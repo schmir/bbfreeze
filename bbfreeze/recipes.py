@@ -78,3 +78,10 @@ del mod
 """, "py/magic/greenlet.py", "exec")
     
     return True
+
+def recipe_time(mf):
+    m = mf.findNode('time')
+    if m is None or m.filename is None:
+        return None
+    
+    mf.import_hook('_strptime', m, ['*'])
