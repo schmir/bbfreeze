@@ -59,4 +59,22 @@ def recipe_py_magic_greenlet(mf):
     gdir = os.path.join(pydir, "c-extension", "greenlet")
     mf.path.append(gdir)
     mf.import_hook("greenlet", m, ['*'])
+
+
+
+    gr = mf.findNode('py.magic.greenlet')
+    if gr is None or gr.filename is None:
+        print "not found:"
+        return None
+    print gr
+
+    gr.code = compile("""
+__path__ = []    
+import sys
+mod = sys.modules[__name__]
+from greenlet import greenlet
+sys.modules[__name__] = mod
+del mod
+""", "py/magic/greenlet.py", "exec")
+    
     return True
