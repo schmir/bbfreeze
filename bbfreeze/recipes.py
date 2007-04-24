@@ -64,9 +64,7 @@ def recipe_py_magic_greenlet(mf):
 
     gr = mf.findNode('py.magic.greenlet')
     if gr is None or gr.filename is None:
-        print "not found:"
         return None
-    print gr
 
     gr.code = compile("""
 __path__ = []    
