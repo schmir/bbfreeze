@@ -84,25 +84,28 @@ if sysconfig.get_config_var("VERSION"):
 define_macros = []
 if sys.platform=='win32':
     define_macros.append(('WIN32', 1))
-    
+
 console = Extension("bbfreeze/console", ['bbfreeze/console.c'],
                     libraries=libs,
                     library_dirs=library_dirs,
                     define_macros=define_macros
                     )
 
+ext_modules = [console]
 consolew = Extension("bbfreeze/consolew", ['bbfreeze/consolew.c'],
                      libraries=libs+['user32'],
                      library_dirs=library_dirs,
                      define_macros=define_macros
                     )
+if sys.platform=='win32':
+    ext_modules.append(consolew)
     
 setup(name = "bbfreeze",
       cmdclass         = {'build_ext': BuildInterpreters,
                           },
       version = '0.91.1.dev',
       entry_points = dict(console_scripts=['bb-freeze = bbfreeze:main']),
-      ext_modules = [console, consolew],
+      ext_modules = ext_modules,
       install_requires=["altgraph>=0.6.7",
                         "modulegraph>=0.7"],
       packages = ['bbfreeze'],

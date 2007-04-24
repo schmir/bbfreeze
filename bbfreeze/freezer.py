@@ -68,7 +68,8 @@ class Freezer(object):
             self.linkmethod = 'hardlink'
 
         self.console = fullname("console.exe")
-        self.consolew = fullname("consolew.exe")
+        if sys.platform=='win32':
+            self.consolew = fullname("consolew.exe")
         
         self._have_console = False
         self.binaries = []
@@ -235,7 +236,7 @@ class Freezer(object):
             os.link(src, dst)
             os.chmod(dst, 0755)
         elif lm=='loader':
-            if gui_only:
+            if gui_only and sys.platform=='win32':
                 shutil.copy2(self.consolew, dst)
             else:
                 shutil.copy2(self.console, dst)
