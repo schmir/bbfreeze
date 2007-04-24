@@ -68,6 +68,8 @@ class Freezer(object):
             self.linkmethod = 'hardlink'
 
         self.console = fullname("console.exe")
+        self.consolew = fullname("consolew.exe")
+        
         self._have_console = False
         self.binaries = []
 
@@ -81,11 +83,12 @@ class Freezer(object):
             mtime = time.time()
         return mtime
     
-    def addScript(self, path):
+    def addScript(self, path, gui_only=False):
         dp = os.path.dirname(os.path.abspath(path))
         
         self.mf.path.insert(0, dp)
-        self.mf.run_script(path)
+        s = self.mf.run_script(path)
+        s.gui_only = gui_only
         del self.mf.path[0]
         
     def addModule(self, name):
@@ -203,7 +206,9 @@ class Freezer(object):
         if exename:
             if sys.platform=='win32':
                 exename+='.exe'
-            self.link(self.zipfilepath, os.path.join(self.distdir, exename))
+            gui_only = getattr(m, 'gui_only', False)
+            
+            self.link(self.zipfilepath, os.path.join(self.distdir, exename), gui_only=gui_only)
                 
         
     def _writecode(self, fn, mtime, code):
@@ -214,7 +219,7 @@ class Freezer(object):
             zinfo.compress_type = zipfile.ZIP_DEFLATED
         self.outfile.writestr(zinfo, data)
 
-    def link(self, src, dst):
+    def link(self, src, dst, gui_only):
         if not self._have_console:
             self.binaries.append(dst)
             self._have_console = True
@@ -230,7 +235,10 @@ class Freezer(object):
             os.link(src, dst)
             os.chmod(dst, 0755)
         elif lm=='loader':
-            shutil.copy2(self.console, dst)
+            if gui_only:
+                shutil.copy2(self.consolew, dst)
+            else:
+                shutil.copy2(self.console, dst)
             os.chmod(dst, 0755)
         else:
             raise RuntimeError("linkmethod %r not supported" % (self.linkmethod,))
