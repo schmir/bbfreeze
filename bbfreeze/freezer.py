@@ -146,7 +146,8 @@ class Freezer(object):
             m(x)
 
         self.copyBinaryDependencies()
-
+        # self.showxref()
+        
     def _handle_ExcludedModule(self, m):
         pass
     
@@ -238,3 +239,25 @@ class Freezer(object):
             dst = os.path.join(self.distdir, os.path.basename(x))
             shutil.copy2(x, dst)
             os.chmod(dst, 0755)
+
+    def showxref(self):
+        import tempfile
+        import urllib
+        
+        fd, htmlfile = tempfile.mkstemp(".html")
+        ofi = open(htmlfile, "w")
+        os.close(fd)
+
+        self.mf.create_xref(ofi)        
+        ofi.close()
+        
+        import webbrowser
+        try:
+            webbrowser.open("file://"+htmlfile)
+        except webbrowser.Error:
+            # sometimes there is no browser (e.g. in chroot environments)
+            pass
+        # how long does it take to start the browser?
+        import threading
+        threading.Timer(5, os.remove, args=[htmlfile])
+        
