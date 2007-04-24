@@ -172,6 +172,7 @@ class Freezer(object):
         shutil.copy2(m.filename, dst)
         os.chmod(dst, 0755)
         self.binaries.append(dst)
+        self.stripBinary(dst)
         
     def _handle_Package(self, m):
         fn = m.identifier.replace(".", "/")+"/__init__.pyc"
@@ -234,12 +235,19 @@ class Freezer(object):
         else:
             raise RuntimeError("linkmethod %r not supported" % (self.linkmethod,))
 
+    def stripBinary(self, p):
+        if sys.platform=='win32':
+            return
+        os.environ['S'] = p
+        os.system('strip $S')
+        
     def copyBinaryDependencies(self):
         for x in getdeps.getDependencies(self.binaries):
             dst = os.path.join(self.distdir, os.path.basename(x))
             shutil.copy2(x, dst)
             os.chmod(dst, 0755)
-
+            self.stripBinary(dst)
+                
     def showxref(self):
         import tempfile
         import urllib
