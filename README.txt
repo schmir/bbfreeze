@@ -39,6 +39,16 @@ Contact Information
 bbfreeze has been developed by `brainbot technologies AG`__. Questions
 and suggestions should be send to schmir@gmail.com
 
+Source
+-------------------
+Windows Eggs and the source code can be downloaded from 
+http://cheeseshop.python.org/pypi/bbfreeze/.
+
+http://systemexit.de/repo/bbfreeze carries a mercurial_ repository of
+the in-development version.
+
+
+
 Installation 
 ---------------
 You need to have setuptools/easy_install installed. Installation
@@ -120,3 +130,4 @@ ChangeLog
 .. _cx_Freeze: http://www.python.net/crew/atuining/cx_Freeze/
 .. _modulegraph: http://undefined.org/python/#modulegraph
 .. __: http://brainbot.com
+.. _mercurial: http://www.selenic.com/mercurial/wiki/
