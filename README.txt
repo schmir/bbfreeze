@@ -123,6 +123,19 @@ The following code shows how to freeze scripts using the bbfreeze API::
 ChangeLog
 ======================================================================
 
+2007-XXXX       release 0.91.1
+-----------------------------------------------
+- use pefile module on windows for binary dependency tracking
+- add gui_only flag to addScript method (which builds GUI programs
+  on windows, i.e. without console)
+- strip shared libraries on non windows platforms
+- add showxref method
+- working recipe for py.magic.greenlet
+
+
+2007-4-24	Initial release 0.91.0
+-----------------------------------------------
+
 
 .. _py2exe: http://www.py2exe.org/
 .. _py2app: http://undefined.org/python/#py2app
