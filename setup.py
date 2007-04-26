@@ -95,10 +95,15 @@ ext_modules = [console]
 consolew = Extension("bbfreeze/consolew", ['bbfreeze/consolew.c'],
                      libraries=libs+['user32'],
                      library_dirs=library_dirs,
-                     define_macros=define_macros
-                    )
+                     define_macros=define_macros)
+
+install_requires=["altgraph>=0.6.7",
+                  "modulegraph>=0.7"]
+
 if sys.platform=='win32':
     ext_modules.append(consolew)
+    install_requires.append("pefile>=1.2.4")
+    
     
 setup(name = "bbfreeze",
       cmdclass         = {'build_ext': BuildInterpreters,
@@ -106,8 +111,7 @@ setup(name = "bbfreeze",
       version = '0.91.1.dev',
       entry_points = dict(console_scripts=['bb-freeze = bbfreeze:main']),
       ext_modules = ext_modules,
-      install_requires=["altgraph>=0.6.7",
-                        "modulegraph>=0.7"],
+      install_requires=install_requires,
       packages = ['bbfreeze'],
       zip_safe = False,
       maintainer="Ralf Schmitt",

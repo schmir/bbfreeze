@@ -3,7 +3,6 @@
 import sys
 import os
 import re
-import struct
 import cPickle
 
 if sys.platform=='win32':
@@ -72,67 +71,10 @@ if sys.platform=='win32':
         """Find the binary dependencies of PTH.
 
             This implementation walks through the PE header"""
-        f = open(path, 'rb')
-        # skip the MSDOS loader
-        f.seek(60)
-        # get offset to PE header
-        offset = struct.unpack('l', f.read(4))[0]
-        f.seek(offset)
-        signature = struct.unpack('l', f.read(4))[0]
-        coffhdrfmt = 'hhlllhh'
-        rawcoffhdr = f.read(struct.calcsize(coffhdrfmt))
-        coffhdr = struct.unpack(coffhdrfmt, rawcoffhdr)
-        coffhdr_numsections = coffhdr[1]
-
-        opthdrfmt = 'hbblllllllllhhhhhhllllhhllllll'
-        rawopthdr = f.read(struct.calcsize(opthdrfmt))
-        opthdr = struct.unpack(opthdrfmt, rawopthdr)
-        opthdr_numrvas = opthdr[-1]
-
-        datadirs = []
-        datadirsize = struct.calcsize('ll') # virtual address, size
-        for i in range(opthdr_numrvas):
-            rawdatadir = f.read(datadirsize)
-            datadirs.append(struct.unpack('ll', rawdatadir))
-
-        sectionfmt = '8s6l2hl'
-        sectionsize = struct.calcsize(sectionfmt)
-        sections = []
-        for i in range(coffhdr_numsections):
-            rawsection = f.read(sectionsize)
-            sections.append(struct.unpack(sectionfmt, rawsection))
-
-        importva, importsz = datadirs[1]
-        if importsz == 0:
-            return []
-        # figure out what section it's in
-        NAME, MISC, VIRTADDRESS, RAWSIZE, POINTERTORAW = range(5)
-        for j in range(len(sections)-1):
-            if sections[j][VIRTADDRESS] <= importva < sections[j+1][VIRTADDRESS]:
-                importsection = sections[j]
-                break
-        else:
-            if importva >= sections[-1][VIRTADDRESS]:
-                importsection = sections[-1]
-            else:
-                print "E: import section is unavailable"
-                return []
-        f.seek(importsection[POINTERTORAW] + importva - importsection[VIRTADDRESS])
-        data = f.read(importsz)
-        iidescrfmt = 'lllll'
-        CHARACTERISTICS, DATETIME, FWDRCHAIN, NAMERVA, FIRSTTHUNK = range(5)
-        iidescrsz = struct.calcsize(iidescrfmt)
-        dlls = []
-        while data:
-            iid = struct.unpack(iidescrfmt, data[:iidescrsz])
-            if iid[CHARACTERISTICS] == 0:
-                break
-            f.seek(importsection[POINTERTORAW] + iid[NAMERVA] - importsection[VIRTADDRESS])
-            nm = f.read(256)
-            nm, jnk = nm.split('\0', 1)
-            if nm:
-                dlls.append(nm)
-            data = data[iidescrsz:]
+        import pefile
+        pe=pefile.PE(path, True)
+        dlls = [x.dll for x in pe.DIRECTORY_ENTRY_IMPORT]
+        print "NEWGETIMPORTS:", dlls
         return dlls
 
 
