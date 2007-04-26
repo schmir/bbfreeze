@@ -74,7 +74,6 @@ if sys.platform=='win32':
         import pefile
         pe=pefile.PE(path, True)
         dlls = [x.dll for x in pe.DIRECTORY_ENTRY_IMPORT]
-        print "NEWGETIMPORTS:", dlls
         return dlls
 
 
