@@ -1,3 +1,2 @@
-recursive-include bbfreeze
 include README.html README.txt showvars.py ez_setup.py
 
