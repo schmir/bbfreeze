@@ -123,8 +123,10 @@ The following code shows how to freeze scripts using the bbfreeze API::
 ChangeLog
 ======================================================================
 
-2007-XXXX       release 0.91.1
+2007-4-27       release 0.92.0
 -----------------------------------------------
+- better binary dependency cache handling
+- fix recipe for time module on windows
 - use pefile module on windows for binary dependency tracking
 - add gui_only flag to addScript method (which builds GUI programs
   on windows, i.e. without console)
