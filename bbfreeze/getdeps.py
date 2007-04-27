@@ -88,9 +88,9 @@ if sys.platform=='win32':
                 try:
                     import win32api
                 except ImportError:
-                    print "W: Cannot determine your Windows or System directories"
-                    print "W: Please add them to your PATH if .dlls are not found"
-                    print "W: or install starship.python.net/skippy/win32/Downloads.html"
+                    print "Warning: Cannot determine your Windows or System directories"
+                    print "Warning: Please add them to your PATH if .dlls are not found"
+                    print "Warning: or install starship.python.net/skippy/win32/Downloads.html"
                 else:
                     sysdir = win32api.GetSystemDirectory()
                     sysdir2 = os.path.join(sysdir, '../SYSTEM')
@@ -140,9 +140,7 @@ else:
 
 class Cache(object):
     def __init__(self):
-        self.cachedir = os.path.expanduser("~/.getdeps")
-        if not os.path.exists(self.cachedir):
-            os.makedirs(self.cachedir)
+        self.c = {}
 
         try:
             uname = os.uname()
@@ -154,7 +152,21 @@ class Cache(object):
                               os.environ.get("DYLD_LIBRARY_PATH"),
                               os.environ.get("PATH")))
 
-        self.c = {}
+        self.cachedir = None
+        try:            
+            cachedir = os.path.expanduser("~/.bbfreeze/cache")
+            if cachedir.startswith("~"):
+                print "Not using cachedir (environment variable HOME not set.)"
+                return
+            
+            if not os.path.exists(cachedir):
+                os.makedirs(cachedir)
+            self.cachedir = cachedir
+        except Exception, err:
+            print "Error while trying to create cachedir:", err
+                
+
+
         
     def computeId(self, *args):
         import StringIO
@@ -178,14 +190,18 @@ class Cache(object):
             return self.c[fp]
         except:
             pass
+
+        if self.cachedir is not None:            
+            p = self._getcachepath(fp)
+            if os.path.exists(p):
+                return cPickle.loads(open(p, 'rb').read())
         
-        p = self._getcachepath(fp)
-        if os.path.exists(p):
-            return cPickle.loads(open(p, 'rb').read())
         raise KeyError()
 
     def __setitem__(self, fp, val):
         self.c[fp] = val
+        if self.cachedir is None:
+            return
         
         p = self._getcachepath(fp)
         open(p, 'wb').write(cPickle.dumps(val))
