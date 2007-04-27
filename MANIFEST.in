@@ -1,2 +1,2 @@
 include README.html README.txt showvars.py ez_setup.py
-
+include bbfreeze/*.c bbfreeze/*.h
