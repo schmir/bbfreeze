@@ -150,6 +150,8 @@ class Freezer(object):
             m(x)
 
         self.copyBinaryDependencies()
+        self.outfile.close()
+        
         # self.showxref()
         
     def _handle_ExcludedModule(self, m):
