@@ -19,6 +19,51 @@ from distutils import dist, dep_util, sysconfig
 os.environ['LD_RUN_PATH'] = "${ORIGIN}:${ORIGIN}/../lib"
 
 
+
+long_description = """
+======================================================================
+bbfreeze - create standalone executables from python scripts
+======================================================================
+
+
+Overview
+======================================================================
+bbfreeze creates standalone executables from python scripts. It's
+similar in purpose to the well known py2exe_ for windows, py2app_ for
+OS X, PyInstaller_ and cx_Freeze_ (in fact it includes some bits from
+cx_Freeze and PyInstaller. And it uses the modulegraph_ package,
+which is also used by py2app).
+
+It has the following features:
+
+easy installation 
+  bbfreeze can be installed with setuptools' easy_install command.
+
+binary dependency tracking
+  bbfreeze will track binary dependencies and will include DLLs and
+  shared libraries needed by a frozen program.
+
+multiple script freezing
+  bbfreeze can freeze multiple scripts at once.
+
+python interpreter included
+  bbfreeze will create an extra executable named 'py', which might be
+  used like the python executable itself.
+
+bbfreeze works on windows and UNIX-like operating systems. It
+currently does not work on OS X. bbfreeze has been tested with python
+2.4 and 2.5. bbfreeze will not work with python versions prior to 2.3
+as it uses the zipimport feature introduced with python 2.3.
+
+.. _py2exe: http://www.py2exe.org/
+.. _py2app: http://undefined.org/python/#py2app
+.. _PyInstaller: http://pyinstaller.python-hosting.com/
+.. _cx_Freeze: http://www.python.net/crew/atuining/cx_Freeze/
+.. _modulegraph: http://undefined.org/python/#modulegraph
+.. __: http://brainbot.com
+.. _mercurial: http://www.selenic.com/mercurial/wiki/
+"""
+
 class BuildInterpreters(build_ext.build_ext):
     _patched = False
 
@@ -108,7 +153,7 @@ if sys.platform=='win32':
 setup(name = "bbfreeze",
       cmdclass         = {'build_ext': BuildInterpreters,
                           },
-      version = '0.91.1.dev',
+      version = '0.91.1',
       entry_points = dict(console_scripts=['bb-freeze = bbfreeze:main']),
       ext_modules = ext_modules,
       install_requires=install_requires,
@@ -117,5 +162,6 @@ setup(name = "bbfreeze",
       maintainer="Ralf Schmitt",
       maintainer_email="schmir@gmail.com",
       url = "http://systemexit.de/bbfreeze/",
-      description="create standalone executables from python scripts"
+      description="create standalone executables from python scripts",
+      long_description = long_description
       )
