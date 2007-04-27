@@ -153,18 +153,34 @@ class Cache(object):
                               os.environ.get("PATH")))
 
         self.cachedir = None
-        try:            
-            cachedir = os.path.expanduser("~/.bbfreeze/cache")
-            if cachedir.startswith("~"):
-                print "Not using cachedir (environment variable HOME not set.)"
+        try:
+            cachedir = self.getCachedir()
+            if cachedir is None:
                 return
-            
+
             if not os.path.exists(cachedir):
                 os.makedirs(cachedir)
             self.cachedir = cachedir
+            print "using binary dependency cache in %r" % (self.cachedir,)
         except Exception, err:
             print "Error while trying to create cachedir:", err
-                
+     
+    def getCachedir(self):
+        if sys.platform=='win32':
+            appdata = os.environ.get("APPDATA")
+            if appdata:
+                cachedir = os.path.join(appdata, "bbfreeze", "cache")
+            else:
+                cachedir = None
+        else:
+            cachedir = os.path.expanduser("~/.bbfreeze/cache")
+            if cachedir.startswith("~"):
+                print "Not using cachedir (environment variable HOME not set.)"
+                cachedir = None
+
+        return cachedir
+
+
 
 
         
