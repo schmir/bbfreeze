@@ -60,8 +60,6 @@ as it uses the zipimport feature introduced with python 2.3.
 .. _PyInstaller: http://pyinstaller.python-hosting.com/
 .. _cx_Freeze: http://www.python.net/crew/atuining/cx_Freeze/
 .. _modulegraph: http://undefined.org/python/#modulegraph
-.. __: http://brainbot.com
-.. _mercurial: http://www.selenic.com/mercurial/wiki/
 """
 
 class BuildInterpreters(build_ext.build_ext):
