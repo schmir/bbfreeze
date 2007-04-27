@@ -8,7 +8,7 @@ def fullpath(x):
     return os.path.join(dn, x)
 
 def compile_and_run(p):
-    err=os.system("bb-freeze $S")
+    err=os.system("bb-freeze %s" % p)
     assert err==0, "bb-freeze failed"
     if p.endswith('.py'):
         p = p[:-3]
@@ -16,12 +16,16 @@ def compile_and_run(p):
     assert err==0, "frozen executable failed"
 
 def maybe_compile_and_run(x):
+    print "\n\n-----------------> building", x, "<------------"
+
     assert os.path.exists(x)
     os.environ['S'] = fullpath(x)
-    err=os.system("%s $S" % (sys.executable,))
+    err=os.system("%s %s" % (sys.executable,fullpath(x)))
     if err==0:
         compile_and_run(x)
-    
+    else:
+        print "failed"
+
 def test_ex_time():
     maybe_compile_and_run("ex-time.py")
 

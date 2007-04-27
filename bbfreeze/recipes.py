@@ -79,7 +79,10 @@ del mod
 
 def recipe_time(mf):
     m = mf.findNode('time')
-    if m is None or m.filename is None:
+    
+    # time is a BuiltinModule on win32, therefor m.filename is None
+    if m is None: # or m.filename is None:
         return None
     
     mf.import_hook('_strptime', m, ['*'])
+    return True
