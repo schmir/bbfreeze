@@ -6,6 +6,7 @@ import struct
 import zipfile
 import imp
 import marshal
+import zipimport
 
 from modulegraph import modulegraph
 modulegraph.ReplacePackage("_xmlplus", "xml")
@@ -25,6 +26,58 @@ def getRecipes():
                 res.append(r)
 
     return res
+
+class ZipModule(modulegraph.BaseModule):
+    pass
+
+class MyModuleGraph(modulegraph.ModuleGraph):
+    def find_module(self, name, path, parent=None):
+        if parent is not None:
+            # assert path is not None
+            fullname = parent.identifier+'.'+name
+        else:
+            fullname = name
+
+        try:
+            res = modulegraph.ModuleGraph.find_module(self, name, path, parent)
+            return res
+        
+        except ImportError, err:
+            pass
+
+        if path is None:
+            path = self.path
+        
+        for x in path:
+            if os.path.isfile(x):
+                try:
+                    zi = zipimport.zipimporter(x)
+                except zipimport.ZipImportError:
+                    continue
+
+                m = zi.find_module(fullname.replace(".", "/"))
+                if m:
+                    code = zi.get_code(fullname.replace(".", "/"))
+                    return zi, x, ('', '', 314)
+
+        raise err
+    
+    
+    def load_module(self, fqname, fp, pathname, (suffix, mode, typ)):
+        if typ==314:
+            m = self.createNode(ZipModule, fqname)
+            code=fp.get_code(fqname.replace(".", "/"))
+            m.packagepath = [fp.archive]
+            m.code = code
+            m.is_package = fp.is_package(fqname.replace(".", "/"))
+            
+            self.scan_code(m.code, m)
+            return m
+        else:
+            return modulegraph.ModuleGraph.load_module(self, fqname, fp, pathname, (suffix, mode, typ))
+        
+            
+
 
 # NOTE: the try: except: block in this code is not necessary under Python 2.4
 # and higher and can be removed once support for Python 2.3 is no longer needed
@@ -55,12 +108,13 @@ if not found:
 """
 
 class Freezer(object):
-    useCompression = True
+    use_compression = True
+    include_py = True
     
     def __init__(self, distdir="dist", includes=(), excludes=()):
         self.distdir = os.path.abspath(distdir)
         
-        self.mf = modulegraph.ModuleGraph(excludes=excludes)
+        self.mf = MyModuleGraph(excludes=excludes, debug=0)
         self._loaderNode = None
         if sys.platform=='win32':
             self.linkmethod = 'loader'
@@ -78,7 +132,7 @@ class Freezer(object):
             self.addModule(x)
             
     def _get_mtime(self, fn):
-        if os.path.exists(fn):
+        if fn and os.path.exists(fn):
             mtime = os.stat(fn).st_mtime
         else:
             mtime = time.time()
@@ -114,8 +168,9 @@ class Freezer(object):
                 print "*** applied", x
         
     def __call__(self):
-        pyscript = os.path.join(os.path.dirname(__file__), 'py.py')
-        self.addScript(pyscript)
+        if self.include_py:
+            pyscript = os.path.join(os.path.dirname(__file__), 'py.py')
+            self.addScript(pyscript)
         
         self.addModule("encodings.*")
         self._add_loader()
@@ -191,7 +246,19 @@ class Freezer(object):
         mtime = self._get_mtime(m.filename)
         self._writecode(fn, mtime, m.code)
         
-    
+
+    def _handle_ZipModule(self, m):
+        fn = m.identifier.replace(".", "/")
+        if m.is_package:
+            fn += "/__init__"
+        fn += ".pyc"
+        mtime = self._get_mtime(m.filename)
+        
+        self._writecode(fn, mtime, m.code)
+        
+                        
+            
+        
     def _handle_Script(self, m):
         exename = None
         mtime = self._get_mtime(m.filename)
@@ -218,7 +285,7 @@ class Freezer(object):
         ziptime = time.localtime(mtime)[:6]
         data = imp.get_magic() + struct.pack("<i", mtime) + marshal.dumps(code)
         zinfo = zipfile.ZipInfo(fn, ziptime)
-        if self.useCompression:
+        if self.use_compression:
             zinfo.compress_type = zipfile.ZIP_DEFLATED
         self.outfile.writestr(zinfo, data)
 

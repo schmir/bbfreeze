@@ -86,3 +86,17 @@ def recipe_time(mf):
     
     mf.import_hook('_strptime', m, ['*'])
     return True
+
+
+def recipe_pkg_resources(mf):
+    m = mf.findNode('pkg_resources')
+    if m is None or m.filename is None:
+        return None
+
+
+    m.code = compile("""
+def require(*args, **kwargs):
+    return
+""", "pkg_resources.py", "exec")
+    
+    return True
