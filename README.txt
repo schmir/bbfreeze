@@ -110,8 +110,9 @@ Example Usage::
 
 bbfreeze - API
 ======================================================================
-The following code shows how to freeze scripts using the bbfreeze API::
-  
+The preferred way to use bbfreeze is by writing short python scripts,
+which use bbfreeze's API. Let's start with a short example::
+
   from bbfreeze import Freezer
   f = Freezer("hello-world-1.0", includes=("_strptime"))
   f.addScript("hello-world.py")
@@ -119,9 +120,43 @@ The following code shows how to freeze scripts using the bbfreeze API::
   f()    # starts the freezing process
 
 
+`bbfreeze.Freezer(distdir="dist", includes=(), excludes=())`
+instantiates a Freezer object. It will create the frozen executables
+and dependencies inside the `distdir` directory. `includes` is a list
+or tuple of modules to include, `excludes` is a list or tuple of
+modules to exclude. Note that the freezer will *delete* the directory
+`distdir` before freezing!
+
+bbfreeze.Freezer objects have the following members:
+
+- `use_compression`: flag whether to use compression inside the created
+  zipfile (default True).
+- `include_py`: flag whether to create the included python interpreter
+  `py` (default True)
+- `addScript(path, gui_only=False)`: register a python script for
+  freezing. `path` must be the path to a python script.
+  The freezer will scan the file for dependencies and will create an
+  executable with the same name in `distdir`. The `gui_only` flag only
+  has a meaning on windows: If set, the executable created for this
+  script will not open a console window.
+
+
+Recipes
+----------------------------------------------------------------------
+Recipes provide a way to control the freezing process. *FIXME* 
+
 
 ChangeLog
 ======================================================================
+
+2007-4-27       release 0.92.1
+-----------------------------------------------
+- basic support for zipfiles/eggs (bbfreeze will scan zipfiles/eggs
+  for dependencies and will implement a dummy pkg_resources.require in
+  frozen executables). Note that the remaining pkg_resources
+  functionality just isn't available.
+- documentation updates
+
 
 2007-4-27       release 0.92.0
 -----------------------------------------------
