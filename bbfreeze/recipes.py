@@ -20,6 +20,7 @@ recipe_flup = find_all_packages('flup')
 recipe_django = find_all_packages('django')
 recipe_py = find_all_packages("py")
 recipe_email = find_all_packages("email")
+recipe_IPython = find_all_packages("IPython")
 
 def recipe_pydoc(mf):
     m = mf.findNode('pydoc')
