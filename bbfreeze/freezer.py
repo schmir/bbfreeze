@@ -67,9 +67,9 @@ class MyModuleGraph(modulegraph.ModuleGraph):
 
         if len(found)>1:
             print "WARNING: found %s in multiple directories. Assuming it's a namespace package. (found in %s)" % (
-                name,", ".join(x[1] for x in found))
+                fullname, ", ".join(x[1] for x in found))
             for x in found[1:]:
-                modulegraph.AddPackagePath(name, x[1])
+                modulegraph.AddPackagePath(fullname, x[1])
             return found[0]
 
         if len(found)==1:
