@@ -11,7 +11,7 @@ import zipimport
 from modulegraph import modulegraph
 modulegraph.ReplacePackage("_xmlplus", "xml")
 
-from bbfreeze import recipes, getdeps
+from bbfreeze import recipes
 
 
 def fullname(p):
@@ -351,6 +351,8 @@ class Freezer(object):
         os.system('strip $S')
         
     def copyBinaryDependencies(self):
+        from bbfreeze import getdeps
+        
         for x in getdeps.getDependencies(self.binaries):
             dst = os.path.join(self.distdir, os.path.basename(x))
             shutil.copy2(x, dst)
