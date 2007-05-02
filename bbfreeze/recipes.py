@@ -94,10 +94,16 @@ def recipe_pkg_resources(mf):
     if m is None or m.filename is None:
         return None
 
+    print "WARNING: replacing pkg_resources module with dummy implementation"
+    
+
 
     m.code = compile("""
 def require(*args, **kwargs):
     return
+def declare_namespace(name):
+    pass
+
 """, "pkg_resources.py", "exec")
     
     return True

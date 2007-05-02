@@ -32,19 +32,50 @@ class ZipModule(modulegraph.BaseModule):
 
 class MyModuleGraph(modulegraph.ModuleGraph):
     def find_module(self, name, path, parent=None):
+        paths_seen = set()
+        
         if parent is not None:
             # assert path is not None
             fullname = parent.identifier+'.'+name
         else:
             fullname = name
 
-        try:
-            res = modulegraph.ModuleGraph.find_module(self, name, path, parent)
-            return res
-        
-        except ImportError, err:
-            pass
+        #print "FIND_MODULE:", name, path, parent
 
+        if path is None:
+            path = self.path
+
+        found = []
+        for p in path:            
+            try:
+                p = os.path.normpath(p)
+                if p in paths_seen:
+                    continue
+                paths_seen.add(p)
+                res = modulegraph.ModuleGraph.find_module(self, name, [p], parent)
+
+                if found:
+                    if res[2][2] == imp.PKG_DIRECTORY:
+                        found.append(res)
+                else:
+                    if res[2][2] == imp.PKG_DIRECTORY:
+                        found.append(res)
+                    else:
+                        return res
+            except ImportError, err:
+                pass
+
+        if len(found)>1:
+            print "WARNING: found %s in multiple directories. Assuming it's a namespace package. (found in %s)" % (
+                name,", ".join(x[1] for x in found))
+            for x in found[1:]:
+                modulegraph.AddPackagePath(name, x[1])
+            return found[0]
+
+        if len(found)==1:
+            return found[0]
+        
+        
         if path is None:
             path = self.path
         
