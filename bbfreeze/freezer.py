@@ -248,8 +248,9 @@ class Freezer(object):
         # be sure to close the file before scanning for binary dependencies
         # otherwise ldd might not be able to do it's job ("Text file busy")
         self.copyBinaryDependencies()
-        
-        # self.showxref()
+
+        if os.environ.get("XREF") or os.environ.get("xref"):
+            self.showxref()
         
     def _handle_ExcludedModule(self, m):
         pass
