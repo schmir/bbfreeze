@@ -31,6 +31,32 @@ class ZipModule(modulegraph.BaseModule):
     pass
 
 class MyModuleGraph(modulegraph.ModuleGraph):
+    def _find_single_path(self, name, p, parent=None):
+        """find module or zip module in directory or zipfile p"""
+        if parent is not None:
+            # assert path is not None
+            fullname = parent.identifier+'.'+name
+        else:
+            fullname = name
+
+        try:    
+            return modulegraph.ModuleGraph.find_module(self, name, [p], parent)
+        except ImportError, err:
+            pass
+
+        if not os.path.isfile(p):
+            raise err
+        
+        zi = zipimport.zipimporter(p)
+        m = zi.find_module(fullname.replace(".", "/"))
+        if m:
+            code = zi.get_code(fullname.replace(".", "/"))
+            return zi, p, ('', '', 314)
+        raise err
+        
+
+        
+        
     def find_module(self, name, path, parent=None):
         paths_seen = set()
         
@@ -52,8 +78,8 @@ class MyModuleGraph(modulegraph.ModuleGraph):
                 if p in paths_seen:
                     continue
                 paths_seen.add(p)
-                res = modulegraph.ModuleGraph.find_module(self, name, [p], parent)
-
+                #res = modulegraph.ModuleGraph.find_module(self, name, [p], parent)
+                res = self._find_single_path(name, p, parent)
                 if found:
                     if res[2][2] == imp.PKG_DIRECTORY:
                         found.append(res)
@@ -70,26 +96,9 @@ class MyModuleGraph(modulegraph.ModuleGraph):
                 fullname, ", ".join(x[1] for x in found))
             for x in found[1:]:
                 modulegraph.AddPackagePath(fullname, x[1])
-            return found[0]
 
-        if len(found)==1:
+        if found:
             return found[0]
-        
-        
-        if path is None:
-            path = self.path
-        
-        for x in path:
-            if os.path.isfile(x):
-                try:
-                    zi = zipimport.zipimporter(x)
-                except zipimport.ZipImportError:
-                    continue
-
-                m = zi.find_module(fullname.replace(".", "/"))
-                if m:
-                    code = zi.get_code(fullname.replace(".", "/"))
-                    return zi, x, ('', '', 314)
 
         raise err
     
