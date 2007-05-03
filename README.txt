@@ -18,6 +18,13 @@ It has the following features:
 easy installation 
   bbfreeze can be installed with setuptools' easy_install command.
 
+zip/egg file import tracking
+  bbfreeze tracks imports from zip files. Note that calls to setuptools'
+  pkg_resources.require will be replaced with a dummy implementation.
+  Calls to resource handling functions are *not* implemented, and
+  freezing packages using these features of pkg_resources will not be
+  possible.
+
 binary dependency tracking
   bbfreeze will track binary dependencies and will include DLLs and
   shared libraries needed by a frozen program.
@@ -61,7 +68,6 @@ altgraph and install them.
 
 Limitations
 ---------------
-- bbfreeze does not track dependencies inside zipped egg files.
 - bbfreeze does not work on OS X
 - documentation
 
@@ -143,14 +149,18 @@ bbfreeze.Freezer objects have the following members:
 
 Recipes
 ----------------------------------------------------------------------
-Recipes provide a way to control the freezing process. *FIXME* 
+Recipes provide a way to control the freezing process. Have a look at
+bbfreeze/recipes.py if you need to implement your own. Note that the
+API might change.
 
 
 ChangeLog
 ======================================================================
 
-2007-4-27       release 0.92.1
+2007-5-3       release 0.93.0
 -----------------------------------------------
+- dependency on libpython.so should now always be recognized
+- support for namespace packages
 - basic support for zipfiles/eggs (bbfreeze will scan zipfiles/eggs
   for dependencies and will implement a dummy pkg_resources.require in
   frozen executables). Note that the remaining pkg_resources
