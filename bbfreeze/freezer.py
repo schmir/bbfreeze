@@ -235,8 +235,10 @@ class Freezer(object):
                 continue
             m(x)
 
-        self.copyBinaryDependencies()
         self.outfile.close()
+        # be sure to close the file before scanning for binary dependencies
+        # otherwise ldd might not be able to do it's job ("Text file busy")
+        self.copyBinaryDependencies()
         
         # self.showxref()
         
