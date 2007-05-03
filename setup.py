@@ -39,6 +39,13 @@ It has the following features:
 easy installation 
   bbfreeze can be installed with setuptools' easy_install command.
 
+zip/egg file import tracking
+  bbfreeze tracks imports from zip files. Note that calls to setuptools'
+  pkg_resources.require will be replaced with a dummy implementation.
+  Calls to resource handling functions are *not* implemented, and
+  freezing packages using these features of pkg_resources will not be
+  possible without further work.
+
 binary dependency tracking
   bbfreeze will track binary dependencies and will include DLLs and
   shared libraries needed by a frozen program.
@@ -151,7 +158,7 @@ if sys.platform=='win32':
 setup(name = "bbfreeze",
       cmdclass         = {'build_ext': BuildInterpreters,
                           },
-      version = '0.92.1.dev',
+      version = '0.93.0',
       entry_points = dict(console_scripts=['bb-freeze = bbfreeze:main']),
       ext_modules = ext_modules,
       install_requires=install_requires,

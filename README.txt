@@ -23,7 +23,7 @@ zip/egg file import tracking
   pkg_resources.require will be replaced with a dummy implementation.
   Calls to resource handling functions are *not* implemented, and
   freezing packages using these features of pkg_resources will not be
-  possible.
+  possible without further work.
 
 binary dependency tracking
   bbfreeze will track binary dependencies and will include DLLs and
