@@ -198,7 +198,8 @@ class Cache(object):
 
 
     def _getcachepath(self, fp):
-        p = os.path.join(self.cachedir, self.computeId(self.machine_id, fp))
+        f=os.stat(fp)
+        p = os.path.join(self.cachedir, self.computeId(self.machine_id, fp, f.st_mtime, f.st_size))
         return p
     
     def __getitem__(self, fp):
