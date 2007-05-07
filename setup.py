@@ -93,7 +93,7 @@ class BuildInterpreters(build_ext.build_ext):
             return
 
         LINKFORSHARED = sysconfig.get_config_var("LINKFORSHARED")
-        if LINKFORSHARED:            
+        if LINKFORSHARED and sys.platform != 'darwin':            
             linker = " ".join(sysconfig.get_config_var(x) for x in 'LINKCC LDFLAGS LINKFORSHARED'.split())
             self.compiler.set_executables(linker_exe = linker)
             
