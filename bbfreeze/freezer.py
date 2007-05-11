@@ -11,6 +11,27 @@ import zipimport
 from modulegraph import modulegraph
 modulegraph.ReplacePackage("_xmlplus", "xml")
 
+# workaround for win32com hacks.
+# see: http://starship.python.net/crew/theller/moin.cgi/WinShell
+
+try:
+    import win32com
+    for p in win32com.__path__[1:]:
+        modulegraph.AddPackagePath("win32com", p)
+    for extra in ["win32com.shell", "win32com.mapi"]:
+        try:
+            __import__(extra)
+        except ImportError:
+            continue
+        m = sys.modules[extra]
+        for p in m.__path__[1:]:
+            modulegraph.AddPackagePath(extra, p)
+except ImportError:
+    pass
+
+
+
+
 from bbfreeze import recipes
 
 
@@ -190,7 +211,8 @@ class Freezer(object):
         if name.endswith(".*"):
             self.mf.import_hook(name[:-2], fromlist="*")
         else:
-            self.mf.import_hook(name)
+            if name not in sys.builtin_module_names:
+                self.mf.import_hook(name)
                                 
 
     def _add_loader(self):
