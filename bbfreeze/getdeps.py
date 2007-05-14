@@ -103,7 +103,7 @@ if sys.platform=='win32':
         """Return a set of direct dependencies of executable given in path"""
 
         dlls = getImports(path)
-        winpath = getWindowsPath()
+        winpath = [os.path.dirname(os.path.abspath(path))] + getWindowsPath()
         deps = set()
         for dll in dlls:
             if dll.upper() in excludes:
@@ -114,6 +114,7 @@ if sys.platform=='win32':
                 if os.path.exists(fp):
                     deps.add(fp)
                     break
+
         return deps
 
     def exclude(fp):
@@ -190,6 +191,7 @@ class Cache(object):
 
         f=StringIO.StringIO()
         print >>f, "regular expression bug fixed"
+        print >>f, "directory of excutable"
         for x in args:
             print >>f, x
         m=md5.new()

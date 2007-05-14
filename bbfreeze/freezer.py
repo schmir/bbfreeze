@@ -297,7 +297,9 @@ class Freezer(object):
         dst = os.path.join(self.distdir, name+ext)
         shutil.copy2(m.filename, dst)
         os.chmod(dst, 0755)
-        self.binaries.append(dst)
+        # when searching for DLL's the location matters, so don't
+        # add the destination file, but rather the source file
+        self.binaries.append(m.filename) 
         self.stripBinary(dst)
         
     def _handle_Package(self, m):
