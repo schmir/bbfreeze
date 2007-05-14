@@ -95,7 +95,7 @@ class MyModuleGraph(modulegraph.ModuleGraph):
         found = []
         for p in path:            
             try:
-                p = os.path.normpath(p)
+                p = os.path.normcase(os.path.normpath(os.path.abspath(p)))
                 if p in paths_seen:
                     continue
                 paths_seen.add(p)
