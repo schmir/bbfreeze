@@ -120,14 +120,17 @@ if sys.platform=='win32':
     def exclude(fp):
         return os.path.basename(fp).upper() in excludes
         
-elif sys.platform=='darwin':
-    def _getDependencies(fp):
-        return []
+elif sys.platform.startswith("freebsd"):
+    def _getDependencies(path):
+        os.environ["P"] = path
+        s=os.popen4("ldd $P")[1].read()
+        res = [x for x in re.compile(r"^ *.* => (.*) \(.*", re.MULTILINE).findall(s) if x]
+        return res
 
     def exclude(fp):
-        return False
+        return bool(re.match(r"^/usr/lib/.*$", fp))
     
-else:    
+elif sys.platform.startswith("linux"):
     def _getDependencies(path):
         os.environ["P"] = path
         s=os.popen4("ldd $P")[1].read()
@@ -137,6 +140,13 @@ else:
     
     def exclude(fp):
         return re.match(r"^libc\.|^libcrypt\.|^libm\.|^libdl\.|^libpthread\.|^libnsl\.|^libutil\.", os.path.basename(fp))
+else:
+    print "Warning: don't know how to handle binary dependencies on this platform (%s)" % (sys.platform,)
+    def _getDependencies(fp):
+        return []
+
+    def exclude(fp):
+        return False
 
 
 class Cache(object):
