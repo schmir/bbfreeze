@@ -1,20 +1,6 @@
-use pefile for binary dependency tracking on win32
---------------------------------------------------
-(http://dkbza.org/pefile.html)
-example usage::
-
-  In [6]: pe=pefile.PE("ppthtml.exe", True)
-
-  In [7]: list(pe.DIRECTORY_ENTRY_IMPORT)
-  Out[7]:
-  [<pefile.ImportDescData instance at 0x2adb0a6e6a28>,
-   <pefile.ImportDescData instance at 0x2adb0a6f1a70>]
-
-  In [8]: [x.dll for x in list(pe.DIRECTORY_ENTRY_IMPORT)]
-  Out[8]: ['KERNEL32.dll', 'msvcrt.dll']
-
-Others
---------------------------------------------------
-- support zipped egg files (modulegraph!)
+- exclude pango/cairo/gtk
+- read long_description from readme
 - support relative imports (modulegraph!)
 
+- [DONE] support zipped egg files (modulegraph!)
+- [DONE] use pefile for binary dependency tracking on win32
