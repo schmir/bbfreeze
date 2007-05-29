@@ -139,7 +139,7 @@ elif sys.platform.startswith("linux"):
 
     
     def exclude(fp):
-        return re.match(r"^libc\.|^libcrypt\.|^libm\.|^libdl\.|^libpthread\.|^libnsl\.|^libutil\.", os.path.basename(fp))
+        return re.match(r"^libc\.|^librt\.|^libcrypt\.|^libm\.|^libdl\.|^libpthread\.|^libnsl\.|^libutil\.", os.path.basename(fp))
 else:
     print "Warning: don't know how to handle binary dependencies on this platform (%s)" % (sys.platform,)
     def _getDependencies(fp):
@@ -202,6 +202,7 @@ class Cache(object):
         f=StringIO.StringIO()
         print >>f, "regular expression bug fixed"
         print >>f, "directory of excutable"
+        print >>f, "exclude1"
         for x in args:
             print >>f, x
         m=md5.new()
