@@ -253,6 +253,12 @@ class Freezer(object):
     def findBinaryDependencies(self):
         from bbfreeze import getdeps
 
+        for so in getdeps.getDependencies(self.console):
+            n = self.mf.createNode(SharedLibrary, os.path.basename(so))
+            n.filename = so
+            self.mf.createReference(self.mf, n)
+        
+
         for x in list(self.mf.flatten()):
             if isinstance(x, modulegraph.Extension):
                 for so in getdeps.getDependencies(x.filename):
