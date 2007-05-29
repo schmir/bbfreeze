@@ -53,6 +53,13 @@ class SharedLibrary(modulegraph.Node):
         self.graphident = identifier
         self.identifier = identifier
         self.filename = None        
+
+class CopyTree(modulegraph.Node):
+    def __init__(self, identifier, dest):
+        self.graphident = identifier
+        self.identifier = identifier
+        self.filename = identifier
+        self.dest = dest
         
 class ZipModule(modulegraph.BaseModule):
     pass
@@ -82,6 +89,10 @@ class MyModuleGraph(modulegraph.ModuleGraph):
         raise err
         
 
+    def copyTree(self, source, dest, parent):
+        n=self.createNode(CopyTree, source, dest)
+        self.createReference(parent, n)
+        
         
         
     def find_module(self, name, path, parent=None):
@@ -235,6 +246,10 @@ class Freezer(object):
             if x(self.mf):
                 print "*** applied", x
 
+
+    def _handle_CopyTree(self, n):
+        shutil.copytree(n.filename, os.path.join(self.distdir, n.dest))
+        
     def findBinaryDependencies(self):
         from bbfreeze import getdeps
 
