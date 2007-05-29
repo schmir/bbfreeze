@@ -142,3 +142,21 @@ def recipe_tkinter(mf):
                 tcldir = os.path.join(os.path.dirname(x), "tcl%s" % _tkinter.TCL_VERSION)
                 if os.path.isdir(tcldir):
                     mf.copyTree(tcldir, "lib-tcl", m)
+
+    return True
+
+def recipe_gtk_and_friends(mf):
+    from bbfreeze.freezer import SharedLibrary
+    for x in list(mf.flatten()):
+        if not isinstance(x, SharedLibrary):
+            continue
+
+        prefixes = ["libpango", "libpangocairo", "libpangoft", "libgtk", "libgdk", "libglib", "libgmodule", "libgobject", "libgthread"]
+
+        for p in prefixes:        
+            if x.identifier.startswith(p):
+                print "SKIPPING:", x
+                mf.removeNode(x)
+                break
+
+    return True

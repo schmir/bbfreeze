@@ -268,9 +268,9 @@ class Freezer(object):
         
         self.addModule("encodings.*")
         self._add_loader()
+        self.findBinaryDependencies()
         self._handleRecipes()
 
-        self.findBinaryDependencies()
         
         if os.path.exists(self.distdir):
             shutil.rmtree(self.distdir)
