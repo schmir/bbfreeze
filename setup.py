@@ -18,56 +18,9 @@ from distutils import dist, dep_util, sysconfig
 
 os.environ['LD_RUN_PATH'] = "${ORIGIN}:${ORIGIN}/../lib"
 
-
-
-long_description = """
-======================================================================
-bbfreeze - create standalone executables from python scripts
-======================================================================
-
-
-Overview
-======================================================================
-bbfreeze creates standalone executables from python scripts. It's
-similar in purpose to the well known py2exe_ for windows, py2app_ for
-OS X, PyInstaller_ and cx_Freeze_ (in fact it includes some bits from
-cx_Freeze and PyInstaller. And it uses the modulegraph_ package,
-which is also used by py2app).
-
-It has the following features:
-
-easy installation 
-  bbfreeze can be installed with setuptools' easy_install command.
-
-zip/egg file import tracking
-  bbfreeze tracks imports from zip files. Note that calls to setuptools'
-  pkg_resources.require will be replaced with a dummy implementation.
-  Calls to resource handling functions are *not* implemented, and
-  freezing packages using these features of pkg_resources will not be
-  possible without further work.
-
-binary dependency tracking
-  bbfreeze will track binary dependencies and will include DLLs and
-  shared libraries needed by a frozen program.
-
-multiple script freezing
-  bbfreeze can freeze multiple scripts at once.
-
-python interpreter included
-  bbfreeze will create an extra executable named 'py', which might be
-  used like the python executable itself.
-
-bbfreeze works on windows and UNIX-like operating systems. It
-currently does not work on OS X. bbfreeze has been tested with python
-2.4 and 2.5. bbfreeze will not work with python versions prior to 2.3
-as it uses the zipimport feature introduced with python 2.3.
-
-.. _py2exe: http://www.py2exe.org/
-.. _py2app: http://undefined.org/python/#py2app
-.. _PyInstaller: http://pyinstaller.python-hosting.com/
-.. _cx_Freeze: http://www.python.net/crew/atuining/cx_Freeze/
-.. _modulegraph: http://undefined.org/python/#modulegraph
-"""
+def read_long_description():
+    fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), "README.txt")
+    return open(fn).read()
 
 class BuildInterpreters(build_ext.build_ext):
     _patched = False
@@ -166,7 +119,7 @@ setup(name = "bbfreeze",
       zip_safe = False,
       maintainer="Ralf Schmitt",
       maintainer_email="schmir@gmail.com",
-      url = "http://systemexit.de/bbfreeze/",
+      url = "http://cheeseshop.python.org/pypi/bbfreeze/",
       description="create standalone executables from python scripts",
-      long_description = long_description
+      long_description = read_long_description()
       )
