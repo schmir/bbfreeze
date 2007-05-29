@@ -146,6 +146,7 @@ def recipe_tkinter(mf):
     return True
 
 def recipe_gtk_and_friends(mf):
+    retval = False
     from bbfreeze.freezer import SharedLibrary
     for x in list(mf.flatten()):
         if not isinstance(x, SharedLibrary):
@@ -157,6 +158,7 @@ def recipe_gtk_and_friends(mf):
             if x.identifier.startswith(p):
                 print "SKIPPING:", x
                 mf.removeNode(x)
+                retval = True                
                 break
 
-    return True
+    return retval
