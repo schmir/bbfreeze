@@ -5,13 +5,10 @@
 import os
 import sys
 
-try:
-    from setuptools import setup, Extension
-except ImportError:
-    from ez_setup import use_setuptools
-    use_setuptools()
-
+import ez_setup
+ez_setup.use_setuptools()
 from setuptools import setup, Extension
+
 
 from distutils.command import build, build_ext
 from distutils import dist, dep_util, sysconfig
