@@ -115,18 +115,30 @@ def recipe_tkinter(mf):
     if m is None or m.filename is None:
         return None
 
-    import _tkinter
-    from bbfreeze import getdeps
-    
-    deps = getdeps.getDependencies(_tkinter.__file__)
-    for x in deps:
-        if os.path.basename(x).startswith("libtk"):
-            tkdir = os.path.join(os.path.dirname(x), "tk%s" % _tkinter.TK_VERSION)
-            if os.path.isdir(tkdir):
-                mf.copyTree(tkdir, "lib-tk", m)
+    if sys.platform=='win32':
+        import Tkinter
+        tcldir = os.environ.get("TCL_LIBRARY")
+        if tcldir:
+            mf.copyTree(tcldir, "lib-tcl", m)
 
-    for x in deps:
-        if os.path.basename(x).startswith("libtcl"):
-            tcldir = os.path.join(os.path.dirname(x), "tcl%s" % _tkinter.TCL_VERSION)
-            if os.path.isdir(tcldir):
-                mf.copyTree(tcldir, "lib-tcl", m)
+        tkdir = os.environ.get("TK_LIBRARY")
+        if tkdir:
+            mf.copyTree(tkdir, "lib-tk", m)
+            
+        
+    else:
+        import _tkinter
+        from bbfreeze import getdeps
+
+        deps = getdeps.getDependencies(_tkinter.__file__)
+        for x in deps:
+            if os.path.basename(x).startswith("libtk"):
+                tkdir = os.path.join(os.path.dirname(x), "tk%s" % _tkinter.TK_VERSION)
+                if os.path.isdir(tkdir):
+                    mf.copyTree(tkdir, "lib-tk", m)
+
+        for x in deps:
+            if os.path.basename(x).startswith("libtcl"):
+                tcldir = os.path.join(os.path.dirname(x), "tcl%s" % _tkinter.TCL_VERSION)
+                if os.path.isdir(tcldir):
+                    mf.copyTree(tcldir, "lib-tcl", m)
