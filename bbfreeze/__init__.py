@@ -5,7 +5,7 @@ class _Version(tuple):
     def __str__(self):
         return '.'.join([str(x) for x in self])
 
-version = _Version((0,93,2,'dev'))
+version = _Version((0,93,2))
 del _Version
 from bbfreeze.freezer import Freezer
 
