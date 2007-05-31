@@ -156,7 +156,7 @@ API might change.
 
 ChangeLog
 ======================================================================
-2007-X-XX      release 0.93.2
+2007-5-31      release 0.93.2
 -----------------------------------------------
 - include tcl/tk runtime files (really makes Tkinter work)
 - exclude gtk, pango and friends (i.e. they must be installed on
