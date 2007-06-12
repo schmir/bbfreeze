@@ -24,6 +24,13 @@ from altgraph.compat import *
 
 READ_MODE = "U"  # universal line endings
 
+LOAD_CONST = chr(dis.opname.index('LOAD_CONST'))
+IMPORT_NAME = chr(dis.opname.index('IMPORT_NAME'))
+STORE_NAME = chr(dis.opname.index('STORE_NAME'))
+STORE_GLOBAL = chr(dis.opname.index('STORE_GLOBAL'))
+STORE_OPS = [STORE_NAME, STORE_GLOBAL]
+HAVE_ARGUMENT = chr(dis.HAVE_ARGUMENT)
+
 # Modulegraph does a good job at simulating Python's, but it can not
 # handle packagepath modifications packages make at runtime.  Therefore there
 # is a mechanism whereby you can register extra paths in this map for a
@@ -236,12 +243,12 @@ class ModuleGraph(ObjectGraph):
         self.scan_code(co, m)
         return m
 
-    def import_hook(self, name, caller=None, fromlist=None):
+    def import_hook(self, name, caller=None, fromlist=None, level=-1):
         """
         Import a module
         """
         self.msg(3, "import_hook", name, caller, fromlist)
-        parent = self.determine_parent(caller)
+        parent = self.determine_parent(caller, level=level)
         q, tail = self.find_head_package(parent, name)
         m = self.load_tail(q, tail)
         modules = set([m])
@@ -251,21 +258,42 @@ class ModuleGraph(ObjectGraph):
             self.createReference(caller, m)
         return modules
 
-    def determine_parent(self, caller):
-        """
-        Determine the package containing a node
-        """
-        self.msgin(4, "determine_parent", caller)
-        parent = None
-        if caller:
-            pname = caller.identifier
+    def determine_parent(self, caller, level=-1):
+        self.msgin(4, "determine_parent", caller, level)
+        if not caller or level == 0:
+            self.msgout(4, "determine_parent -> None")
+            return None
+        pname = caller.identifier
+        if level >= 1: # relative import
             if caller.packagepath:
+                level -= 1
+            if level == 0:
                 parent = self.findNode(pname)
-            elif '.' in pname:
-                pname = pname[:pname.rfind('.')]
-                parent = self.findNode(pname)
-        self.msgout(4, "determine_parent ->", parent)
-        return parent
+                assert parent is caller
+                self.msgout(4, "determine_parent ->", parent)
+                return parent
+            if pname.count(".") < level:
+                raise ImportError, "relative importpath too deep"
+            pname = ".".join(pname.split(".")[:-level])
+            parent = self.findNode(pname)
+            self.msgout(4, "determine_parent ->", parent)
+            return parent
+        if caller.packagepath:
+            parent = self.findNode(pname)
+            assert caller is parent
+            self.msgout(4, "determine_parent ->", parent)
+            return parent
+        if '.' in pname:
+            i = pname.rfind('.')
+            pname = pname[:i]
+            parent = self.findNode(pname)
+            if parent:
+                assert parent.identifier == pname
+            self.msgout(4, "determine_parent ->", parent)
+            return parent
+        self.msgout(4, "determine_parent -> None")
+        return None
+
 
     def find_head_package(self, parent, name):
         """
@@ -355,7 +383,7 @@ class ModuleGraph(ObjectGraph):
             return None
         try:
             fp, pathname, stuff = self.find_module(partname,
-                                                   parent and parent.packagepath, parent)
+                parent and parent.packagepath, parent)
         except ImportError:
             self.msgout(3, "import_module ->", None)
             return None
@@ -398,23 +426,34 @@ class ModuleGraph(ObjectGraph):
         self.msgout(2, "load_module ->", m)
         return m
 
-    def _safe_import_hook(self, name, caller, fromlist):
+    def _safe_import_hook(self, name, caller, fromlist, level=-1):
         # wrapper for self.import_hook() that won't raise ImportError
         try:
-            m = self.import_hook(name, caller).pop()
+            mods = self.import_hook(name, caller, level=level)
         except ImportError, msg:
             self.msg(2, "ImportError:", str(msg))
             m = self.createNode(MissingModule, name)
+            self.createReference(caller, m)
+        else:
+            assert len(mods) == 1
+            m = list(mods)[0]
+
         subs = set([m])
-        for sub in set(fromlist or ()):
+        for sub in (fromlist or ()):
+            # If this name is in the module namespace already,
+            # then add the entry to the list of substitutions
             if sub in m:
-                subs.add(m[sub])
+                sm = m[sub]
+                if sm is not None:
+                    subs.add(sm)
                 continue
+
+            # See if we can load it
             fullname = name + '.' + sub
             sm = self.findNode(fullname)
             if sm is None:
                 try:
-                    sm = self.import_hook(name, caller, [sub])
+                    sm = self.import_hook(name, caller, [sub], level=level)
                 except ImportError, msg:
                     self.msg(2, "ImportError:", str(msg))
                     sm = self.createNode(MissingModule, fullname)
@@ -427,40 +466,82 @@ class ModuleGraph(ObjectGraph):
                 subs.add(sm)
         return subs
 
-    def scan_code(self, co, m,
-            HAVE_ARGUMENT=chr(dis.HAVE_ARGUMENT),
-            LOAD_CONST=chr(dis.opname.index('LOAD_CONST')),
-            IMPORT_NAME=chr(dis.opname.index('IMPORT_NAME')),
-            STORE_NAME=chr(dis.opname.index('STORE_NAME')),
-            STORE_GLOBAL=chr(dis.opname.index('STORE_GLOBAL')),
-            unpack=struct.unpack):
+    def scan_opcodes(self, co,
+                     unpack = struct.unpack):
+        # Scan the code, and yield 'interesting' opcode combinations
+        # Version for Python 2.4 and older
         code = co.co_code
-        constants = co.co_consts
-        n = len(code)
-        i = 0
-        fromlist = None
-        while i < n:
-            c = code[i]
-            i += 1
+        names = co.co_names
+        consts = co.co_consts
+        while code:
+            c = code[0]
+            if c in STORE_OPS:
+                oparg, = unpack('<H', code[1:3])
+                yield "store", (names[oparg],)
+                code = code[3:]
+                continue
+            if c == LOAD_CONST and code[3] == IMPORT_NAME:
+                oparg_1, oparg_2 = unpack('<xHxH', code[:6])
+                yield "import", (consts[oparg_1], names[oparg_2])
+                code = code[6:]
+                continue
             if c >= HAVE_ARGUMENT:
-                i = i+2
-            if c == LOAD_CONST:
-                # An IMPORT_NAME is always preceded by a LOAD_CONST, it's
-                # a tuple of "from" names, or None for a regular import.
-                # The tuple may contain "*" for "from <mod> import *"
-                oparg = unpack('<H', code[i - 2:i])[0]
-                fromlist = co.co_consts[oparg]
-            elif c == IMPORT_NAME:
-                assert fromlist is None or type(fromlist) is tuple
-                oparg = unpack('<H', code[i - 2:i])[0]
-                name = co.co_names[oparg]
-                have_star = False
+                code = code[3:]
+            else:
+                code = code[1:]
+
+    def scan_opcodes_25(self, co,
+                     unpack = struct.unpack):
+        # Scan the code, and yield 'interesting' opcode combinations
+        # Python 2.5 version (has absolute and relative imports)
+        code = co.co_code
+        names = co.co_names
+        consts = co.co_consts
+        LOAD_LOAD_AND_IMPORT = LOAD_CONST + LOAD_CONST + IMPORT_NAME
+        while code:
+            c = code[0]
+            if c in STORE_OPS:
+                oparg, = unpack('<H', code[1:3])
+                yield "store", (names[oparg],)
+                code = code[3:]
+                continue
+            if code[:9:3] == LOAD_LOAD_AND_IMPORT:
+                oparg_1, oparg_2, oparg_3 = unpack('<xHxHxH', code[:9])
+                level = consts[oparg_1]
+                if level == -1: # normal import
+                    yield "import", (consts[oparg_2], names[oparg_3])
+                elif level == 0: # absolute import
+                    yield "absolute_import", (consts[oparg_2], names[oparg_3])
+                else: # relative import
+                    yield "relative_import", (level, consts[oparg_2], names[oparg_3])
+                code = code[9:]
+                continue
+            if c >= HAVE_ARGUMENT:
+                code = code[3:]
+            else:
+                code = code[1:]
+
+    def scan_code(self, co, m):
+        code = co.co_code
+        if sys.version_info >= (2, 5):
+            scanner = self.scan_opcodes_25
+        else:
+            scanner = self.scan_opcodes
+
+        for what, args in scanner(co):
+            if what == "store":
+                name, = args
+                m.globalnames.add(name)
+            elif what in ("import", "absolute_import"):
+                fromlist, name = args
+                have_star = 0
                 if fromlist is not None:
-                    fromlist = set(fromlist)
-                    if '*' in fromlist:
-                        fromlist.remove('*')
-                        have_star = True
-                self._safe_import_hook(name, m, fromlist)
+                    if "*" in fromlist:
+                        have_star = 1
+                    fromlist = [f for f in fromlist if f != "*"]
+                if what == "absolute_import": level = 0
+                else: level = -1
+                self._safe_import_hook(name, m, fromlist, level=level)
                 if have_star:
                     # We've encountered an "import *". If it is a Python module,
                     # the code has already been parsed and we can suck out the
@@ -470,7 +551,7 @@ class ModuleGraph(ObjectGraph):
                         # At this point we don't know whether 'name' is a
                         # submodule of 'm' or a global module. Let's just try
                         # the full name first.
-                        mm = self.findNode(m.identifier + '.' + name)
+                        mm = self.findNode(m.identifier+ "." + name)
                     if mm is None:
                         mm = self.findNode(name)
                     if mm is not None:
@@ -480,14 +561,19 @@ class ModuleGraph(ObjectGraph):
                             m.starimports.add(name)
                     else:
                         m.starimports.add(name)
-            elif c == STORE_NAME or c == STORE_GLOBAL:
-                # keep track of all global names that are assigned to
-                oparg = unpack('<H', code[i - 2:i])[0]
-                name = co.co_names[oparg]
-                m.globalnames.add(name)
-        cotype = type(co)
-        for c in constants:
-            if isinstance(c, cotype):
+            elif what == "relative_import":
+                level, fromlist, name = args
+                if name:
+                    self._safe_import_hook(name, m, fromlist, level=level)
+                else:
+                    parent = self.determine_parent(m, level=level)
+                    self._safe_import_hook(parent.identifier, None, fromlist, level=0)
+            else:
+                # We don't expect anything else from the generator.
+                raise RuntimeError(what)
+
+        for c in co.co_consts:
+            if isinstance(c, type(co)):
                 self.scan_code(c, m)
 
     def load_package(self, fqname, pathname):
