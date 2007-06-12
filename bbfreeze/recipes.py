@@ -1,7 +1,7 @@
 import sys
 import os
 
-def find_all_packages(name):    
+def find_all_packages(name, skip=lambda x: False):
     def recipe(mf):
         m = mf.findNode(name)
         if m is None or m.filename is None:
@@ -11,14 +11,16 @@ def find_all_packages(name):
         packages = setuptools.find_packages(os.path.dirname(m.filename))
 
         for pkg in packages:
-            mf.import_hook('%s.%s' % (name, pkg), m, ['*'])
+            pkgname = '%s.%s' % (name, pkg)
+            if not skip(pkgname):
+                mf.import_hook(pkgname, m, ['*'])
         return True
     recipe.__name__ = "recipe_"+name
     return recipe
 
 recipe_flup = find_all_packages('flup')
 recipe_django = find_all_packages('django')
-recipe_py = find_all_packages("py")
+recipe_py = find_all_packages("py", skip=lambda x: x.startswith("py.test.tkinter"))
 recipe_email = find_all_packages("email")
 recipe_IPython = find_all_packages("IPython")
 
