@@ -1,6 +1,13 @@
 import sys
 import os
 
+def isRealModule(m):
+    from modulegraph.modulegraph import BadModule, MissingModule, ExcludedModule
+    if m is None or isinstance(m, (BadModule, MissingModule, ExcludedModule)):
+        return False
+    else:
+        return True
+
 def find_all_packages(name, skip=lambda x: False):
     def recipe(mf):
         m = mf.findNode(name)
@@ -26,7 +33,7 @@ recipe_IPython = find_all_packages("IPython")
 
 def recipe_pydoc(mf):
     m = mf.findNode('pydoc')
-    if m is None or m.filename is None:
+    if not isRealModule(m):
         return None
     
     refs = [
@@ -41,7 +48,7 @@ def recipe_pydoc(mf):
 
 def recipe_docutils(mf):
     m = mf.findNode('docutils')
-    if m is None or m.filename is None:
+    if not isRealModule(m):
         return None
 
     for pkg in [
@@ -55,7 +62,7 @@ def recipe_docutils(mf):
 
 def recipe_py_magic_greenlet(mf):
     m = mf.findNode('py')
-    if m is None or m.filename is None:
+    if not isRealModule(m):
         return None
 
     pydir = os.path.dirname(m.filename)
@@ -90,10 +97,10 @@ def recipe_time(mf):
     mf.import_hook('_strptime', m, ['*'])
     return True
 
-
+    
 def recipe_pkg_resources(mf):
     m = mf.findNode('pkg_resources')
-    if m is None or m.filename is None:
+    if not isRealModule(m):
         return None
 
     print "WARNING: replacing pkg_resources module with dummy implementation"
