@@ -379,7 +379,7 @@ class Freezer(object):
             raise RuntimeError("linkmethod %r not supported" % (self.linkmethod,))
 
     def stripBinary(self, p):
-        if sys.platform=='win32':
+        if sys.platform=='win32' or sys.platform=='darwin':
             return
         os.environ['S'] = p
         os.system('strip $S')
