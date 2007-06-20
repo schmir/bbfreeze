@@ -40,13 +40,26 @@ def addpath():
         os.environ['PATH'] = os.pathsep.join(paths)
         #print "SETTING PATH:", os.environ['PATH']
 
+
+
+def addtcltk():
+    libtk = os.path.join(installdir, "lib-tk")
+    libtcl = os.path.join(installdir, "lib-tcl")
+    
+    if os.path.isdir(libtk):
+        os.environ['TK_LIBRARY'] = libtk
+        
+    if os.path.isdir(libtcl):
+        os.environ['TCL_LIBRARY'] = libtcl
+
 #print "EXE:", sys.executable
 #print "SYS.PATH:", sys.path
 
 addpath()
 #if sys.platform!='win32': # and hasattr(os, 'execv'):
 #    addldlibrarypath()
-    
+
+addtcltk()
     
 try:
     import encodings
@@ -56,10 +69,6 @@ except ImportError:
 exe = os.path.basename(sys.argv[0])
 if exe.lower().endswith(".exe"):
     exe = exe[:-4]
-
-if sys.platform=='darwin':
-    if len(sys.argv)>1 and sys.argv[1].startswith("-psn"):
-        del sys.argv[1]
 
     
 m = __import__("__main__")

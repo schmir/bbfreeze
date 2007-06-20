@@ -156,6 +156,16 @@ API might change.
 
 ChangeLog
 ======================================================================
+2007-5-31      release 0.93.2
+-----------------------------------------------
+- include tcl/tk runtime files (really makes Tkinter work)
+- exclude gtk, pango and friends (i.e. they must be installed on
+  the target system)
+
+2007-5-14      release 0.93.1
+-----------------------------------------------
+- make py executable work when readline is not installed
+- fix dll search path issue (makes Tkinter work)
 
 2007-5-3       release 0.93.0
 -----------------------------------------------

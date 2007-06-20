@@ -48,6 +48,19 @@ def getRecipes():
 
     return res
 
+class SharedLibrary(modulegraph.Node):
+    def __init__(self, identifier):
+        self.graphident = identifier
+        self.identifier = identifier
+        self.filename = None        
+
+class CopyTree(modulegraph.Node):
+    def __init__(self, identifier, dest):
+        self.graphident = identifier
+        self.identifier = identifier
+        self.filename = identifier
+        self.dest = dest
+        
 class ZipModule(modulegraph.BaseModule):
     pass
 
@@ -76,6 +89,10 @@ class MyModuleGraph(modulegraph.ModuleGraph):
         raise err
         
 
+    def copyTree(self, source, dest, parent):
+        n=self.createNode(CopyTree, source, dest)
+        self.createReference(parent, n)
+        
         
         
     def find_module(self, name, path, parent=None):
@@ -95,7 +112,7 @@ class MyModuleGraph(modulegraph.ModuleGraph):
         found = []
         for p in path:            
             try:
-                p = os.path.normpath(p)
+                p = os.path.normcase(os.path.normpath(os.path.abspath(p)))
                 if p in paths_seen:
                     continue
                 paths_seen.add(p)
@@ -228,6 +245,27 @@ class Freezer(object):
         for x in getRecipes():
             if x(self.mf):
                 print "*** applied", x
+
+
+    def _handle_CopyTree(self, n):
+        shutil.copytree(n.filename, os.path.join(self.distdir, n.dest))
+        
+    def findBinaryDependencies(self):
+        from bbfreeze import getdeps
+
+        for so in getdeps.getDependencies(self.console):
+            n = self.mf.createNode(SharedLibrary, os.path.basename(so))
+            n.filename = so
+            self.mf.createReference(self.mf, n)
+        
+
+        for x in list(self.mf.flatten()):
+            if isinstance(x, modulegraph.Extension):
+                for so in getdeps.getDependencies(x.filename):
+                    n = self.mf.createNode(SharedLibrary, os.path.basename(so))
+                    n.filename = so
+                    self.mf.createReference(x, n)
+                
         
     def __call__(self):
         if self.include_py:
@@ -236,8 +274,10 @@ class Freezer(object):
         
         self.addModule("encodings.*")
         self._add_loader()
+        self.findBinaryDependencies()
         self._handleRecipes()
 
+        
         if os.path.exists(self.distdir):
             shutil.rmtree(self.distdir)
         os.makedirs(self.distdir)
@@ -269,7 +309,7 @@ class Freezer(object):
         self.outfile.close()
         # be sure to close the file before scanning for binary dependencies
         # otherwise ldd might not be able to do it's job ("Text file busy")
-        self.copyBinaryDependencies()
+        #self.copyBinaryDependencies()
 
         if os.environ.get("XREF") or os.environ.get("xref"):
             self.showxref()
@@ -297,7 +337,9 @@ class Freezer(object):
         dst = os.path.join(self.distdir, name+ext)
         shutil.copy2(m.filename, dst)
         os.chmod(dst, 0755)
-        self.binaries.append(dst)
+        # when searching for DLL's the location matters, so don't
+        # add the destination file, but rather the source file
+        self.binaries.append(m.filename) 
         self.stripBinary(dst)
         
     def _handle_Package(self, m):
@@ -383,16 +425,14 @@ class Freezer(object):
             return
         os.environ['S'] = p
         os.system('strip $S')
+
+    def _handle_SharedLibrary(self, m):
+        dst = os.path.join(self.distdir, os.path.basename(m.filename))
+        shutil.copy2(m.filename, dst)
+        os.chmod(dst, 0755)
+        self.stripBinary(dst)
         
-    def copyBinaryDependencies(self):
-        from bbfreeze import getdeps
         
-        for x in getdeps.getDependencies(self.binaries):
-            dst = os.path.join(self.distdir, os.path.basename(x))
-            shutil.copy2(x, dst)
-            os.chmod(dst, 0755)
-            self.stripBinary(dst)
-                
     def showxref(self):
         import tempfile
         import urllib

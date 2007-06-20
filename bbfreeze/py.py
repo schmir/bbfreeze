@@ -5,8 +5,9 @@
 # (http://matplotlib.sourceforge.net/examples/interactive.py)
 
 import code
-import rlcompleter
 try:
+    # rlcompleter also depends on readline
+    import rlcompleter
     import readline
 except ImportError:
     readline = None
@@ -15,14 +16,15 @@ except ImportError:
 class MyConsole(code.InteractiveConsole):
     def __init__(self, *args, **kwargs):
         code.InteractiveConsole.__init__(self, *args, **kwargs)
+
+        if not readline:
+            return
         
         try:  # this form only works with python 2.3
             self.completer = rlcompleter.Completer(self.locals)
         except: # simpler for py2.2
             self.completer = rlcompleter.Completer()
 
-        if not readline:
-            return
         
         readline.set_completer(self.completer.complete)
         # Use tab for completions
