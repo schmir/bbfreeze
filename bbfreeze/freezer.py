@@ -29,6 +29,13 @@ try:
 except ImportError:
     pass
 
+try:
+    import xml
+except ImportError:
+    pass
+else:
+    for p in xml.__path__:
+        modulegraph.AddPackagePath("xml", p)
 
 
 

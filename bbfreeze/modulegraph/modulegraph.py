@@ -583,11 +583,15 @@ class ModuleGraph(ObjectGraph):
             fqname = newname
         m = self.createNode(Package, fqname)
         m.filename = pathname
-        m.packagepath = [pathname]
 
         # As per comment at top of file, simulate runtime packagepath additions.
-        m.packagepath = m.packagepath + packagePathMap.get(fqname, [])
-
+        additions = packagePathMap.get(fqname, [])
+        if pathname in additions:
+            m.packagepath = additions
+        else:
+            m.packagepath = [pathname]+additions
+            
+            
         fp, buf, stuff = self.find_module("__init__", m.packagepath)
         self.load_module(fqname, fp, buf, stuff)
         self.msgout(2, "load_package ->", m)
