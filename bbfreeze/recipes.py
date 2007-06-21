@@ -173,11 +173,7 @@ def recipe_gtk_and_friends(mf):
     return retval
 
 def recipe_cElementTree(mf):
-    m = mf.findNode('xml.etree.cElementTree')
-    print m
-    
     m = mf.findNode("_elementtree")
-    print m
     
     if not isRealModule(m):
         return None
