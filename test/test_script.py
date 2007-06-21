@@ -34,3 +34,7 @@ def test_hello_world():
 
 def test_pylog():
     maybe_compile_and_run("ex-pylog.py")
+
+def test_celementtree():
+    maybe_compile_and_run("ex-celementtree.py")
+    
