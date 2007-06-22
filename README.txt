@@ -156,6 +156,13 @@ API might change.
 
 ChangeLog
 ======================================================================
+2007-6-22      release 0.94.0
+-----------------------------------------------
+- support relative imports (backported from modulefinder, bbfreeze now
+  ships with its' own patched copy of modulegraph).
+- fix xml/_xmlplus issues
+- add recipe for cElementTree
+
 2007-5-31      release 0.93.2
 -----------------------------------------------
 - include tcl/tk runtime files (really makes Tkinter work)
