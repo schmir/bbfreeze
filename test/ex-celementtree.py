@@ -1,6 +1,10 @@
 #! /usr/bin/env python
 
-import xml.etree.cElementTree as ET
+import sys
+if sys.version_info>=(2,5):
+    import xml.etree.cElementTree as ET
+else:
+    import cElementTree as ET
 
 xml = """<?xml version='1.0'?>
 <methodCall>

@@ -172,7 +172,7 @@ def recipe_gtk_and_friends(mf):
 
     return retval
 
-def recipe_cElementTree(mf):
+def recipe_cElementTree25(mf):
     m = mf.findNode("_elementtree")
     
     if not isRealModule(m):
@@ -180,6 +180,18 @@ def recipe_cElementTree(mf):
 
     mf.import_hook("pyexpat", m, "*")
     mf.import_hook("xml.etree.ElementTree")
+    
+    
+    return True
+
+def recipe_cElementTree(mf):
+    m = mf.findNode("cElementTree")
+    
+    if not isRealModule(m):
+        return None
+
+    #mf.import_hook("pyexpat", m, "*")
+    mf.import_hook("elementtree.ElementTree")
     
     
     return True

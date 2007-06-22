@@ -97,8 +97,8 @@ consolew = Extension("bbfreeze/consolew", ['bbfreeze/consolew.c'],
                      library_dirs=library_dirs,
                      define_macros=define_macros)
 
-install_requires=["altgraph>=0.6.7",
-                  "modulegraph>=0.7"]
+install_requires=["altgraph>=0.6.7"] 
+#"modulegraph>=0.7"]
 
 if sys.platform=='win32':
     ext_modules.append(consolew)
