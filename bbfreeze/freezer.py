@@ -198,6 +198,7 @@ class Freezer(object):
     
     def __init__(self, distdir="dist", includes=(), excludes=()):
         self.distdir = os.path.abspath(distdir)
+        self._recipes = None
         
         self.mf = MyModuleGraph(excludes=excludes, debug=0)
         self._loaderNode = None
@@ -249,11 +250,17 @@ class Freezer(object):
         self._loaderNode = m
 
     def _handleRecipes(self):
-        for x in getRecipes():
+        if self._recipes is None:
+            self._recipes = getRecipes()
+
+        numApplied = 0
+        for x in self._recipes:
             if x(self.mf):
                 print "*** applied", x
-
-
+                self._recipes.remove(x)
+                numApplied+=1
+        return numApplied
+    
     def _handle_CopyTree(self, n):
         shutil.copytree(n.filename, os.path.join(self.distdir, n.dest))
         
@@ -281,8 +288,10 @@ class Freezer(object):
         
         self.addModule("encodings.*")
         self._add_loader()
-        self.findBinaryDependencies()
-        self._handleRecipes()
+        while 1:
+            self.findBinaryDependencies()
+            if not self._handleRecipes():
+                break
 
         
         if os.path.exists(self.distdir):
