@@ -156,6 +156,11 @@ API might change.
 
 ChangeLog
 ======================================================================
+2007-6-28      release 0.94.1
+-----------------------------------------------
+- fix bug in setup script, now the patched modulegraph is really used
+- better recipe handling
+
 2007-6-22      release 0.94.0
 -----------------------------------------------
 - support relative imports (backported from modulefinder, bbfreeze now
