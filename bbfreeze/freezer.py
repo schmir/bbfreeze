@@ -451,7 +451,6 @@ class Freezer(object):
         
     def showxref(self):
         import tempfile
-        import urllib
         
         fd, htmlfile = tempfile.mkstemp(".html")
         ofi = open(htmlfile, "w")
