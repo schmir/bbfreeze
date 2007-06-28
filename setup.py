@@ -10,8 +10,8 @@ ez_setup.use_setuptools()
 from setuptools import setup, Extension
 
 
-from distutils.command import build, build_ext
-from distutils import dist, dep_util, sysconfig
+from distutils.command import build_ext
+from distutils import sysconfig
 
 os.environ['LD_RUN_PATH'] = "${ORIGIN}:${ORIGIN}/../lib"
 
@@ -27,7 +27,6 @@ class BuildInterpreters(build_ext.build_ext):
         of the file from which it will be loaded (eg. "foo/bar.so", or
         "foo\bar.pyd").
         """
-        from distutils.sysconfig import get_config_var
         ext_path = ext_name.split('.')
         # OS/2 has an 8 character module (extension) limit :-(
         if os.name == "os2":
