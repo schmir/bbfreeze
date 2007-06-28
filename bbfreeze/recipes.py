@@ -31,6 +31,16 @@ recipe_py = find_all_packages("py", skip=lambda x: x.startswith("py.test.tkinter
 recipe_email = find_all_packages("email")
 recipe_IPython = find_all_packages("IPython")
 
+def recipe_django_core_management(mf):
+    m = mf.findNode('django.core.management')
+    if not isRealModule(m):
+        return None
+    refs = ["IPython"]
+    for ref in refs:
+        mf.removeReference(m, ref)
+    return True
+    
+    
 def recipe_pydoc(mf):
     m = mf.findNode('pydoc')
     if not isRealModule(m):
