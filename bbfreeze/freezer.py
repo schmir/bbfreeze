@@ -48,11 +48,12 @@ except ImportError:
 
 class EggAnalyzer(object):
     def __init__(self):
+        self.used = set()
+        
         if pkg_resources is None:
             return
         
         self.locations = [x.location for x in list(pkg_resources.working_set)]        
-        self.used = set()
         
     def findDistribution(self, m):
         if pkg_resources is None:
@@ -61,8 +62,11 @@ class EggAnalyzer(object):
             return None
 
         fn = m.filename
-        for dist in pkg_resources.working_set:            
+        for dist in pkg_resources.working_set:
             if dist.has_metadata("") and fn.startswith(dist.location):
+                if dist.project_name=='bbfreeze':
+                    return None
+                
                 self.used.add(dist)
                 return dist
 
