@@ -7,6 +7,15 @@ import zipimport
 
 installdir = os.path.normpath(os.path.dirname(sys.path[0])) # sys.path[0]=='.../library.zip'
 
+def find_eggs():
+    for x in os.listdir(installdir):
+        if x.endswith(".egg"):
+            fp = os.path.join(installdir, x)
+            print "*** Adding", fp
+            sys.path.append(fp)
+
+find_eggs()
+
 def addldlibrarypath():
 
     if sys.platform=='darwin':

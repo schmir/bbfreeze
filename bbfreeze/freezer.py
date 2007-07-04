@@ -62,7 +62,7 @@ class EggAnalyzer(object):
 
         fn = m.filename
         for dist in pkg_resources.working_set:            
-            if dist.location.endswith(".egg") and fn.startswith(dist.location):
+            if dist.has_metadata("") and fn.startswith(dist.location):
                 self.used.add(dist)
                 return dist
 
@@ -76,7 +76,14 @@ class EggAnalyzer(object):
                 print repr(x[1])
             print "="*50
 
-
+    def copy(self, destdir):
+        for x in self.used:
+            dest = os.path.join(destdir, x.egg_name()+".egg")
+            print "Copying", x.location, "to", dest
+            shutil.copytree(x.location, dest)
+            
+            
+        
 def fullname(p):
     return os.path.join(os.path.dirname(__file__), p)
 
@@ -351,12 +358,21 @@ class Freezer(object):
         mods = [x[1] for x in mods]
 
         analyzer = EggAnalyzer()
-        for x in mods:
-            dist = analyzer.findDistribution(x)
 
-        analyzer.report()
-        
+        use_mods = []
         for x in mods:
+            if x is self._loaderNode:
+                use_mods.append(x)
+                continue
+
+            dist = analyzer.findDistribution(x)
+            if not dist:
+                use_mods.append(x)
+                
+        analyzer.report()
+        analyzer.copy(self.distdir)
+        
+        for x in use_mods:               
             try:
                 m = getattr(self, "_handle_"+x.__class__.__name__)
             except AttributeError:

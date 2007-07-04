@@ -107,7 +107,7 @@ if sys.platform=='win32':
 setup(name = "bbfreeze",
       cmdclass         = {'build_ext': BuildInterpreters,
                           },
-      version = '0.94.1',
+      version = '0.95.0.dev',
       entry_points = dict(console_scripts=['bb-freeze = bbfreeze:main']),
       ext_modules = ext_modules,
       install_requires=install_requires,
