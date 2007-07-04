@@ -63,7 +63,7 @@ class EggAnalyzer(object):
 
         fn = m.filename
         for dist in pkg_resources.working_set:
-            if dist.has_metadata("") and fn.startswith(dist.location):
+            if dist.has_metadata("top_level.txt") and fn.startswith(dist.location):
                 if dist.project_name=='bbfreeze':
                     return None
                 
@@ -84,7 +84,10 @@ class EggAnalyzer(object):
         for x in self.used:
             dest = os.path.join(destdir, x.egg_name()+".egg")
             print "Copying", x.location, "to", dest
-            shutil.copytree(x.location, dest)
+            if os.path.isdir(x.location):
+                shutil.copytree(x.location, dest)
+            else:
+                shutil.copy(x.location, dest)
             
             
         
@@ -198,6 +201,7 @@ class MyModuleGraph(modulegraph.ModuleGraph):
         if typ==314:
             m = self.createNode(ZipModule, fqname)
             code=fp.get_code(fqname.replace(".", "/"))
+            m.filename = fp.archive
             m.packagepath = [fp.archive]
             m.code = code
             m.is_package = fp.is_package(fqname.replace(".", "/"))

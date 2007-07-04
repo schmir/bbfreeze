@@ -108,7 +108,7 @@ def recipe_time(mf):
     return True
 
     
-def recipe_pkg_resources(mf):
+def NOT_USING_recipe_pkg_resources(mf):
     m = mf.findNode('pkg_resources')
     if not isRealModule(m):
         return None
