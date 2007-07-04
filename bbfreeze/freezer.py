@@ -41,6 +41,41 @@ else:
 
 from bbfreeze import recipes
 
+try:
+    import pkg_resources
+except ImportError:
+    pkg_resources = None
+
+class EggAnalyzer(object):
+    def __init__(self):
+        if pkg_resources is None:
+            return
+        
+        self.locations = [x.location for x in list(pkg_resources.working_set)]        
+        self.used = set()
+        
+    def findDistribution(self, m):
+        if pkg_resources is None:
+            return None
+        if m.filename is None:
+            return None
+
+        fn = m.filename
+        for dist in pkg_resources.working_set:            
+            if dist.location.endswith(".egg") and fn.startswith(dist.location):
+                self.used.add(dist)
+                return dist
+
+    def report(self):
+        tmp = [(x.project_name, x) for x in self.used]
+        tmp.sort()
+        if tmp:
+            print "="*50
+            print "The following eggs are being used:"
+            for x in tmp:
+                print repr(x[1])
+            print "="*50
+
 
 def fullname(p):
     return os.path.join(os.path.dirname(__file__), p)
@@ -314,6 +349,13 @@ class Freezer(object):
         mods = [(x.identifier, x) for x in self.mf.flatten()]
         mods.sort()
         mods = [x[1] for x in mods]
+
+        analyzer = EggAnalyzer()
+        for x in mods:
+            dist = analyzer.findDistribution(x)
+
+        analyzer.report()
+        
         for x in mods:
             try:
                 m = getattr(self, "_handle_"+x.__class__.__name__)
