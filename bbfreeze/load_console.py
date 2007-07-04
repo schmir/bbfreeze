@@ -11,7 +11,6 @@ def find_eggs():
     for x in os.listdir(installdir):
         if x.endswith(".egg"):
             fp = os.path.join(installdir, x)
-            print "*** Adding", fp
             sys.path.append(fp)
 
 find_eggs()
