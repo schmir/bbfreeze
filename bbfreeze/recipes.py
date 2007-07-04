@@ -128,7 +128,20 @@ def declare_namespace(name):
     return True
 
 
-
+def recipe_matplotlib(mf):
+    m = mf.findNode('matplotlib')
+    if not isRealModule(m):
+        return
+    import matplotlib
+    dp = matplotlib.get_data_path()
+    assert dp
+    mf.copyTree(dp, "matplotlibdata", m)
+    mf.import_hook("matplotlib.numerix.random_array", m)
+    backend_name =  'backend_'+matplotlib.get_backend().lower()
+    mf.import_hook('matplotlib.backends.'+backend_name, m)
+    return True
+    
+    
 def recipe_tkinter(mf):
     m = mf.findNode('_tkinter')
     if m is None or m.filename is None:
