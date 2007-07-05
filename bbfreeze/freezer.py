@@ -39,7 +39,7 @@ else:
 
 
 
-from bbfreeze import recipes
+from bbfreeze import recipes, eggutil
 
 try:
     import pkg_resources
@@ -84,12 +84,11 @@ class EggAnalyzer(object):
         for x in self.used:
             dest = os.path.join(destdir, x.egg_name()+".egg")
             print "Copying", x.location, "to", dest
-            if os.path.isdir(x.location):
-                shutil.copytree(x.location, dest)
+
+            if x.has_metadata("zip-safe") or not os.path.isdir(x.location):
+                eggutil.copyDistribution(x, destdir)                
             else:
-                shutil.copy(x.location, dest)
-            
-            
+                shutil.copytree(x.location, dest)
         
 def fullname(p):
     return os.path.join(os.path.dirname(__file__), p)

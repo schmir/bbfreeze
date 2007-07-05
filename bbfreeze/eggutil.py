@@ -69,3 +69,10 @@ def write_zipfile(path, entries):
 
         zf.writestr(x.name, x.read())
     zf.close()
+
+
+
+def copyDistribution(distribution, destdir):
+    dest = os.path.join(destdir, distribution.egg_name()+".egg")
+    print "Copying", distribution.location, "to", dest
+    write_zipfile(dest, default_filter(walk(distribution.location)))
