@@ -66,7 +66,15 @@ class EggAnalyzer(object):
             if dist.has_metadata("top_level.txt") and fn.startswith(dist.location):
                 if dist.project_name=='bbfreeze':
                     return None
-                
+
+                # do not include eggs if this is a namespace package
+                # e.g. "import zope" can find any of "zope.deferredimport", "zope.interface",...
+                if dist.has_metadata("namespace_packages.txt"):
+                    ns = list(dist.get_metadata_lines("namespace_packages.txt"))
+                    if isinstance(m, modulegraph.Package) and m.identifier in ns:
+                        #print "SKIP:", ns, m
+                        return None
+                    
                 self.used.add(dist)
                 return dist
 
