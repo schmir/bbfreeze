@@ -77,6 +77,10 @@ def write_directory(path, entries):
 
         if x.stat is None:
             continue
+
+        if x.isdir() and sys.platform=='win32':
+            continue
+        
         
         st = x.stat()
         mode = stat.S_IMODE(st.st_mode)
