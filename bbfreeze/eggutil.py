@@ -2,16 +2,7 @@
 
 import zipfile
 import os
-
-## import stat
-## def copystat(src, dst):
-##     """Copy all stat info (mode bits, atime and mtime) from src to dst"""
-##     st = os.stat(src)
-##     mode = stat.S_IMODE(st.st_mode)
-##     if hasattr(os, 'utime'):
-##         os.utime(dst, (st.st_atime, st.st_mtime))
-##     if hasattr(os, 'chmod'):
-##         os.chmod(dst, mode)
+import stat
 
 class Entry(object):
     read = None
@@ -58,8 +49,13 @@ def walk_dir(path):
 
 def default_filter(entries):
     for x in entries:
-        if not x.name.endswith(".py"):
-            yield x
+        if x.name.endswith(".py"):
+            continue
+
+        if x.name.endswith(".pyo"):
+            continue
+
+        yield x
         
 def write_zipfile(path, entries):
     zf = zipfile.ZipFile(path, "w", compression=zipfile.ZIP_DEFLATED)
@@ -70,9 +66,32 @@ def write_zipfile(path, entries):
         zf.writestr(x.name, x.read())
     zf.close()
 
+def write_directory(path, entries):
+    os.mkdir(path)
+    for x in entries:
+        fn = os.path.join(path, x.name)
+        if x.isdir():
+            os.mkdir(fn)
+        else:
+            open(fn, "wb").write(x.read())
 
+        if x.stat is None:
+            continue
+        
+        st = x.stat()
+        mode = stat.S_IMODE(st.st_mode)
+        if hasattr(os, 'utime'):
+            os.utime(fn, (st.st_atime, st.st_mtime))
+        if hasattr(os, 'chmod'):
+            os.chmod(fn, mode)
+        
 
 def copyDistribution(distribution, destdir):
     dest = os.path.join(destdir, distribution.egg_name()+".egg")
     print "Copying", distribution.location, "to", dest
-    write_zipfile(dest, default_filter(walk(distribution.location)))
+
+    entries = default_filter(walk(distribution.location))
+    if distribution.has_metadata("zip-safe") or not os.path.isdir(distribution.location):        
+        write_zipfile(dest, entries)
+    else:
+        write_directory(dest, entries)

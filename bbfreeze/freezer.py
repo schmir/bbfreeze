@@ -82,13 +82,7 @@ class EggAnalyzer(object):
 
     def copy(self, destdir):
         for x in self.used:
-            dest = os.path.join(destdir, x.egg_name()+".egg")
-            print "Copying", x.location, "to", dest
-
-            if x.has_metadata("zip-safe") or not os.path.isdir(x.location):
-                eggutil.copyDistribution(x, destdir)                
-            else:
-                shutil.copytree(x.location, dest)
+            eggutil.copyDistribution(x, destdir)                
         
 def fullname(p):
     return os.path.join(os.path.dirname(__file__), p)
