@@ -1,8 +1,10 @@
 #! /usr/bin/env python
 
-import zipfile
+import sys
 import os
 import stat
+import zipfile
+
 
 class Entry(object):
     read = None
