@@ -133,9 +133,12 @@ def recipe_matplotlib(mf):
     if not isRealModule(m):
         return
     import matplotlib
-    dp = matplotlib.get_data_path()
-    assert dp
-    mf.copyTree(dp, "matplotlibdata", m)
+
+    if 0:  # do not copy matplotlibdata. assume matplotlib is installed as egg
+        dp = matplotlib.get_data_path()
+        assert dp
+        mf.copyTree(dp, "matplotlibdata", m)
+
     mf.import_hook("matplotlib.numerix.random_array", m)
     backend_name =  'backend_'+matplotlib.get_backend().lower()
     print "recipe_matplotlib: using the %s matplotlib backend" % (backend_name,)
