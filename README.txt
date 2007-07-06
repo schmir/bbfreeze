@@ -19,11 +19,9 @@ easy installation
   bbfreeze can be installed with setuptools' easy_install command.
 
 zip/egg file import tracking
-  bbfreeze tracks imports from zip files. Note that calls to setuptools'
-  pkg_resources.require will be replaced with a dummy implementation.
-  Calls to resource handling functions are *not* implemented, and
-  freezing packages using these features of pkg_resources will not be
-  possible without further work.
+  bbfreeze tracks imports from zip files and includes whole egg files
+  if some module is used from an eggfile. Packages using setuputils'
+  pkg_resources module will now work (new in 0.95.0)
 
 binary dependency tracking
   bbfreeze will track binary dependencies and will include DLLs and
@@ -156,6 +154,14 @@ API might change.
 
 ChangeLog
 ======================================================================
+
+2007-7-6       release 0.95.0
+-----------------------------------------------
+- support for egg files: bbfreeze scans zipped egg files and now
+  includes whole egg files/directories in the distribution. Programs
+  using setuptools' pkg_resources module will now work (thanks to
+  Eirik Svendsen for testing this).
+
 2007-6-28      release 0.94.1
 -----------------------------------------------
 - fix bug in setup script, now the patched modulegraph is really used
