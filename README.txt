@@ -118,7 +118,7 @@ The preferred way to use bbfreeze is by writing short python scripts,
 which use bbfreeze's API. Let's start with a short example::
 
   from bbfreeze import Freezer
-  f = Freezer("hello-world-1.0", includes=("_strptime"))
+  f = Freezer("hello-world-1.0", includes=("_strptime",))
   f.addScript("hello-world.py")
   f.addScript("hello-version.py")
   f()    # starts the freezing process
