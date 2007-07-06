@@ -178,6 +178,7 @@ class Cache(object):
             print "Error while trying to create cachedir:", err
      
     def getCachedir(self):
+        return None  # disable binary dependency cache 
         if sys.platform=='win32':
             appdata = os.environ.get("APPDATA")
             if appdata:
