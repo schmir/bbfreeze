@@ -138,6 +138,7 @@ def recipe_matplotlib(mf):
     mf.copyTree(dp, "matplotlibdata", m)
     mf.import_hook("matplotlib.numerix.random_array", m)
     backend_name =  'backend_'+matplotlib.get_backend().lower()
+    print "recipe_matplotlib: using the %s matplotlib backend" % (backend_name,)
     mf.import_hook('matplotlib.backends.'+backend_name, m)
     return True
     
@@ -152,10 +153,14 @@ def recipe_tkinter(mf):
         tcldir = os.environ.get("TCL_LIBRARY")
         if tcldir:
             mf.copyTree(tcldir, "lib-tcl", m)
-
+        else:
+            print "WARNING: recipe_tkinter: TCL_LIBRARY not set. cannot find lib-tcl"
+            
         tkdir = os.environ.get("TK_LIBRARY")
         if tkdir:
             mf.copyTree(tkdir, "lib-tk", m)
+        else:
+            print "WARNING: recipe_tkinter: TK_LIBRARY not set. cannot find lib-tk"
             
         
     else:

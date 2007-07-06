@@ -114,7 +114,8 @@ if sys.platform=='win32':
                 if os.path.exists(fp):
                     deps.add(fp)
                     break
-
+            else:
+                print "WARNING: could not find dll %r needed by %r in %r" % (dll, path, winpath)
         return deps
 
     def exclude(fp):
