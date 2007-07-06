@@ -19,7 +19,10 @@ def test_guiscript2():
     f = bbfreeze.Freezer()
     f.addScript("hello-world.py", True)
     f()
-    err=os.system("dist/hello-world")
+
+    cmd = os.path.join("dist", "hello-world")
+    err=os.system(cmd)
+        
     assert err==0
     
     
