@@ -155,6 +155,12 @@ API might change.
 ChangeLog
 ======================================================================
 
+2007-7-12       release 0.95.2
+-----------------------------------------------
+- fix issues with c modules with suffix 'module.so',
+  e.g. zlibmodule.so, timemodule.so (fedora core 7 uses that naming
+  scheme, thanks to Neil Becker for reporting)
+
 2007-7-11       release 0.95.1
 -----------------------------------------------
 - compile .py files from eggs when there is no accompanying .pyc file
