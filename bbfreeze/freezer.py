@@ -411,7 +411,8 @@ class Freezer(object):
 
         basefilename = os.path.basename(m.filename)
         base, ext = os.path.splitext(basefilename)
-        if base != name:
+        # fedora has zlibmodule.so, timemodule.so,...
+        if base not in [name,  name+"module"]:
             code = compile(EXTENSION_LOADER_SOURCE % (name+ext),
                            "ExtensionLoader.py", "exec")
             fn = name.replace(".", "/")+".pyc"
