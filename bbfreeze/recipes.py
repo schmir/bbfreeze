@@ -11,7 +11,11 @@ def isRealModule(m):
 def find_all_packages(name, skip=lambda x: False):
     def recipe(mf):
         m = mf.findNode(name)
-        if m is None or m.filename is None:
+        if not isRealModule(m):
+            return None
+
+        from bbfreeze.freezer import ZipModule
+        if isinstance(m, ZipModule):
             return None
 
         import setuptools
