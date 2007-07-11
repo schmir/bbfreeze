@@ -155,9 +155,10 @@ API might change.
 ChangeLog
 ======================================================================
 
-2007-X-X       release 0.95.1
+2007-7-11       release 0.95.1
 -----------------------------------------------
 - compile .py files from eggs when there is no accompanying .pyc file
+- skip egg/zip files in find_all_packages (makes some recipes work)
 
 2007-7-6       release 0.95.0
 -----------------------------------------------
