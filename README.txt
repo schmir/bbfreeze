@@ -155,6 +155,10 @@ API might change.
 ChangeLog
 ======================================================================
 
+2007-X-X       release 0.95.1
+-----------------------------------------------
+- compile .py files from eggs when there is no accompanying .pyc file
+
 2007-7-6       release 0.95.0
 -----------------------------------------------
 - support for egg files: bbfreeze scans zipped egg files and now

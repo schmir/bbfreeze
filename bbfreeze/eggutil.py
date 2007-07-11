@@ -4,7 +4,10 @@ import sys
 import os
 import stat
 import zipfile
-
+import struct
+import imp
+import marshal
+import time
 
 class Entry(object):
     read = None
@@ -96,7 +99,33 @@ def copyDistribution(distribution, destdir):
     dest = os.path.join(destdir, distribution.egg_name()+".egg")
     print "Copying", distribution.location, "to", dest
 
-    entries = default_filter(walk(distribution.location))
+    entries = list(walk(distribution.location))
+    name2compile = {}
+
+    for x in entries:
+        if x.name.endswith(".py"):
+            name2compile[x.name]=x
+    
+    entries = list(default_filter(entries))
+    for x in entries:
+        if x.name.endswith(".pyc"):
+            try:
+                del name2compile[x.name[:-1]]
+            except KeyError:
+                pass
+
+    mtime = int(time.time())
+
+    for x in name2compile.values():
+        try:
+            code = compile(x.read()+'\n', x.name, 'exec')
+        except Exception, err:
+            print "WARNING: Could not compile %r: %r" % (x.name, err)
+            continue
+
+        data = imp.get_magic() + struct.pack("<i", mtime) + marshal.dumps(code)        
+        entries.append(Entry(name=x.name+'c', read=lambda data=data: data))
+
     if distribution.has_metadata("zip-safe") or not os.path.isdir(distribution.location):        
         write_zipfile(dest, entries)
     else:
