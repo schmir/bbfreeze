@@ -117,5 +117,6 @@ setup(name = "bbfreeze",
       maintainer_email="schmir@gmail.com",
       url = "http://cheeseshop.python.org/pypi/bbfreeze/",
       description="create standalone executables from python scripts",
+      platforms="Linux Windows",
       long_description = read_long_description()
       )
