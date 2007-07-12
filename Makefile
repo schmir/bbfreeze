@@ -1,3 +1,8 @@
+all:: README.html MANIFEST.in
+
+MANIFEST.in::
+	./make_manifest.py
+
 README.html: README.txt
 	rst2html.py README.txt >README.html
 
