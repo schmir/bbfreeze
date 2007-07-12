@@ -1,6 +1,0 @@
-- exclude pango/cairo/gtk
-- read long_description from readme
-- support relative imports (modulegraph!)
-
-- [DONE] support zipped egg files (modulegraph!)
-- [DONE] use pefile for binary dependency tracking on win32
