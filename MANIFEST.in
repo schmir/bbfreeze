@@ -1,2 +1,34 @@
-include README.html README.txt showvars.py ez_setup.py
-include bbfreeze/*.c bbfreeze/*.h
+include MANIFEST.in
+include Makefile
+include README.html
+include README.txt
+include bb-freeze
+include bbfreeze/__init__.py
+include bbfreeze/console.c
+include bbfreeze/consolew.c
+include bbfreeze/eggutil.py
+include bbfreeze/freezer.py
+include bbfreeze/getdeps.py
+include bbfreeze/load_console.py
+include bbfreeze/loader_impl.h
+include bbfreeze/modulegraph/__init__.py
+include bbfreeze/modulegraph/find_modules.py
+include bbfreeze/modulegraph/modulegraph.py
+include bbfreeze/modulegraph/util.py
+include bbfreeze/py.py
+include bbfreeze/recipes.py
+include ez_setup.py
+include setup.py
+include showvars.py
+include test/ex-celementtree.py
+include test/ex-matplotlib.py
+include test/ex-mbox.py
+include test/ex-pylog.py
+include test/ex-time.py
+include test/ex-tkinter.py
+include test/hello-world.py
+include test/relimport/__init__.py
+include test/relimport/forms.py
+include test/test_guiscript.py
+include test/test_relimport.py
+include test/test_script.py
