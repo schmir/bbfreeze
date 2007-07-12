@@ -8,6 +8,7 @@ def main():
     
     files.remove("make_manifest.py")
     files.remove(".hgtags")
+    files.remove("Makefile")
 
     files.sort()
 

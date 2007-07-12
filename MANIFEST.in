@@ -1,5 +1,4 @@
 include MANIFEST.in
-include Makefile
 include README.html
 include README.txt
 include bb-freeze
