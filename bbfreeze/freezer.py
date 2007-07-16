@@ -216,6 +216,8 @@ class MyModuleGraph(modulegraph.ModuleGraph):
 
 def replace_paths_in_code(co, newname):
     import new
+    if newname.endswith('.pyc'):
+        newname = newname[:-1]
 
     consts = list(co.co_consts)
 
