@@ -214,6 +214,20 @@ class MyModuleGraph(modulegraph.ModuleGraph):
         
             
 
+def replace_paths_in_code(co, newname):
+    import new
+
+    consts = list(co.co_consts)
+
+    for i in range(len(consts)):
+        if isinstance(consts[i], type(co)):
+            consts[i] = replace_paths_in_code(consts[i], newname)
+
+    return new.code(co.co_argcount, co.co_nlocals, co.co_stacksize,
+                     co.co_flags, co.co_code, tuple(consts), co.co_names,
+                     co.co_varnames, newname, co.co_name,
+                     co.co_firstlineno, co.co_lnotab,
+                     co.co_freevars, co.co_cellvars)
 
 # NOTE: the try: except: block in this code is not necessary under Python 2.4
 # and higher and can be removed once support for Python 2.3 is no longer needed
@@ -473,6 +487,7 @@ class Freezer(object):
                 
         
     def _writecode(self, fn, mtime, code):
+        replace_paths_in_code(code, fn)
         ziptime = time.localtime(mtime)[:6]
         data = imp.get_magic() + struct.pack("<i", mtime) + marshal.dumps(code)
         zinfo = zipfile.ZipInfo(fn, ziptime)

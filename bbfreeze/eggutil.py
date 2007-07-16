@@ -21,6 +21,26 @@ class Entry(object):
 
     def isdir(self):
         return self.read is None
+    
+    def read_replace(self):
+        if not self.name.endswith(".pyc"):
+            return self.read()
+        
+        data = self.read()
+        if data[:4] != imp.get_magic():
+            return data
+        mtime = data[4:8]
+
+        code = marshal.loads(data[8:])
+        from bbfreeze import freezer
+        code = freezer.replace_paths_in_code(code, self.name)
+        return "".join([imp.get_magic(), mtime, marshal.dumps(code)])
+
+
+        
+        
+
+        
         
 def walk(path):
     if os.path.isfile(path):
@@ -68,7 +88,7 @@ def write_zipfile(path, entries):
         if x.isdir():
             continue
 
-        zf.writestr(x.name, x.read())
+        zf.writestr(x.name, x.read_replace())
     zf.close()
 
 def write_directory(path, entries):
@@ -78,7 +98,7 @@ def write_directory(path, entries):
         if x.isdir():
             os.mkdir(fn)
         else:
-            open(fn, "wb").write(x.read())
+            open(fn, "wb").write(x.read_replace())
 
         if x.stat is None:
             continue
