@@ -1,6 +1,7 @@
 // run frozen programs
 
 #include <Python.h>
+#include <osdefs.h>
 
 #ifdef WIN32
 #include <windows.h>
@@ -19,6 +20,73 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+
+/* what follows is a copy of sysmodule.c's PySys_SetPath
+ * we use this to change the sys.path according to our needs
+ * (PySys_SetPath is called from Py_Initialize)
+ */
+
+static int initialized = 0;
+static const char *syspath = "/home/ralf/dist/library.zip:/home/ralf/dist/";
+
+static PyObject *
+makepathobject(char *path, int delim)
+{
+	int i, n;
+	char *p;
+	PyObject *v, *w;
+
+	n = 1;
+	p = path;
+	while ((p = strchr(p, delim)) != NULL) {
+		n++;
+		p++;
+	}
+	v = PyList_New(n);
+	if (v == NULL)
+		return NULL;
+	for (i = 0; ; i++) {
+		p = strchr(path, delim);
+		if (p == NULL)
+			p = strchr(path, '\0'); /* End of string */
+		w = PyString_FromStringAndSize(path, (Py_ssize_t) (p - path));
+		if (w == NULL) {
+			Py_DECREF(v);
+			return NULL;
+		}
+		PyList_SetItem(v, i, w);
+		if (*p == '\0')
+			break;
+		path = p+1;
+	}
+	return v;
+}
+
+static void
+PySys_SetPath_orig(char *path)
+{
+	PyObject *v;
+	if ((v = makepathobject(path, DELIM)) == NULL)
+		Py_FatalError("can't create sys.path");
+	if (PySys_SetObject("path", v) != 0)
+		Py_FatalError("can't assign sys.path");
+	Py_DECREF(v);
+}
+
+void
+PySys_SetPath(char *path)
+{
+	if (initialized) {
+		PySys_SetPath_orig(path);
+	} else {
+		PySys_SetPath_orig(syspath);
+	}
+	/*
+	fprintf(stderr, "after setpath:");
+	PyObject_Print(PySys_GetObject("path"), stderr, 0);
+	fprintf(stderr, "\n");
+	*/
+}
 
 static int exists(const char *name)
 {
@@ -183,7 +251,7 @@ static int loader_main(int argc, char **argv)
 
 	fileName = Py_GetProgramFullPath();
 	Py_Initialize();
-
+	initialized = 1;
 	PySys_SetArgv(argc, argv);
 
 	return ExecuteScript(fileName);
