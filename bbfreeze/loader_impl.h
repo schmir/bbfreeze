@@ -119,7 +119,7 @@ static void compute_syspath()
 	syspath = malloc(2*strlen(resolved_path)+64);
 
 	sprintf(syspath, "%s%clibrary.zip%c%s", resolved_path, SEP, DELIM, resolved_path);
-	fprintf(stderr, "syspath: %s\n", syspath);
+	//fprintf(stderr, "syspath: %s\n", syspath);
 }
 
 static int run_script()
