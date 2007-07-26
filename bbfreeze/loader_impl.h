@@ -85,7 +85,7 @@ PySys_SetPath(char *path)
 #endif
 
 
-static void FatalError(const char *message)
+static void fatal(const char *message)
 {
 #ifdef GUI
 	MessageBox(NULL, message, "bbfreeze Fatal Error", MB_ICONERROR);
@@ -104,7 +104,7 @@ static void dirname(const char *path)
 #endif
 	char *lastsep = strrchr(path, sep);
 	if (lastsep==0) {
-		FatalError("dirname failed.");
+		fatal("dirname failed.");
 	}
 	*lastsep = 0;
 }
@@ -134,7 +134,7 @@ static void compute_syspath(const char *fileName)
 	// fprintf(stderr, "syspath: %s\n", syspath);
 }
 
-static int ExecuteScript()
+static int run_script()
 {
 	PyObject *locals;
 	PyObject *tmp;
@@ -149,7 +149,7 @@ static int ExecuteScript()
 	
 	locals = PyDict_New();
 	if (!locals) {
-		FatalError("PyDict_New failed.");
+		fatal("PyDict_New failed.");
 	}
 
 	PyDict_SetItemString(locals, "__builtins__", PyEval_GetBuiltins());
@@ -214,5 +214,5 @@ static int loader_main(int argc, char **argv)
 	free(syspath);
 	syspath = 0;
 
-	return ExecuteScript();
+	return run_script();
 }
