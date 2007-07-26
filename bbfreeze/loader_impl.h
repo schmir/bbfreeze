@@ -26,9 +26,9 @@
  * (PySys_SetPath is called from Py_Initialize)
  */
 
-static int initialized = 0;
-static const char *syspath = "/home/ralf/dist/library.zip:/home/ralf/dist/";
+static char *syspath = 0;
 
+#ifndef WIN32
 static PyObject *
 makepathobject(char *path, int delim)
 {
@@ -76,37 +76,23 @@ PySys_SetPath_orig(char *path)
 void
 PySys_SetPath(char *path)
 {
-	if (initialized) {
-		PySys_SetPath_orig(path);
-	} else {
+	if (syspath) {
 		PySys_SetPath_orig(syspath);
+	} else {
+		PySys_SetPath_orig(path);
 	}
-	/*
-	fprintf(stderr, "after setpath:");
-	PyObject_Print(PySys_GetObject("path"), stderr, 0);
-	fprintf(stderr, "\n");
-	*/
 }
+#endif
 
-static int exists(const char *name)
-{
-	FILE *f=fopen(name, "rb");
-	if (f) {
-		fclose(f);
-		return 1;
-	}
-	return 0;
-}
 
 static void FatalError(const char *message)
 {
-	PyErr_Print();
 #ifdef GUI
 	MessageBox(NULL, message, "bbfreeze Fatal Error", MB_ICONERROR);
-	exit(1);
+#else
+	fprintf(stderr, "Fatal error: %s", message);	
 #endif
-
-	Py_FatalError(message);
+	exit(1);
 }
 
 static void dirname(const char *path)
@@ -123,33 +109,10 @@ static void dirname(const char *path)
 	*lastsep = 0;
 }
 
-static void addToPath(const char *p)
+
+static void compute_syspath(const char *fileName)
 {
-	PyObject *pathList, *temp;
-	
-	pathList = PySys_GetObject("path");
-	if (!pathList) {
-		FatalError("cannot acquire sys.path");
-	}
-
-	temp = PyString_FromString(p);
-	if (!temp) {
-		FatalError("cannot create Python string");
-	}
-
-	if (PyList_Insert(pathList, 0, temp) < 0) {
-		FatalError("cannot insert file name in sys.path");
-	}
-	
-	Py_DECREF(temp);
-}
-
-static int ExecuteScript(const char *fileName)		// name of file containing Python code
-{
-	PyObject *locals;
-	PyObject *tmp;
-	const char *resolved_path = fileName;
-	char *tmppath;
+	const char *resolved_path = strdup(fileName);
 
 #ifdef HAVE_REALPATH
 	static char buffer[PATH_MAX+1];
@@ -159,26 +122,22 @@ static int ExecuteScript(const char *fileName)		// name of file containing Pytho
 	}
 #endif
 
-	tmppath = (char*)malloc(strlen(resolved_path)+64);
-	if (!tmppath) {
-		FatalError("malloc failed");
-	}
-	strcpy(tmppath, resolved_path);
-	dirname(tmppath);
-	addToPath(tmppath);
+	dirname(resolved_path);
+	syspath = malloc(2*strlen(resolved_path)+64);
+
 
 #ifdef WIN32
-	strcat(tmppath, "\\library.zip");
+	sprintf(syspath, "%s\\library.zip;%s", resolved_path, resolved_path);
 #else
-	strcat(tmppath, "/library.zip");
+	sprintf(syspath, "%s/library.zip:%s", resolved_path, resolved_path);
 #endif
+	// fprintf(stderr, "syspath: %s\n", syspath);
+}
 
-	if (exists(tmppath)) {
-		addToPath(tmppath);
-	} else {
-		addToPath(resolved_path);
-	}
-	free(tmppath);
+static int ExecuteScript()
+{
+	PyObject *locals;
+	PyObject *tmp;
 
 	// sys.path isn't as empty as one might hope. when using zipfile compression
 	// the zlib module must be loaded. without cleaning sys.path here, it did happen 
@@ -201,8 +160,6 @@ static int ExecuteScript(const char *fileName)		// name of file containing Pytho
 		"sys.frozen=1\n"
 		"import zipimport\n"
 		"importer = zipimport.zipimporter(sys.path[0])\n"
-		"import __builtin__\n"
-		"m = __builtin__.__import__('__main__')\n"
 		"exec importer.get_code('__main__')\n",
 		Py_file_input, locals, 0
 		);
@@ -250,9 +207,12 @@ static int loader_main(int argc, char **argv)
 	set_program_path(argv[0]);
 
 	fileName = Py_GetProgramFullPath();
+	compute_syspath(fileName);
 	Py_Initialize();
-	initialized = 1;
 	PySys_SetArgv(argc, argv);
+	PySys_SetPath(syspath);
+	free(syspath);
+	syspath = 0;
 
-	return ExecuteScript(fileName);
+	return ExecuteScript();
 }
