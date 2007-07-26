@@ -96,12 +96,7 @@ static void fatal(const char *message)
 
 static void dirname(const char *path)
 {
-#ifdef WIN32
-	int sep='\\';
-#else
-	int sep='/';
-#endif
-	char *lastsep = strrchr(path, sep);
+	char *lastsep = strrchr(path, SEP);
 	if (lastsep==0) {
 		fatal("dirname failed.");
 	}
