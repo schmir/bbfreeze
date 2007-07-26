@@ -84,7 +84,6 @@ PySys_SetPath(char *path)
 }
 #endif
 
-
 static void fatal(const char *message)
 {
 #ifdef GUI
@@ -109,15 +108,14 @@ static void dirname(const char *path)
 	*lastsep = 0;
 }
 
-
-static void compute_syspath(const char *fileName)
+static void compute_syspath()
 {
-	const char *resolved_path = strdup(fileName);
+	const char *resolved_path = strdup(Py_GetProgramFullPath());
 
 #ifdef HAVE_REALPATH
 	static char buffer[PATH_MAX+1];
 
-	if (realpath(fileName, buffer)) {
+	if (realpath(resolved_path, buffer)) {
 		resolved_path = buffer;
 	}
 #endif
@@ -125,13 +123,8 @@ static void compute_syspath(const char *fileName)
 	dirname(resolved_path);
 	syspath = malloc(2*strlen(resolved_path)+64);
 
-
-#ifdef WIN32
-	sprintf(syspath, "%s\\library.zip;%s", resolved_path, resolved_path);
-#else
-	sprintf(syspath, "%s/library.zip:%s", resolved_path, resolved_path);
-#endif
-	// fprintf(stderr, "syspath: %s\n", syspath);
+	sprintf(syspath, "%s%clibrary.zip%c%s", resolved_path, SEP, DELIM, resolved_path);
+	fprintf(stderr, "syspath: %s\n", syspath);
 }
 
 static int run_script()
@@ -197,7 +190,6 @@ static void set_program_path(char *argv0)
 
 static int loader_main(int argc, char **argv)
 {
-	const char *fileName;
 	// initialize Python
 	Py_NoSiteFlag = 1;
 	Py_FrozenFlag = 1;
@@ -206,8 +198,7 @@ static int loader_main(int argc, char **argv)
 
 	set_program_path(argv[0]);
 
-	fileName = Py_GetProgramFullPath();
-	compute_syspath(fileName);
+	compute_syspath();
 	Py_Initialize();
 	PySys_SetArgv(argc, argv);
 	PySys_SetPath(syspath);
