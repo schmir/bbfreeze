@@ -118,5 +118,6 @@ setup(name = "bbfreeze",
       url = "http://cheeseshop.python.org/pypi/bbfreeze/",
       description="create standalone executables from python scripts",
       platforms="Linux Windows",
-      long_description = read_long_description()
+      long_description = read_long_description(),
+      dependency_links = ["http://code.google.com/p/pefile/downloads/list"],
       )
