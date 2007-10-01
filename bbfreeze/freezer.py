@@ -489,7 +489,7 @@ class Freezer(object):
                 
         
     def _writecode(self, fn, mtime, code):
-        replace_paths_in_code(code, fn)
+        code = replace_paths_in_code(code, fn)
         ziptime = time.localtime(mtime)[:6]
         data = imp.get_magic() + struct.pack("<i", mtime) + marshal.dumps(code)
         zinfo = zipfile.ZipInfo(fn, ziptime)
