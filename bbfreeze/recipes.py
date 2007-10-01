@@ -74,6 +74,32 @@ def recipe_docutils(mf):
             pass
     return True
 
+def recipe_pythoncom(mf):
+    m = mf.findNode("pythoncom")
+    if not isRealModule(m):
+        return None
+    import pythoncom
+    from bbfreeze.freezer import SharedLibrary
+    n=mf.createNode(SharedLibrary, os.path.basename(pythoncom.__file__))
+    n.filename = pythoncom.__file__
+    mf.createReference(m, n)
+    
+    mf.import_hook('pywintypes', m, ['*'])
+
+    return True
+
+def recipe_pywintypes(mf):
+    m = mf.findNode("pywintypes")
+    if not isRealModule(m):
+        return None
+    import pywintypes
+    from bbfreeze.freezer import SharedLibrary
+    n=mf.createNode(SharedLibrary, os.path.basename(pywintypes.__file__))
+    n.filename = pywintypes.__file__
+    mf.createReference(m, n)
+    return True
+
+
 def recipe_py_magic_greenlet(mf):
     m = mf.findNode('py')
     if not isRealModule(m):
