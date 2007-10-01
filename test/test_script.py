@@ -38,3 +38,9 @@ def test_pylog():
 def test_celementtree():
     maybe_compile_and_run("ex-celementtree.py")
     
+if sys.platform=='win32':
+    def test_pythoncom():
+        maybe_compile_and_run("ex-pythoncom.py")
+
+    def test_pywintypes():
+        maybe_compile_and_run("ex-pywintypes.py")
