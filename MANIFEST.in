@@ -23,6 +23,8 @@ include test/ex-celementtree.py
 include test/ex-matplotlib.py
 include test/ex-mbox.py
 include test/ex-pylog.py
+include test/ex-pythoncom.py
+include test/ex-pywintypes.py
 include test/ex-time.py
 include test/ex-tkinter.py
 include test/hello-world.py
