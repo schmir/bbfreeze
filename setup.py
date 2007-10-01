@@ -118,5 +118,6 @@ setup(name = "bbfreeze",
       url = "http://cheeseshop.python.org/pypi/bbfreeze/",
       description="create standalone executables from python scripts",
       platforms="Linux Windows",
+      license="zlib/libpng license",
       long_description = read_long_description(),
       )
