@@ -154,6 +154,16 @@ API might change.
 
 ChangeLog
 ======================================================================
+XXXX-X-X        release 0.95.3
+- recipes for pythoncom/pywintypes have been added
+- make sys.getfilesystemencoding() work like in non-frozen versions
+- pathnames in tracebacks are replaced with relative pathnames
+  (i.e. if you import package foo.bar from /home/jdoe/pylib/
+  tracebacks generated from functions in foo.bar will not show your
+  local path /home/jdoe/pylib/foo/bar.py. They will instead show
+  foo/bar.py)
+
+
 
 2007-7-12       release 0.95.2
 -----------------------------------------------
