@@ -49,7 +49,7 @@ makepathobject(char *path, int delim)
 		p = strchr(path, delim);
 		if (p == NULL)
 			p = strchr(path, '\0'); /* End of string */
-		w = PyString_FromStringAndSize(path, (Py_ssize_t) (p - path));
+		w = PyString_FromStringAndSize(path, p - path);
 		if (w == NULL) {
 			Py_DECREF(v);
 			return NULL;
@@ -103,7 +103,7 @@ static void dirname(const char *path)
 	*lastsep = 0;
 }
 
-static void compute_syspath()
+static void compute_syspath(void)
 {
 	const char *resolved_path = strdup(Py_GetProgramFullPath());
 
@@ -122,7 +122,7 @@ static void compute_syspath()
 	//fprintf(stderr, "syspath: %s\n", syspath);
 }
 
-static int run_script()
+static int run_script(void)
 {
 	PyObject *locals;
 	PyObject *tmp;
