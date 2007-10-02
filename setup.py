@@ -43,9 +43,11 @@ class BuildInterpreters(build_ext.build_ext):
 
         LINKFORSHARED = sysconfig.get_config_var("LINKFORSHARED")
         if LINKFORSHARED and sys.platform != 'darwin':            
-            linker = " ".join(sysconfig.get_config_var(x) for x in 'LINKCC LDFLAGS LINKFORSHARED'.split())
+            linker = " ".join([sysconfig.get_config_var(x) for x in 'LINKCC LDFLAGS LINKFORSHARED'.split()])
+            if '-Xlinker' in linker:
+                linker += ' -Xlinker -zmuldefs'
             self.compiler.set_executables(linker_exe = linker)
-            
+
         def hacked(*args, **kwargs):
             for x in ('export_symbols', 'build_temp'):
                 try:
