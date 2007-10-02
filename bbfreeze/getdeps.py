@@ -140,7 +140,7 @@ elif sys.platform.startswith("linux"):
 
     
     def exclude(fp):
-        return re.match(r"^libc\.|^librt\.|^libcrypt\.|^libm\.|^libdl\.|^libpthread\.|^libnsl\.|^libutil\.", os.path.basename(fp))
+        return re.match(r"^libc\.|^librt\.|^libcrypt\.|^libm\.|^libdl\.|^libpthread\.|^libnsl\.|^libutil\.|^ld-linux\.|^ld-linux-", os.path.basename(fp))
 else:
     print "Warning: don't know how to handle binary dependencies on this platform (%s)" % (sys.platform,)
     def _getDependencies(fp):
