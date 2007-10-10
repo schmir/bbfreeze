@@ -111,6 +111,12 @@ class SharedLibrary(modulegraph.Node):
         self.identifier = identifier
         self.filename = None        
 
+class Executable(modulegraph.Node):
+    def __init__(self, identifier):
+        self.graphident = identifier
+        self.identifier = identifier
+        self.filename = None        
+
 class CopyTree(modulegraph.Node):
     def __init__(self, identifier, dest):
         self.graphident = identifier
@@ -331,6 +337,17 @@ class Freezer(object):
     def _handle_CopyTree(self, n):
         shutil.copytree(n.filename, os.path.join(self.distdir, n.dest))
         
+    def addExecutable(self, exe):
+        from bbfreeze import getdeps
+        e = self.mf.createNode(Executable, os.path.basename(exe))
+        e.filename = exe
+        self.mf.createReference(self.mf, e)
+
+        for so in getdeps.getDependencies(exe):
+            n = self.mf.createNode(SharedLibrary, os.path.basename(so))
+            n.filename = so
+            self.mf.createReference(e, n)
+        
     def findBinaryDependencies(self):
         from bbfreeze import getdeps
 
@@ -526,6 +543,12 @@ class Freezer(object):
             return
         os.environ['S'] = p
         os.system('strip $S')
+
+    def _handle_Executable(self, m):
+        dst = os.path.join(self.distdir, os.path.basename(m.filename))
+        shutil.copy2(m.filename, dst)
+        os.chmod(dst, 0755)
+        self.stripBinary(dst)
 
     def _handle_SharedLibrary(self, m):
         dst = os.path.join(self.distdir, os.path.basename(m.filename))
