@@ -3,6 +3,7 @@ include README.html
 include README.txt
 include bb-freeze
 include bbfreeze/__init__.py
+include bbfreeze/_version.py
 include bbfreeze/console.c
 include bbfreeze/consolew.c
 include bbfreeze/eggutil.py
