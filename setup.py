@@ -12,6 +12,11 @@ from setuptools import setup, Extension
 
 from distutils.command import build_ext
 from distutils import sysconfig
+import distutils.util
+execfile(distutils.util.convert_path('bbfreeze/_version.py')) 
+# adds 'version' to local namespace
+
+sys.exit(10)
 
 os.environ['LD_RUN_PATH'] = "${ORIGIN}:${ORIGIN}/../lib"
 
@@ -109,7 +114,7 @@ if sys.platform=='win32':
 setup(name = "bbfreeze",
       cmdclass         = {'build_ext': BuildInterpreters,
                           },
-      version = '0.95.3',
+      version = str(version),  # see execfile from above
       entry_points = dict(console_scripts=['bb-freeze = bbfreeze:main']),
       ext_modules = ext_modules,
       install_requires=install_requires,
