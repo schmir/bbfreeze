@@ -16,8 +16,6 @@ import distutils.util
 execfile(distutils.util.convert_path('bbfreeze/_version.py')) 
 # adds 'version' to local namespace
 
-sys.exit(10)
-
 os.environ['LD_RUN_PATH'] = "${ORIGIN}:${ORIGIN}/../lib"
 
 def read_long_description():
