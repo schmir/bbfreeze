@@ -28,7 +28,7 @@
 
 static char *syspath = 0;
 
-#ifndef WIN32
+#ifdef USE_SETPATH_HACK
 static PyObject *
 makepathobject(char *path, int delim)
 {
@@ -82,7 +82,7 @@ PySys_SetPath(char *path)
 		PySys_SetPath_orig(path);
 	}
 }
-#endif
+#endif // !USE_SETPATH_HACK
 
 static void fatal(const char *message)
 {
