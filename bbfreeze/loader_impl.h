@@ -185,6 +185,11 @@ static void set_program_path(char *argv0)
 
 static int loader_main(int argc, char **argv)
 {
+	// make stdin, stdout and stderr unbuffered
+	setbuf(stdin, (char *)NULL);
+	setbuf(stdout, (char *)NULL);
+	setbuf(stderr, (char *)NULL);
+
 	// initialize Python
 	Py_NoSiteFlag = 1;
 	Py_FrozenFlag = 1;
