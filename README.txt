@@ -9,9 +9,9 @@ Overview
 ======================================================================
 bbfreeze creates standalone executables from python scripts. It's
 similar in purpose to the well known py2exe_ for windows, py2app_ for
-OS X, PyInstaller_ and cx_Freeze_ (in fact it includes some bits from
-cx_Freeze and PyInstaller. And it uses the modulegraph_ package,
-which is also used by py2app).
+OS X, PyInstaller_ and cx_Freeze_ (in fact ancient versions were based
+on cx_Freeze. And it uses the modulegraph_ package, which is also used by
+py2app).
 
 It has the following features:
 
@@ -33,6 +33,13 @@ multiple script freezing
 python interpreter included
   bbfreeze will create an extra executable named 'py', which might be
   used like the python executable itself.
+
+*NEW* automatic pathname rewriting
+  pathnames in tracebacks are replaced with relative pathnames
+  (i.e. if you import package foo.bar from /home/jdoe/pylib/
+  tracebacks generated from functions in foo.bar will not show your
+  local path /home/jdoe/pylib/foo/bar.py. They will instead show
+  foo/bar.py)
 
 bbfreeze works on windows and UNIX-like operating systems. It
 currently does not work on OS X. bbfreeze has been tested with python
@@ -154,15 +161,11 @@ API might change.
 
 ChangeLog
 ======================================================================
-XXXX-X-X        release 0.95.3
+2007-10-16        release 0.95.3
 - recipes for pythoncom/pywintypes have been added
 - make sys.getfilesystemencoding() work like in non-frozen versions
-- pathnames in tracebacks are replaced with relative pathnames
-  (i.e. if you import package foo.bar from /home/jdoe/pylib/
-  tracebacks generated from functions in foo.bar will not show your
-  local path /home/jdoe/pylib/foo/bar.py. They will instead show
-  foo/bar.py)
-
+- automatic pathname rewriting
+- make stdin, stdout and stderr unbuffered in frozen programs
 
 
 2007-7-12       release 0.95.2
