@@ -161,7 +161,9 @@ API might change.
 
 ChangeLog
 ======================================================================
+
 2007-10-16        release 0.95.3
+-----------------------------------------------
 - recipes for pythoncom/pywintypes have been added
 - make sys.getfilesystemencoding() work like in non-frozen versions
 - automatic pathname rewriting
