@@ -274,6 +274,12 @@ class Freezer(object):
         self._recipes = None
         
         self.mf = MyModuleGraph(excludes=excludes, debug=0)
+
+        # workaround for virtualenv's distutils monkeypatching
+        import distutils
+        self.mf.load_package("distutils", distutils.__path__[0])
+
+
         self._loaderNode = None
         if sys.platform=='win32':
             self.linkmethod = 'loader'
