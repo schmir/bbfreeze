@@ -4,7 +4,8 @@
 # code inspired by matplotlib
 # (http://matplotlib.sourceforge.net/examples/interactive.py)
 
-import code
+from code import InteractiveConsole
+import time
 try:
     # rlcompleter also depends on readline
     import rlcompleter
@@ -13,9 +14,11 @@ except ImportError:
     readline = None
     
 
-class MyConsole(code.InteractiveConsole):
+class MyConsole(InteractiveConsole):
+    needed = 0.0
+
     def __init__(self, *args, **kwargs):
-        code.InteractiveConsole.__init__(self, *args, **kwargs)
+        InteractiveConsole.__init__(self, *args, **kwargs)
 
         if not readline:
             return
@@ -37,6 +40,22 @@ class MyConsole(code.InteractiveConsole):
         # anything in the previous input history containing them.
         readline.parse_and_bind('"\C-r": reverse-search-history')
         readline.parse_and_bind('"\C-s": forward-search-history')
+
+    def runcode(self, code):
+        stime=time.time()
+        try:
+            return InteractiveConsole.runcode(self, code)
+        finally:
+            self.needed = time.time()-stime
+
+    def raw_input(self, prompt=""):
+        if self.needed > 0.01:
+            prompt = "[%.2fs]\n%s" % (self.needed, prompt)
+            self.needed = 0.0
+
+        return InteractiveConsole.raw_input(self, prompt)
+
+        
 
 if __name__=='__main__':
     if readline:
