@@ -173,6 +173,13 @@ class MyModuleGraph(modulegraph.ModuleGraph):
             path = self.path
 
         found = []
+        def append_if_uniq(r):
+            for t in found:
+                if r[1]==t[1]:
+                    return
+            found.append(r)
+
+
         for p in path:            
             try:
                 p = os.path.normcase(os.path.normpath(os.path.abspath(p)))
@@ -183,10 +190,10 @@ class MyModuleGraph(modulegraph.ModuleGraph):
                 res = self._find_single_path(name, p, parent)
                 if found:
                     if res[2][2] == imp.PKG_DIRECTORY:
-                        found.append(res)
+                        append_if_uniq(res)
                 else:
                     if res[2][2] == imp.PKG_DIRECTORY:
-                        found.append(res)
+                        append_if_uniq(res)
                     else:
                         return res
             except ImportError, err:
