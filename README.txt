@@ -162,6 +162,11 @@ API might change.
 ChangeLog
 ======================================================================
 
+2007-12-6         release 0.95.4
+-----------------------------------------------
+- workaround for virtualenv
+- show execution time in py
+
 2007-10-16        release 0.95.3
 -----------------------------------------------
 - recipes for pythoncom/pywintypes have been added
