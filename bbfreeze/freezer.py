@@ -63,6 +63,8 @@ class EggAnalyzer(object):
 
         fn = m.filename
         for dist in pkg_resources.working_set:
+            if dist.location.endswith("site-packages") or dist.location.endswith("lib-dynload"):
+                continue
             if dist.has_metadata("top_level.txt") and fn.startswith(dist.location):
                 if dist.project_name=='bbfreeze':
                     return None
@@ -275,12 +277,15 @@ if not found:
 class Freezer(object):
     use_compression = True
     include_py = True
-    
+    implies = {
+        "wxPython.wx":  modulegraph.Alias('wx'),
+        }
+
     def __init__(self, distdir="dist", includes=(), excludes=()):
         self.distdir = os.path.abspath(distdir)
         self._recipes = None
         
-        self.mf = MyModuleGraph(excludes=excludes, debug=0)
+        self.mf = MyModuleGraph(excludes=excludes, implies=self.implies, debug=0)
 
         # workaround for virtualenv's distutils monkeypatching
         import distutils
