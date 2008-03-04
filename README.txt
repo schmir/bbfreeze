@@ -162,6 +162,14 @@ API might change.
 ChangeLog
 ======================================================================
 
+2008-3-5         release 0.95.5
+-----------------------------------------------
+- some egg packages have the site-packages directory as their
+  location, which resulted in the whole site-packages directory being 
+  copied as some egg file.
+- fix issue with wxPython
+
+
 2007-12-6         release 0.95.4
 -----------------------------------------------
 - workaround for virtualenv

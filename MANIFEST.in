@@ -34,3 +34,4 @@ include test/relimport/forms.py
 include test/test_guiscript.py
 include test/test_relimport.py
 include test/test_script.py
+include test/wx-example.py
