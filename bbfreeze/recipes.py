@@ -218,6 +218,7 @@ def recipe_tkinter(mf):
 def recipe_gtk_and_friends(mf):
     retval = False
     from bbfreeze.freezer import SharedLibrary
+    from modulegraph.modulegraph import ExcludedModule
     for x in list(mf.flatten()):
         if not isinstance(x, SharedLibrary):
             continue
@@ -227,10 +228,10 @@ def recipe_gtk_and_friends(mf):
         for p in prefixes:        
             if x.identifier.startswith(p):
                 print "SKIPPING:", x
-                mf.removeNode(x)
+                x.__class__ = ExcludedModule
                 retval = True                
                 break
-
+            
     return retval
 
 def recipe_cElementTree25(mf):
