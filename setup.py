@@ -63,6 +63,7 @@ class BuildInterpreters(build_ext.build_ext):
             linker = " ".join([sysconfig.get_config_var(x) for x in 'LINKCC LDFLAGS LINKFORSHARED'.split()])
             if '-Xlinker' in linker:
                 linker += ' -Xlinker -zmuldefs'
+                linker += ' -Xlinker --disable-new-dtags'
             self.compiler.set_executables(linker_exe = linker)
 
         def hacked(*args, **kwargs):
