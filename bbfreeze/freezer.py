@@ -499,7 +499,11 @@ class Freezer(object):
         self._writecode(fn, mtime, m.code)
         
                         
-            
+    def _handle_CompiledModule(self, m):
+        fn = m.identifier.replace(".", "/")+'.pyc'
+        print "WARNING: using .pyc file %r for which no source file could be found." % (fn,)
+        mtime = self._get_mtime(m.filename)
+        self._writecode(fn, mtime, m.code)
         
     def _handle_Script(self, m):
         exename = None
