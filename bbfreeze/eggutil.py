@@ -133,8 +133,10 @@ def copyDistribution(distribution, destdir):
 
             from distutils.spawn import spawn
             import tempfile
+            import atexit
+            import shutil
             tmp = tempfile.mkdtemp()
-            
+            atexit.register(shutil.rmtree, tmp)
             cmd = [sys.executable, "setup.py", "-q", "bdist_egg", "--dist", tmp]
             print "running %r in %r" % (" ".join(cmd), os.getcwd())
             spawn(cmd)
