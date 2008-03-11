@@ -257,3 +257,11 @@ def recipe_cElementTree(mf):
     
     
     return True
+
+def recipe_mercurial(mf):
+    m = mf.findNode("mercurial")
+    if not isRealModule(m):
+        return None
+    mf.import_hook("hgext", m, "*")
+    mf.import_hook("hgext.convert", m, "*")
+    return True
