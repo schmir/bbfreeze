@@ -63,8 +63,8 @@ class EggAnalyzer(object):
 
         fn = m.filename
         for dist in pkg_resources.working_set:
-            if not dist.location.lower().endswith(".egg"):
-                continue
+            if type(dist._provider)==pkg_resources.FileMetadata: # no real egg
+                continue            
             if dist.has_metadata("top_level.txt") and fn.startswith(dist.location):
                 if dist.project_name=='bbfreeze':
                     return None

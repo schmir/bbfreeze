@@ -116,6 +116,27 @@ def write_directory(path, entries):
         
 
 def copyDistribution(distribution, destdir):
+    import pkg_resources
+    if (isinstance(distribution._provider, pkg_resources.PathMetadata)
+        and not distribution.location.lower().endswith(".egg")):
+        # this seems to be an development egg. FIXME the above test looks fragile
+        cwd = os.getcwd()
+        os.chdir(distribution.location)
+        try:
+            print distribution.location, "looks like an development egg. need to run setup.py bdist_egg"
+            if not os.path.exists("setup.py"):
+                raise RuntimeError("setup.py not found for development egg")
+
+            from distutils.spawn import spawn
+            cmd = [sys.executable, "setup.py", "-q", "bdist_egg", "--dist", destdir]
+            print "running %r in %r" % (" ".join(cmd), os.getcwd())
+            spawn(cmd)
+            print "====> setup.py bdist_egg finished in", os.getcwd() 
+            return
+        finally:
+            os.chdir(cwd)
+            
+    
     dest = os.path.join(destdir, distribution.egg_name()+".egg")
     print "Copying", distribution.location, "to", dest
 
