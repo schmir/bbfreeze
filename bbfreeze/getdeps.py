@@ -3,7 +3,6 @@
 import sys
 import os
 import re
-import cPickle
 
 if sys.platform=='win32':
 
