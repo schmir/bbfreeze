@@ -314,14 +314,32 @@ class Freezer(object):
         else:
             mtime = time.time()
         return mtime
-    
+
+    def _entry_script(self, path):
+        f=open(path, 'r')
+        lines = [f.readline(), f.readline()]
+        del f
+        eicomment = "# EASY-INSTALL-ENTRY-SCRIPT: "
+        for line in lines:
+            if line.startswith(eicomment):
+                values = [x.strip("'\"") for x in line[len(eicomment):].strip().split(",")]
+                print path, "is an easy install entry script. running pkg_resources.require(%r)" % (values[0],)
+                pkg_resources.require(values[0])
+                ep=pkg_resources.get_entry_info(*values)
+                print "entry point is", ep
+                return ep.module_name                
+        return None        
+            
+        
     def addScript(self, path, gui_only=False):
         dp = os.path.dirname(os.path.abspath(path))
-        
         self.mf.path.insert(0, dp)
+        ep_module_name = self._entry_script(path)
         s = self.mf.run_script(path)
         s.gui_only = gui_only
         del self.mf.path[0]
+        if ep_module_name:
+            self.mf.import_hook(ep_module_name, s)
         
     def addModule(self, name):
         if name.endswith(".*"):
