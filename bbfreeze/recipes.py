@@ -264,4 +264,6 @@ def recipe_mercurial(mf):
         return None
     mf.import_hook("hgext", m, "*")
     mf.import_hook("hgext.convert", m, "*")
+    t = os.path.join(os.path.dirname(m.filename), "templates")
+    mf.copyTree(t, "templates", m)
     return True
