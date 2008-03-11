@@ -98,6 +98,9 @@ def write_directory(path, entries):
         if x.isdir():
             os.mkdir(fn)
         else:
+            dn = os.path.dirname(fn)
+            if not os.path.isdir(dn):
+                os.makedirs(dn)
             open(fn, "wb").write(x.read_replace())
 
         if x.stat is None:
@@ -113,10 +116,11 @@ def write_directory(path, entries):
             os.utime(fn, (st.st_atime, st.st_mtime))
         if hasattr(os, 'chmod'):
             os.chmod(fn, mode)
-        
 
 def copyDistribution(distribution, destdir):
     import pkg_resources
+    location = distribution.location
+    
     if (isinstance(distribution._provider, pkg_resources.PathMetadata)
         and not distribution.location.lower().endswith(".egg")):
         # this seems to be an development egg. FIXME the above test looks fragile
@@ -128,19 +132,26 @@ def copyDistribution(distribution, destdir):
                 raise RuntimeError("setup.py not found for development egg")
 
             from distutils.spawn import spawn
-            cmd = [sys.executable, "setup.py", "-q", "bdist_egg", "--dist", destdir]
+            import tempfile
+            tmp = tempfile.mkdtemp()
+            
+            cmd = [sys.executable, "setup.py", "-q", "bdist_egg", "--dist", tmp]
             print "running %r in %r" % (" ".join(cmd), os.getcwd())
             spawn(cmd)
-            print "====> setup.py bdist_egg finished in", os.getcwd() 
-            return
+            print "====> setup.py bdist_egg finished in", os.getcwd()
+            files = os.listdir(tmp)
+            assert len(files)>0, "output directory of bdist_egg command is empty"
+            assert len(files)==1, "expected exactly one file in output directory of bdist_egg command"
+
+            location = os.path.join(tmp, files[0])
         finally:
             os.chdir(cwd)
             
     
     dest = os.path.join(destdir, distribution.egg_name()+".egg")
-    print "Copying", distribution.location, "to", dest
+    print "Copying", location, "to", dest
 
-    entries = list(walk(distribution.location))
+    entries = list(walk(location))
     name2compile = {}
 
     for x in entries:
@@ -167,7 +178,7 @@ def copyDistribution(distribution, destdir):
         data = imp.get_magic() + struct.pack("<i", mtime) + marshal.dumps(code)        
         entries.append(Entry(name=x.name+'c', read=lambda data=data: data))
 
-    if distribution.has_metadata("zip-safe") or not os.path.isdir(distribution.location):        
+    if distribution.has_metadata("zip-safe"):        
         write_zipfile(dest, entries)
     else:
         write_directory(dest, entries)
