@@ -162,13 +162,16 @@ API might change.
 ChangeLog
 ======================================================================
 
-2008-3-5         release 0.95.5
+2008-3-12         release 0.95.5
 -----------------------------------------------
 - some egg packages have the site-packages directory as their
   location, which resulted in the whole site-packages directory being 
   copied as some egg file.
 - fix issue with wxPython
-
+- add recipe for mercurial
+- handle development eggs ("python setup.py develop") by running
+  setup.py bdist_egg
+- handle easy install entry scripts
 
 2007-12-6         release 0.95.4
 -----------------------------------------------
