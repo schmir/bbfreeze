@@ -267,3 +267,22 @@ def recipe_mercurial(mf):
     t = os.path.join(os.path.dirname(m.filename), "templates")
     mf.copyTree(t, "templates", m)
     return True
+def recipe_kinterbasdb(mf):
+    m = mf.findNode("kinterbasdb")
+    if not isRealModule(m):
+        return
+    mods="""typeconv_23plus_lowmem
+typeconv_23plus
+typeconv_24plus
+typeconv_backcompat
+typeconv_datetime_mx
+typeconv_datetime_naked
+typeconv_datetime_stdlib
+typeconv_fixed_decimal
+typeconv_fixed_fixedpoint
+typeconv_fixed_stdlib
+typeconv_naked
+typeconv_text_unicode""".split()
+    for x in mods:
+        mf.import_hook("kinterbasdb."+x, m)
+    return True
