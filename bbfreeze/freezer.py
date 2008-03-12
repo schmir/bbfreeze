@@ -54,15 +54,34 @@ class EggAnalyzer(object):
             return
         
         self.locations = [x.location for x in list(pkg_resources.working_set)]        
+        self.usable = None
+
+    def usableWorkingSet(self):
+        pathcount = {}
+        for x in pkg_resources.working_set:
+            try:
+                pathcount[x.location]+=1
+            except KeyError:
+                pathcount[x.location]=1
+        ws = []
+        for x in pkg_resources.working_set:
+            if pathcount[x.location]==1:
+                ws.append(x)
+            else:
+                print "SKIPPING:", x, x.location, pathcount[x.location]
+        return ws
+    
         
     def findDistribution(self, m):
         if pkg_resources is None:
             return None
         if m.filename is None:
             return None
-
+        if self.usable is None:
+            self.usable = self.usableWorkingSet()
+            
         fn = m.filename
-        for dist in pkg_resources.working_set:
+        for dist in self.usable:
             if type(dist._provider)==pkg_resources.FileMetadata: # no real egg
                 continue            
             if dist.has_metadata("top_level.txt") and fn.startswith(dist.location):
