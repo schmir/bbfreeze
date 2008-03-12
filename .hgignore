@@ -1,0 +1,8 @@
+syntax: glob
+
+*.so
+*.o
+*.pyc
+*~
+bbfreeze/*.exe
+bbfreeze.egg-info
