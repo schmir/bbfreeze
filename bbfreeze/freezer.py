@@ -67,8 +67,6 @@ class EggAnalyzer(object):
         for x in pkg_resources.working_set:
             if pathcount[x.location]==1:
                 ws.append(x)
-            else:
-                print "SKIPPING:", x, x.location, pathcount[x.location]
         return ws
     
         

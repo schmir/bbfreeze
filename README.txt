@@ -172,6 +172,9 @@ ChangeLog
 - handle development eggs ("python setup.py develop") by running
   setup.py bdist_egg
 - handle easy install entry scripts
+- add recipe for kinterbasdb (thanks to Werner F. Bruhin)
+- fix LD_RUN_PATH issue, when --enable--new-dtags is the default for
+  linking (e.g. on gentoo). (thanks to Collin Day)
 
 2007-12-6         release 0.95.4
 -----------------------------------------------

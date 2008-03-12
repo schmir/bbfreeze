@@ -267,6 +267,7 @@ def recipe_mercurial(mf):
     t = os.path.join(os.path.dirname(m.filename), "templates")
     mf.copyTree(t, "templates", m)
     return True
+
 def recipe_kinterbasdb(mf):
     m = mf.findNode("kinterbasdb")
     if not isRealModule(m):
