@@ -21,6 +21,7 @@ include ez_setup.py
 include setup.py
 include showvars.py
 include test/ex-celementtree.py
+include test/ex-kinterbasdb.py
 include test/ex-matplotlib.py
 include test/ex-mbox.py
 include test/ex-pylog.py
@@ -28,6 +29,7 @@ include test/ex-pythoncom.py
 include test/ex-pywintypes.py
 include test/ex-time.py
 include test/ex-tkinter.py
+include test/ex-wxpython.py
 include test/hello-world.py
 include test/relimport/__init__.py
 include test/relimport/forms.py
