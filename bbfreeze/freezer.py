@@ -63,9 +63,22 @@ class EggAnalyzer(object):
                 pathcount[x.location]+=1
             except KeyError:
                 pathcount[x.location]=1
+
+        def is_good(dist):
+            if dist.project_name=="bbfreeze":
+                return False
+            
+            if not dist.has_metadata("top_level.txt"):
+                return False
+            
+            if type(dist._provider)==pkg_resources.FileMetadata: # no real egg
+                return False
+
+            return False
+        
         ws = []
         for x in pkg_resources.working_set:
-            if pathcount[x.location]==1:
+            if pathcount[x.location]==1 and is_good(x):
                 ws.append(x)
         return ws
     
@@ -80,12 +93,7 @@ class EggAnalyzer(object):
             
         fn = m.filename
         for dist in self.usable:
-            if type(dist._provider)==pkg_resources.FileMetadata: # no real egg
-                continue            
-            if dist.has_metadata("top_level.txt") and fn.startswith(dist.location):
-                if dist.project_name=='bbfreeze':
-                    return None
-
+            if fn.startswith(dist.location):
                 # do not include eggs if this is a namespace package
                 # e.g. "import zope" can find any of "zope.deferredimport", "zope.interface",...
                 if dist.has_metadata("namespace_packages.txt"):
