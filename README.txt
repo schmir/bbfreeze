@@ -162,7 +162,7 @@ API might change.
 ChangeLog
 ======================================================================
 
-2008-3-12         release 0.96.0
+2008-3-13         release 0.96.0
 -----------------------------------------------
 - some egg packages have the site-packages directory as their
   location, which resulted in the whole site-packages directory being 
