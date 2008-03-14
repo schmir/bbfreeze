@@ -74,7 +74,7 @@ class EggAnalyzer(object):
             if type(dist._provider)==pkg_resources.FileMetadata: # no real egg
                 return False
 
-            return False
+            return True
         
         ws = []
         for x in pkg_resources.working_set:
