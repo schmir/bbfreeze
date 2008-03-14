@@ -161,6 +161,10 @@ API might change.
 
 ChangeLog
 ======================================================================
+2008-3-14         release 0.96.1
+-----------------------------------------------
+- fix bug in an internal function, which determines if eggs should 
+  be used. It always returned False, so eggs where never packaged.
 
 2008-3-13         release 0.96.0
 -----------------------------------------------
