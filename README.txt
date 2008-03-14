@@ -34,7 +34,7 @@ python interpreter included
   bbfreeze will create an extra executable named 'py', which might be
   used like the python executable itself.
 
-*NEW* automatic pathname rewriting
+automatic pathname rewriting
   pathnames in tracebacks are replaced with relative pathnames
   (i.e. if you import package foo.bar from /home/jdoe/pylib/
   tracebacks generated from functions in foo.bar will not show your
