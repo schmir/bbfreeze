@@ -19,6 +19,8 @@ execfile(distutils.util.convert_path('bbfreeze/_version.py'))
 os.environ['LD_RUN_PATH'] = "${ORIGIN}:${ORIGIN}/../lib"
 
 def use_setpath_hack():
+    return False # we ship a modified getpath.c from python
+
     if sys.platform=='win32':
         return False
 
@@ -100,21 +102,25 @@ if libpl:
 if sysconfig.get_config_var("VERSION"):
     libs.append("python%s" % sysconfig.get_config_var("VERSION"))
 
+extra_sources = []
 define_macros = []
+
 if sys.platform=='win32':
     define_macros.append(('WIN32', 1))
-
+else:
+    extra_sources.append('bbfreeze/getpath.c')
+    
 if use_setpath_hack():
     define_macros.append(('USE_SETPATH_HACK', 1))
 
-console = Extension("bbfreeze/console", ['bbfreeze/console.c'],
+console = Extension("bbfreeze/console", ['bbfreeze/console.c']+extra_sources,
                     libraries=libs,
                     library_dirs=library_dirs,
                     define_macros=define_macros
                     )
 
 ext_modules = [console]
-consolew = Extension("bbfreeze/consolew", ['bbfreeze/consolew.c'],
+consolew = Extension("bbfreeze/consolew", ['bbfreeze/consolew.c']+extra_sources,
                      libraries=libs+['user32'],
                      library_dirs=library_dirs,
                      define_macros=define_macros)

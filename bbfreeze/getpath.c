@@ -130,6 +130,9 @@ static char exec_prefix[MAXPATHLEN+1];
 static char progpath[MAXPATHLEN+1];
 static char *module_search_path = NULL;
 static char lib_python[] = "lib/python" VERSION;
+static char *syspath=0;
+
+static void compute_syspath(void);
 
 static void
 reduce(char *dir)
@@ -660,7 +663,10 @@ Py_GetPath(void)
 {
     if (!module_search_path)
         calculate_path();
-    return module_search_path;
+    /* return module_search_path; */
+
+    compute_syspath();
+    return syspath;
 }
 
 char *
@@ -687,6 +693,24 @@ Py_GetProgramFullPath(void)
     return progpath;
 }
 
+static void compute_syspath(void)
+{
+	char *resolved_path = strdup(Py_GetProgramFullPath());
+
+#ifdef HAVE_REALPATH
+	static char buffer[PATH_MAX+1];
+
+	if (realpath(resolved_path, buffer)) {
+		resolved_path = buffer;
+	}
+#endif
+
+	reduce(resolved_path);
+	syspath = malloc(2*strlen(resolved_path)+64);
+
+	sprintf(syspath, "%s%clibrary.zip%c%s", resolved_path, SEP, DELIM, resolved_path);
+	//fprintf(stderr, "syspath: %s\n", syspath);
+}
 
 #ifdef __cplusplus
 }
