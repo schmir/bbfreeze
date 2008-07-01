@@ -165,7 +165,7 @@ static int run_script(void)
 static void set_program_path(char *argv0)
 {
 #ifndef WIN32
-	char progpath[PATH_MAX+1];
+	static char progpath[PATH_MAX+1];
 	int count;
 
 	count=readlink("/proc/self/exe", progpath, PATH_MAX);
