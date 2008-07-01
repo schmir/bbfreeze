@@ -9,6 +9,7 @@ include bbfreeze/consolew.c
 include bbfreeze/eggutil.py
 include bbfreeze/freezer.py
 include bbfreeze/getdeps.py
+include bbfreeze/getpath.c
 include bbfreeze/load_console.py
 include bbfreeze/loader_impl.h
 include bbfreeze/modulegraph/__init__.py
