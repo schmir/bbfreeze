@@ -86,7 +86,8 @@ if exe=='py' and len(sys.argv)>1:
     m.__dict__['__file__'] = sys.argv[0]
     exec open(sys.argv[0], 'r') in m.__dict__
 else:
-    m.__dict__['__file__'] = exe
+    # add '.py' suffix to prevent garbage from the warnings module
+    m.__dict__['__file__'] = exe+'.py'
     exe = exe.replace(".", "_")
     importer = zipimport.zipimporter(sys.path[0])
     while 1:
