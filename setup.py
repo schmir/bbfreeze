@@ -18,22 +18,6 @@ execfile(distutils.util.convert_path('bbfreeze/_version.py'))
 
 os.environ['LD_RUN_PATH'] = "${ORIGIN}:${ORIGIN}/../lib"
 
-def use_setpath_hack():
-    return False # we ship a modified getpath.c from python
-
-    if sys.platform=='win32':
-        return False
-
-    if sysconfig.get_config_var('Py_ENABLE_SHARED'):
-        return True
-
-    if sys.version_info[:2]<(2,5):
-        config_args = sysconfig.get_config_var('CONFIG_ARGS')
-        if config_args:
-            return "--enable-shared" in config_args
-    return False
-
-
 def read_long_description():
     fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), "README.txt")
     return open(fn).read()
@@ -109,9 +93,6 @@ if sys.platform=='win32':
     define_macros.append(('WIN32', 1))
 else:
     extra_sources.append('bbfreeze/getpath.c')
-    
-if use_setpath_hack():
-    define_macros.append(('USE_SETPATH_HACK', 1))
 
 console = Extension("bbfreeze/console", ['bbfreeze/console.c']+extra_sources,
                     libraries=libs,

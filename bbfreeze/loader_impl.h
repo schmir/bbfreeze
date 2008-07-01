@@ -21,68 +21,6 @@
 #include <stdlib.h>
 #endif
 
-/* what follows is a copy of sysmodule.c's PySys_SetPath
- * we use this to change the sys.path according to our needs
- * (PySys_SetPath is called from Py_Initialize)
- */
-
-static char *syspath = 0;
-
-#ifdef USE_SETPATH_HACK
-static PyObject *
-makepathobject(char *path, int delim)
-{
-	int i, n;
-	char *p;
-	PyObject *v, *w;
-
-	n = 1;
-	p = path;
-	while ((p = strchr(p, delim)) != NULL) {
-		n++;
-		p++;
-	}
-	v = PyList_New(n);
-	if (v == NULL)
-		return NULL;
-	for (i = 0; ; i++) {
-		p = strchr(path, delim);
-		if (p == NULL)
-			p = strchr(path, '\0'); /* End of string */
-		w = PyString_FromStringAndSize(path, p - path);
-		if (w == NULL) {
-			Py_DECREF(v);
-			return NULL;
-		}
-		PyList_SetItem(v, i, w);
-		if (*p == '\0')
-			break;
-		path = p+1;
-	}
-	return v;
-}
-
-static void
-PySys_SetPath_orig(char *path)
-{
-	PyObject *v;
-	if ((v = makepathobject(path, DELIM)) == NULL)
-		Py_FatalError("can't create sys.path");
-	if (PySys_SetObject("path", v) != 0)
-		Py_FatalError("can't assign sys.path");
-	Py_DECREF(v);
-}
-
-void
-PySys_SetPath(char *path)
-{
-	if (syspath) {
-		PySys_SetPath_orig(syspath);
-	} else {
-		PySys_SetPath_orig(path);
-	}
-}
-#endif // !USE_SETPATH_HACK
 
 static void fatal(const char *message)
 {
@@ -101,25 +39,6 @@ static void dirname(const char *path)
 		fatal("dirname failed.");
 	}
 	*lastsep = 0;
-}
-
-static void compute_syspath(void)
-{
-	const char *resolved_path = strdup(Py_GetProgramFullPath());
-
-#ifdef HAVE_REALPATH
-	static char buffer[PATH_MAX+1];
-
-	if (realpath(resolved_path, buffer)) {
-		resolved_path = buffer;
-	}
-#endif
-
-	dirname(resolved_path);
-	syspath = malloc(2*strlen(resolved_path)+64);
-
-	sprintf(syspath, "%s%clibrary.zip%c%s", resolved_path, SEP, DELIM, resolved_path);
-	//fprintf(stderr, "syspath: %s\n", syspath);
 }
 
 static int run_script(void)
@@ -198,12 +117,9 @@ static int loader_main(int argc, char **argv)
 
 	set_program_path(argv[0]);
 
-	compute_syspath();
 	Py_Initialize();
 	PySys_SetArgv(argc, argv);
-	PySys_SetPath(syspath);
-	free(syspath);
-	syspath = 0;
+	PySys_SetPath(Py_GetPath());
 
 	return run_script();
 }
