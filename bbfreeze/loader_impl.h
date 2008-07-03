@@ -32,15 +32,6 @@ static void fatal(const char *message)
 	exit(1);
 }
 
-static void dirname(const char *path)
-{
-	char *lastsep = strrchr(path, SEP);
-	if (lastsep==0) {
-		fatal("dirname failed.");
-	}
-	*lastsep = 0;
-}
-
 static int run_script(void)
 {
 	PyObject *locals;
