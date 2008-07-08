@@ -32,7 +32,7 @@ def find_all_packages(name, skip=lambda x: False):
 recipe_flup = find_all_packages('flup')
 recipe_django = find_all_packages('django')
 recipe_py = find_all_packages("py", skip=lambda x: x.startswith("py.test.tkinter"))
-recipe_email = find_all_packages("email")
+recipe_email = find_all_packages("email", lambda x: x.startswith('email.test'))
 recipe_IPython = find_all_packages("IPython")
 
 def recipe_django_core_management(mf):
@@ -43,8 +43,32 @@ def recipe_django_core_management(mf):
     for ref in refs:
         mf.removeReference(m, ref)
     return True
+
+def recipe_xmlrpclib(mf):
+    m = mf.findNode("xmlrpclib")
+    if not isRealModule(m):
+        return None
+    # we have python 2.0, SlowParser is not used as xml.parsers.expat.ParserCreate is available
+    mf.removeReference(m, 'xmllib')
+    return True
     
+def recipe_doctest(mf):
+    m = mf.findNode('doctest')
+    if not isRealModule(m):
+        return None
     
+    refs = ['collections', 'decimal', 'difflib', 'heapq', 'pickle', 'Cookie', 'pickletools', 'memcache', 'simplegeneric']
+    for ref in refs:
+        mf.removeReference(ref, m)
+    return True
+
+def recipe_twisted_python_versions(mf):
+    m = mf.findNode('twisted.python.versions')
+    if not isRealModule(m):
+        return None
+    mf.removeReference(m, 'xml.dom.minidom')
+    
+
 def recipe_pydoc(mf):
     m = mf.findNode('pydoc')
     if not isRealModule(m):
