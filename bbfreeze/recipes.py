@@ -32,7 +32,6 @@ def find_all_packages(name, skip=lambda x: False):
 recipe_flup = find_all_packages('flup')
 recipe_django = find_all_packages('django')
 recipe_py = find_all_packages("py", skip=lambda x: x.startswith("py.test.tkinter"))
-recipe_email = find_all_packages("email", lambda x: x.startswith('email.test'))
 recipe_IPython = find_all_packages("IPython")
 
 def recipe_django_core_management(mf):

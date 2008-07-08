@@ -298,13 +298,24 @@ if not found:
     del sys.modules[__name__]
     raise ImportError, "No module named %%s" %% __name__
 """
+def get_implies():
+    implies = {
+        "wxPython.wx":  modulegraph.Alias('wx'),
+        }
+
+    try:
+        from email import _LOWERNAMES
+    except ImportError:
+        return implies
+    
+    for x in _LOWERNAMES:
+        implies['email.'+x] = modulegraph.Alias('email.'+x.lower())
+    return implies
 
 class Freezer(object):
     use_compression = True
     include_py = True
-    implies = {
-        "wxPython.wx":  modulegraph.Alias('wx'),
-        }
+    implies = get_implies()
 
     def __init__(self, distdir="dist", includes=(), excludes=()):
         self.distdir = os.path.abspath(distdir)
@@ -499,7 +510,9 @@ class Freezer(object):
     
     def _handle_BuiltinModule(self, m):
         pass
-
+    def _handle_AliasNode(self, m):
+        pass
+    
     def _handle_Extension(self, m):
         name = m.identifier
 
