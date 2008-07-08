@@ -95,6 +95,27 @@ def recipe_pydoc(mf):
         mf.removeReference(m, ref)
     return True
 
+def recipe_urllib(mf):
+    m = mf.findNode('urllib')
+    if not isRealModule(m):
+        return None
+    retval = None
+    
+    if sys.platform!='darwin':
+        for ref in ['ctypes', 'ctypes.util']:
+            mf.removeReference(m, ref)
+        retval = True
+        
+    if os.name!='mac':
+        mf.removeReference(m, 'macurl2path')
+        retval = True
+
+    if os.name!='nt':
+        mf.removeReference(m, 'nturl2path')
+        retval=True
+        
+    return retval
+    
 def recipe_docutils(mf):
     m = mf.findNode('docutils')
     if not isRealModule(m):
