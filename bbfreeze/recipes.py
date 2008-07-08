@@ -51,6 +51,17 @@ def recipe_xmlrpclib(mf):
     # we have python 2.0, SlowParser is not used as xml.parsers.expat.ParserCreate is available
     mf.removeReference(m, 'xmllib')
     return True
+
+def recipe_ctypes_macholib(mf):
+    if os.name == "posix" and sys.platform == "darwin":
+        return None
+    m = mf.findNode('ctypes.macholib.dyld')
+    if not isRealModule(m):
+        return None
+    mf.removeReference('ctypes.util', m)
+    return True
+
+
     
 def recipe_doctest(mf):
     m = mf.findNode('doctest')
