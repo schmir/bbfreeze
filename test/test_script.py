@@ -37,7 +37,10 @@ def test_pylog():
 
 def test_celementtree():
     maybe_compile_and_run("ex-celementtree.py")
-    
+
+def test_email_mimetext():
+    maybe_compile_and_run("ex-email_mimetext.py")
+
 if sys.platform=='win32':
     def test_pythoncom():
         maybe_compile_and_run("ex-pythoncom.py")
