@@ -304,12 +304,15 @@ def get_implies():
         }
 
     try:
-        from email import _LOWERNAMES
+        from email import _LOWERNAMES, _MIMENAMES
     except ImportError:
         return implies
     
     for x in _LOWERNAMES:
         implies['email.'+x] = modulegraph.Alias('email.'+x.lower())
+    for x in _MIMENAMES:
+        implies['email.MIME'+x] = modulegraph.Alias('email.mime.'+x.lower())
+        
     return implies
 
 class Freezer(object):
