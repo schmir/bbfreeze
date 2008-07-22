@@ -68,66 +68,69 @@ class BuildInterpreters(build_ext.build_ext):
     def build_extension(self, ext):
         self._patch()
         return build_ext.build_ext.build_extension(self, ext)
-                
-libs = sysconfig.get_config_var("LIBS") or ""
-libs = [x[2:] for x in libs.split()]
-if sysconfig.get_config_var("LIBM"):
-    libs += [sysconfig.get_config_var("LIBM")[2:]]
 
-library_dirs = []
-libdir = sysconfig.get_config_var("LIBDIR")
-if libdir:
-    library_dirs.append(libdir)
+
+
+def main():
+    # --- libs
+    libs = sysconfig.get_config_var("LIBS") or ""
+    libs = [x[2:] for x in libs.split()]
+    if sysconfig.get_config_var("LIBM"):
+        libs += [sysconfig.get_config_var("LIBM")[2:]]
+
+    if sysconfig.get_config_var("VERSION"):
+        libs.append("python%s" % sysconfig.get_config_var("VERSION"))
+
+
+    # --- library_dirs
+    library_dirs = []
+    libdir = sysconfig.get_config_var("LIBDIR")
+    if libdir:
+        library_dirs.append(libdir)
+
+    libpl = sysconfig.get_config_var("LIBPL")
+    if libpl:
+        library_dirs.append(libpl)
+
+    # --- extra_sources, define_macros, ext_modules
+    extra_sources = []
+    define_macros = []
+    install_requires=["altgraph>=0.6.7"]
     
-libpl = sysconfig.get_config_var("LIBPL")
-if libpl:
-    library_dirs.append(libpl)
+    if sys.platform=='win32':
+        define_macros.append(('WIN32', 1))
+    else:
+        extra_sources.append('bbfreeze/getpath.c')
 
-if sysconfig.get_config_var("VERSION"):
-    libs.append("python%s" % sysconfig.get_config_var("VERSION"))
+    ext_modules=[]
+    def ext(name, source, libraries):
+        e = Extension(name, source+extra_sources,
+                      libraries=libraries,
+                      library_dirs=library_dirs,
+                      define_macros=define_macros)
+        ext_modules.append(e)
+        
+    ext("bbfreeze/console", ['bbfreeze/console.c'], libs)
+    if sys.platform=='win32':
+        ext("bbfreeze/consolew", ['bbfreeze/consolew.c'], libs+['user32'])
+        install_requires.append("pefile>=1.2.4")
 
-extra_sources = []
-define_macros = []
+    setup(name = "bbfreeze",
+          cmdclass = dict(build_ext=BuildInterpreters),
+          version = str(version),  # see execfile from above
+          entry_points = dict(console_scripts=['bb-freeze = bbfreeze:main']),
+          ext_modules = ext_modules,
+          install_requires=install_requires,
+          packages = ['bbfreeze', 'bbfreeze.modulegraph'],
+          zip_safe = False,
+          maintainer="Ralf Schmitt",
+          maintainer_email="schmir@gmail.com",
+          url = "http://cheeseshop.python.org/pypi/bbfreeze/",
+          description="create standalone executables from python scripts",
+          platforms="Linux Windows",
+          license="zlib/libpng license",
+          long_description = read_long_description(),
+          )
 
-if sys.platform=='win32':
-    define_macros.append(('WIN32', 1))
-else:
-    extra_sources.append('bbfreeze/getpath.c')
-
-console = Extension("bbfreeze/console", ['bbfreeze/console.c']+extra_sources,
-                    libraries=libs,
-                    library_dirs=library_dirs,
-                    define_macros=define_macros
-                    )
-
-ext_modules = [console]
-consolew = Extension("bbfreeze/consolew", ['bbfreeze/consolew.c']+extra_sources,
-                     libraries=libs+['user32'],
-                     library_dirs=library_dirs,
-                     define_macros=define_macros)
-
-install_requires=["altgraph>=0.6.7"] 
-#"modulegraph>=0.7"]
-
-if sys.platform=='win32':
-    ext_modules.append(consolew)
-    install_requires.append("pefile>=1.2.4")
-    
-    
-setup(name = "bbfreeze",
-      cmdclass         = {'build_ext': BuildInterpreters,
-                          },
-      version = str(version),  # see execfile from above
-      entry_points = dict(console_scripts=['bb-freeze = bbfreeze:main']),
-      ext_modules = ext_modules,
-      install_requires=install_requires,
-      packages = ['bbfreeze', 'bbfreeze.modulegraph'],
-      zip_safe = False,
-      maintainer="Ralf Schmitt",
-      maintainer_email="schmir@gmail.com",
-      url = "http://cheeseshop.python.org/pypi/bbfreeze/",
-      description="create standalone executables from python scripts",
-      platforms="Linux Windows",
-      license="zlib/libpng license",
-      long_description = read_long_description(),
-      )
+if __name__=='__main__':
+    main()
