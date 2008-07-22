@@ -4,6 +4,7 @@
 
 import os
 import sys
+import platform
 
 import ez_setup
 ez_setup.use_setuptools()
@@ -17,6 +18,61 @@ execfile(distutils.util.convert_path('bbfreeze/_version.py'))
 # adds 'version' to local namespace
 
 os.environ['LD_RUN_PATH'] = "${ORIGIN}:${ORIGIN}/../lib"
+
+conf = None
+class Conf(object):
+    def __init__(self):
+        self.platform = platform.platform()
+        self.darwin = (sys.platform=='darwin')
+        self.win32 = (sys.platform=='win32')
+        self.unix = not (self.darwin or self.win32) # other unix
+        self.PYTHONVERSION = "python%s" % (sysconfig.get_config_var("VERSION"),)
+        self.linker = self._linker()
+        self.symbolic_functions_bug = self._symbolic_functions()
+        self.static_library = self._static_library()
+        
+        
+    def _linker(self):
+        LINKFORSHARED = sysconfig.get_config_var("LINKFORSHARED")
+        if LINKFORSHARED and sys.platform != 'darwin':            
+            linker = " ".join([sysconfig.get_config_var(x) for x in 'LINKCC LDFLAGS LINKFORSHARED'.split()])
+            return linker
+        return ""
+    
+    def _symbolic_functions(self):
+        return self.unix and '-Bsymbolic-functions' in self._linker()
+
+    def _static_library(self):
+        libpl = sysconfig.get_config_var("LIBPL")
+        if not libpl:
+            return ""
+        lib = sysconfig.get_config_var("LIBRARY")
+        if not lib:
+            lib = "lib%s" % (self.PYTHONVERSION,)
+        p = os.path.join(libpl, lib)
+        if os.path.exists(p):
+            return p
+        return ""
+        
+    def __repr__(self):
+        d = self.__dict__.copy()
+        d['sys.version'] = sys.version
+        d['sys.maxunicode'] = hex(sys.maxunicode)
+        d['sys.maxint'] = hex(sys.maxint)
+        d['sys.executable'] = sys.executable
+        d['platform'] = platform.platform()
+        
+        items = d.items()
+        
+        items.sort()
+        res = ['']
+        first = "------ bbfreeze %s configuration ------" % (version,)
+        res.append(first)
+        for k,v in items:
+            res.append("%s = %s" % (k,v))
+        res.append("-"*len(first))
+        res.append('')
+        return "\n".join(res)
 
 def read_long_description():
     fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), "README.txt")
@@ -70,8 +126,11 @@ class BuildInterpreters(build_ext.build_ext):
         return build_ext.build_ext.build_extension(self, ext)
 
 
-
 def main():
+    global conf
+    conf = Conf()
+    print conf
+    
     # --- libs
     libs = sysconfig.get_config_var("LIBS") or ""
     libs = [x[2:] for x in libs.split()]
