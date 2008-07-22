@@ -26,7 +26,11 @@ class Conf(object):
         self.darwin = (sys.platform=='darwin')
         self.win32 = (sys.platform=='win32')
         self.unix = not (self.darwin or self.win32) # other unix
-        self.PYTHONVERSION = "python%s" % (sysconfig.get_config_var("VERSION"),)
+        VERSION=sysconfig.get_config_var("VERSION")
+        if VERSION:
+            self.PYTHONVERSION = "python%s" % (VERSION,)
+        else:
+            self.PYTHONVERSION = ""
         self.linker = self._linker()
         self.symbolic_functions_bug = self._symbolic_functions()
         self.static_library = self._static_library()
@@ -130,15 +134,21 @@ def main():
     global conf
     conf = Conf()
     print conf
+
+    extra_objects = []
     
     # --- libs
     libs = sysconfig.get_config_var("LIBS") or ""
     libs = [x[2:] for x in libs.split()]
+    
     if sysconfig.get_config_var("LIBM"):
         libs += [sysconfig.get_config_var("LIBM")[2:]]
 
-    if sysconfig.get_config_var("VERSION"):
-        libs.append("python%s" % sysconfig.get_config_var("VERSION"))
+    if conf.symbolic_functions_bug and conf.static_library:
+        extra_objects.append(conf.static_library)
+    else:
+        if conf.PYTHONVERSION:
+            libs.append(conf.PYTHONVERSION)
 
 
     # --- library_dirs
@@ -166,6 +176,7 @@ def main():
         e = Extension(name, source+extra_sources,
                       libraries=libraries,
                       library_dirs=library_dirs,
+                      extra_objects=extra_objects,
                       define_macros=define_macros)
         ext_modules.append(e)
         
