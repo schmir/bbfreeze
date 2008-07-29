@@ -98,6 +98,9 @@ class EggAnalyzer(object):
     
         
     def findDistribution(self, m):
+        if isinstance(m, modulegraph.Script):
+            return None
+        
         if pkg_resources is None:
             return None
         if m.filename is None:
