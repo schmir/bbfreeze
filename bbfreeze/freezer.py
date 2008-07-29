@@ -56,6 +56,17 @@ class EggAnalyzer(object):
         self.locations = [x.location for x in list(pkg_resources.working_set)]        
         self.usable = None
 
+    def add(self, dist):
+        if dist in self.used:
+            return
+        
+        self.used.add(dist)
+        deps = pkg_resources.working_set.resolve(dist.requires())
+        for x in deps:
+            if x not in self.used:
+                print "adding %s as a dependency of %s" % (x, dist)
+                self.used.add(x)
+        
     def usableWorkingSet(self):
         pathcount = {}
         for x in pkg_resources.working_set:
@@ -79,7 +90,10 @@ class EggAnalyzer(object):
         ws = []
         for x in pkg_resources.working_set:
             if pathcount[x.location]==1 and is_good(x):
+                x._freeze_usable = True
                 ws.append(x)
+            else:
+                x._freeze_usable = False
         return ws
     
         
@@ -102,7 +116,7 @@ class EggAnalyzer(object):
                         #print "SKIP:", ns, m
                         return None
                     
-                self.used.add(dist)
+                self.add(dist)
                 return dist
 
     def report(self):
@@ -117,7 +131,16 @@ class EggAnalyzer(object):
 
     def copy(self, destdir):
         for x in self.used:
-            eggutil.copyDistribution(x, destdir)                
+            if x._freeze_usable:
+                eggutil.copyDistribution(x, destdir)
+            else:
+                try:
+                    path = x._provider.path
+                except AttributeError:
+                    print "Warning: cannot copy egg-info for", x
+                    continue
+                print "Copying egg-info of %s from %r" % (x, path)
+                shutil.copy2(path, destdir)
         
 def fullname(p):
     return os.path.join(os.path.dirname(__file__), p)
