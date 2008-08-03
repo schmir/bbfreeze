@@ -1,13 +1,13 @@
 .. -*- mode: rst; coding: utf-8 -*-
 
 ======================================================================
-bbfreeze - create standalone executables from python scripts
+bbfreeze - create stand-alone executables from python scripts
 ======================================================================
 
 
 Overview
 ======================================================================
-bbfreeze creates standalone executables from python scripts. It's
+bbfreeze creates stand-alone executables from python scripts. It's
 similar in purpose to the well known py2exe_ for windows, py2app_ for
 OS X, PyInstaller_ and cx_Freeze_ (in fact ancient versions were based
 on cx_Freeze. And it uses the modulegraph_ package, which is also used by
@@ -49,7 +49,16 @@ as it uses the zipimport feature introduced with python 2.3.
 Contact Information
 -------------------
 bbfreeze has been developed by `brainbot technologies AG`__. Questions
-and suggestions should be send to schmir@gmail.com
+and suggestions should be send to the bbfreeze-users mailing list:
+bbfreeze-users@googlegroups.com
+
+You can subscribe by sending email to
+bbfreeze-users-subscribe@googlegroups.com
+
+An archive is available at 
+http://groups.google.com/group/bbfreeze-users
+
+You can also reach the author via email to schmir@gmail.com
 
 Source
 -------------------
@@ -57,16 +66,26 @@ Windows Eggs and the source code can be downloaded from
 http://cheeseshop.python.org/pypi/bbfreeze/.
 
 http://systemexit.de/repo/bbfreeze carries a mercurial_ repository of
-the in-development version.
+the in-development version
+
+Use::
+
+  hg clone http://systemexit.de/repo/bbfreeze 
+
+to create a copy of the repository, then::
+
+  hg pull --update
+
+inside the copy to receive the latest version.
 
 
 
 Installation 
 ---------------
 You need to have setuptools/easy_install installed. Installation
-should be as easy as typing:
+should be as easy as typing::
   
-  $ easy_install bbfreeze
+  easy_install bbfreeze
 
 This should download bbfreeze and it's dependencies modulegraph and
 altgraph and install them.
@@ -159,8 +178,27 @@ bbfreeze/recipes.py if you need to implement your own. Note that the
 API might change.
 
 
-ChangeLog
+Change-Log
 ======================================================================
+2008-8-4	  release 0.96.2
+-----------------------------------------------
+- a slightly patched getpath.c from python trunk has been
+  added. This should fix sys.getfilesystemencoding() for statically
+  linked python. We also try to link with the static library in case
+  the shared one has been linked with -Bsymbolic (which makes it
+  impossible to override the necessary symbols). This happens e.g. on
+  Ubuntu 8.04.
+- __file__ in the main program now has a .py suffix. This prevents
+  garbage output from the warnings module.
+- some recipes have been added (mostly breaking some unneeded
+  dependencies).
+- explicit recipes for the email module have been added. the email
+  module isn't added as a whole.
+- the setup script now reports the configuration used.
+- bbfreeze now tracks dependencies from eggs (i.e. dependencies
+  specified in the egg's setup.py script).
+
+
 2008-3-14         release 0.96.1
 -----------------------------------------------
 - fix bug in an internal function, which determines if eggs should 
@@ -267,9 +305,14 @@ LICENSE
 bbfreeze contains a modified copy of modulegraph, which is distributed
 under the MIT license and is copyrighted by Bop Ippolito.
 
+bbfreeze contains a modified copy of getpath.c from the python
+distribution, which is distributed under the python software
+foundation license version 2 and copyrighted by the python software
+foundation.
+
 The remaining part is distributed under the zlib/libpng license:
 
-Copyright (c) 2007 brainbot technologies AG
+Copyright (c) 2007, 2008 brainbot technologies AG
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
