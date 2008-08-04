@@ -32,6 +32,30 @@ static void fatal(const char *message)
 	exit(1);
 }
 
+#ifdef WIN32
+static char *syspath = 0;
+
+static void dirname(const char *path)
+{
+	char *lastsep = strrchr(path, SEP);
+	if (lastsep==0) {
+		fatal("dirname failed.");
+	}
+	*lastsep = 0;
+}
+
+static void compute_syspath(void)
+{
+	const char *resolved_path = strdup(Py_GetProgramFullPath());
+
+	dirname(resolved_path);
+	syspath = malloc(2*strlen(resolved_path)+64);
+
+	sprintf(syspath, "%s%clibrary.zip%c%s", resolved_path, SEP, DELIM, resolved_path);
+	//fprintf(stderr, "syspath: %s\n", syspath);
+}
+#endif
+
 static int run_script(void)
 {
 	PyObject *locals;
@@ -107,10 +131,13 @@ static int loader_main(int argc, char **argv)
 	Py_SetPythonHome("");
 
 	set_program_path(argv[0]);
-
 	Py_Initialize();
 	PySys_SetArgv(argc, argv);
+#ifdef WIN32
+	compute_syspath();
+	PySys_SetPath(syspath);
+#else
 	PySys_SetPath(Py_GetPath());
-
+#endif
 	return run_script();
 }
