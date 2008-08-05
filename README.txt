@@ -180,7 +180,7 @@ API might change.
 
 Change-Log
 ======================================================================
-2008-8-4	  release 0.96.2
+2008-8-5	  release 0.96.2
 -----------------------------------------------
 - a slightly patched getpath.c from python trunk has been
   added. This should fix sys.getfilesystemencoding() for statically
