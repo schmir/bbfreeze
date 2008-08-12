@@ -122,14 +122,13 @@ def copyDistribution(distribution, destdir):
     location = distribution.location
     
     if (isinstance(distribution._provider, pkg_resources.PathMetadata)
-        and not distribution.location.lower().endswith(".egg")):
+        and not distribution.location.lower().endswith(".egg")
+        and os.path.exists(os.path.join(distribution.location, "setup.py"))):
         # this seems to be a development egg. FIXME the above test looks fragile
         cwd = os.getcwd()
         os.chdir(distribution.location)
         try:
             print distribution.location, "looks like a development egg. need to run setup.py bdist_egg"
-            if not os.path.exists("setup.py"):
-                raise RuntimeError("setup.py not found for development egg")
 
             from distutils.spawn import spawn
             import tempfile
