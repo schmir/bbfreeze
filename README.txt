@@ -180,6 +180,11 @@ API might change.
 
 Change-Log
 ======================================================================
+2008-8-18	  release 0.96.3
+-----------------------------------------------
+- fix issues with some packages, which where wrongly
+  recognized as development eggs
+
 2008-8-5	  release 0.96.2
 -----------------------------------------------
 - a slightly patched getpath.c from python trunk has been
