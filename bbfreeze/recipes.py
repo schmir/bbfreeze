@@ -77,7 +77,7 @@ def recipe_twisted_python_versions(mf):
     if not isRealModule(m):
         return None
     mf.removeReference(m, 'xml.dom.minidom')
-    
+    return True
 
 def recipe_pydoc(mf):
     m = mf.findNode('pydoc')
