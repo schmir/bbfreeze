@@ -446,6 +446,7 @@ class ModuleGraph(ObjectGraph):
                 sm = m[sub]
                 if sm is not None:
                     subs.add(sm)
+                self.createReference(caller, sm)
                 continue
 
             # See if we can load it
