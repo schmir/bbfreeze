@@ -21,6 +21,12 @@ include bbfreeze/recipes.py
 include ez_setup.py
 include setup.py
 include showvars.py
+include tests/baz/__init__.py
+include tests/baz/dom/__init__.py
+include tests/baz/dom/expatbuilder.py
+include tests/baz/parsers/__init__.py
+include tests/baz/parsers/expat.py
+include tests/bazscript.py
 include tests/ex-celementtree.py
 include tests/ex-email_mimetext.py
 include tests/ex-kinterbasdb.py

@@ -180,6 +180,11 @@ API might change.
 
 Change-Log
 ======================================================================
+2008-8-29         release 0.96.4
+-----------------------------------------------
+- record previously missing dependencies for subpackage imports. This
+  bug only showed up when dependencies where explicitly removed.
+
 2008-8-18	  release 0.96.3
 -----------------------------------------------
 - fix issues with some packages, which where wrongly
