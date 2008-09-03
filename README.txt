@@ -41,6 +41,10 @@ automatic pathname rewriting
   local path /home/jdoe/pylib/foo/bar.py. They will instead show
   foo/bar.py)
 
+distutils command 'bdist_bbfreeze'
+  A new distutils/setuptools command bdist_bbfreeze integrates
+  bbfreeze into your setup.py.
+
 bbfreeze works on windows and UNIX-like operating systems. It
 currently does not work on OS X. bbfreeze has been tested with python
 2.4 and 2.5. bbfreeze will not work with python versions prior to 2.3
@@ -136,7 +140,29 @@ Example Usage::
   $
 
    
-  
+bdist_bbfreeze - distutils command
+======================================================================
+
+bbfreeze provides a distutils command which works much like the
+'bb-freeze' command line tool, but integrates nicely into distutils
+and setuptools. It collects all 'console_scripts' 'gui_scripts'
+entry-points, generates the wrapper scripts (like easy_install would
+do) and freezes these scripts.
+
+After installing bbfreeze, every setup.py which used setuptools, has a
+new command 'bdist_bbfreeze'. To show the help message just run::
+
+  python setup.py bdist_bbfreeze --help
+
+Usage examples:
+
+  # freeze all scripts into ./dist/<egg_name>-<egg_version>/
+  python setup.py bdist_bbfreeze
+
+  # same, but use tagging for "daily build" or "snapshot" releases
+  python setup.py egg_info --tag-build=dev bdist_bbfreeze
+
+
 
 bbfreeze - API
 ======================================================================
@@ -180,6 +206,11 @@ API might change.
 
 Change-Log
 ======================================================================
+2008-09-xx         release 0.xx.xx
+-----------------------------------------------
+- added distutils command 'bdist_bbfreeze' contributed by Hartmut
+  Goebel
+
 2008-8-29         release 0.96.4
 -----------------------------------------------
 - record previously missing dependencies for subpackage imports. This
@@ -319,6 +350,14 @@ bbfreeze contains a modified copy of getpath.c from the python
 distribution, which is distributed under the python software
 foundation license version 2 and copyrighted by the python software
 foundation.
+
+bbfreeze includes a module 'bdist_bbfreeze.py' which is
+
+  Copyright 2008 by Hartmut Goebel <h.goebel@goebel-consult.de>
+
+The 'bdist_bbfreeze' module may be distributed under the same licence
+as bbfreeze itself.
+
 
 The remaining part is distributed under the zlib/libpng license:
 

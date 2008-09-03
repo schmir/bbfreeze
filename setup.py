@@ -188,7 +188,12 @@ def main():
     setup(name = "bbfreeze",
           cmdclass = dict(build_ext=BuildInterpreters),
           version = str(version),  # see execfile from above
-          entry_points = dict(console_scripts=['bb-freeze = bbfreeze:main']),
+          entry_points = {
+             "console_scripts": ['bb-freeze = bbfreeze:main'],
+             "distutils.commands": [
+                 "bdist_bbfreeze = bbfreeze.bdist_bbfreeze:bdist_bbfreeze",
+                 ],
+             },
           ext_modules = ext_modules,
           install_requires=install_requires,
           packages = ['bbfreeze', 'bbfreeze.modulegraph'],
