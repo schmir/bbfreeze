@@ -67,7 +67,7 @@ class bdist_bbfreeze(easy_install):
         # import bbfreeze only thenabout to run the command
         from bbfreeze import Freezer
 
-        # get inforamteion from egg_info
+        # get information from egg_info
         ei = self.get_finalized_command("egg_info")
         target = normalize_path(self.bdist_base)
         dist = Distribution(
@@ -79,7 +79,7 @@ class bdist_bbfreeze(easy_install):
         # install wrapper_Scripts into self.bdist_base == self.script_dir
         self.install_wrapper_scripts(dist)
 
-        # now gwet a Freezer()
+        # now get a Freezer()
         f = Freezer(os.path.join(self.dist_dir,
                                  "%s-%s" % (ei.egg_name, ei.egg_version)))
         f.include_py = self.include_py
