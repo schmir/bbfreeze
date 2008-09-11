@@ -633,6 +633,7 @@ class Freezer(object):
         if lm=='symlink':
             assert os.path.dirname(src)==os.path.dirname(dst)
             os.symlink(os.path.basename(src), dst)
+            os.chmod(dst, 0755)
         elif lm=='hardlink':
             os.link(src, dst)
             os.chmod(dst, 0755)
