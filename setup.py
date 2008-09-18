@@ -82,6 +82,18 @@ def read_long_description():
     fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), "README.txt")
     return open(fn).read()
 
+def maybe_strip(exe):
+    """strip executable"""
+    if conf.win32:
+        return
+
+    os.environ['S'] = exe
+    print "====> Running 'strip %s'" % (exe,)
+    err=os.system("strip $S")
+    if err:
+        print "strip command failed"
+
+    
 class BuildInterpreters(build_ext.build_ext):
     _patched = False
 
@@ -118,8 +130,10 @@ class BuildInterpreters(build_ext.build_ext):
                     del kwargs[x]
                 except KeyError:
                     pass
-            
-            return self.compiler.link_executable(*args, **kwargs)
+
+            retval = self.compiler.link_executable(*args, **kwargs)
+            maybe_strip(args[1])
+            return retval
             
         self.compiler.link_shared_object = hacked
 
