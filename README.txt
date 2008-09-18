@@ -206,10 +206,12 @@ API might change.
 
 Change-Log
 ======================================================================
-2008-09-xx         release 0.xx.xx
+2008-09-18         release 0.96.5
 -----------------------------------------------
 - added distutils command 'bdist_bbfreeze' contributed by Hartmut
   Goebel
+- executables are now stripped with the 'strip' command. This makes a
+  difference in file size when using a static libpython.a.
 
 2008-8-29         release 0.96.4
 -----------------------------------------------
