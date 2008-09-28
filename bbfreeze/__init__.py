@@ -1,5 +1,12 @@
+import sys
+
+from bbfreeze import macholib, modulegraph
+sys.modules['macholib'] = macholib
+sys.modules['modulegraph'] = modulegraph
+
 from bbfreeze._version import version
 from bbfreeze.freezer import Freezer
+
 
 def main():
     import sys
