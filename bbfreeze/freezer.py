@@ -524,12 +524,20 @@ class Freezer(object):
             m(x)
 
         self.outfile.close()
-        # be sure to close the file before scanning for binary dependencies
-        # otherwise ldd might not be able to do it's job ("Text file busy")
-        #self.copyBinaryDependencies()
 
+        self.finish_dist()
+        
         if os.environ.get("XREF") or os.environ.get("xref"):
             self.showxref()
+
+    def finish_dist(self):
+        if sys.platform != 'darwin':
+            return
+
+        from macholib.MachOStandalone import MachOStandalone
+        d = os.path.join(os.path.abspath(self.distdir), "")
+        m=MachOStandalone(d, d)
+        m.run(contents="@executable_path/")
         
     def _handle_ExcludedModule(self, m):
         pass
