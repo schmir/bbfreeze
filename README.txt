@@ -45,9 +45,9 @@ distutils command 'bdist_bbfreeze'
   A new distutils/setuptools command bdist_bbfreeze integrates
   bbfreeze into your setup.py.
 
-bbfreeze works on windows and UNIX-like operating systems. It
-currently does not work on OS X. bbfreeze has been tested with python
-2.4 and 2.5. bbfreeze will not work with python versions prior to 2.3
+bbfreeze works on windows and UNIX-like operating systems. Starting
+with version 0.97 OS X is also supported. bbfreeze has been tested with python
+2.4, 2.5 and 2.6. bbfreeze will not work with python versions prior to 2.3
 as it uses the zipimport feature introduced with python 2.3.
 
 Contact Information
@@ -96,7 +96,6 @@ altgraph and install them.
 
 Limitations
 ---------------
-- bbfreeze does not work on OS X
 - documentation
 
 
@@ -206,6 +205,11 @@ API might change.
 
 Change-Log
 ======================================================================
+2008-XX-XX         release 0.97.0
+-----------------------------------------------
+- OS X support has been added (using macholib to find binary
+  dependencies and rewrite mach-o headers).
+
 2008-09-18         release 0.96.5
 -----------------------------------------------
 - added distutils command 'bdist_bbfreeze' contributed by Hartmut
