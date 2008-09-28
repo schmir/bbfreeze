@@ -86,7 +86,9 @@ def maybe_strip(exe):
     """strip executable"""
     if conf.win32:
         return
-
+    if conf.darwin:
+        return
+    
     os.environ['S'] = exe
     print "====> Running 'strip %s'" % (exe,)
     err=os.system("strip $S")
