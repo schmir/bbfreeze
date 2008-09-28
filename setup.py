@@ -212,7 +212,7 @@ def main():
              },
           ext_modules = ext_modules,
           install_requires=install_requires,
-          packages = ['bbfreeze', 'bbfreeze.modulegraph'],
+          packages = ['bbfreeze', 'bbfreeze.modulegraph', 'bbfreeze.macholib'],
           zip_safe = False,
           maintainer="Ralf Schmitt",
           maintainer_email="schmir@gmail.com",
