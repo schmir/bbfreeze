@@ -193,25 +193,26 @@ def recipe_time(mf):
     return True
 
     
-def NOT_USING_recipe_pkg_resources(mf):
+def osx_recipe_pkg_resources(mf):
     m = mf.findNode('pkg_resources')
     if not isRealModule(m):
         return None
 
-    print "WARNING: replacing pkg_resources module with dummy implementation"
+    import pkg_resources
+    val = pkg_resources.get_supported_platform()
     
-
-
-    m.code = compile("""
-def require(*args, **kwargs):
-    return
-def declare_namespace(name):
-    pass
-
-""", "pkg_resources.py", "exec")
+    repl = """
+def get_supported_platform():
+    return %r
+""" % (val,)
     
+    import codehack
+    m.code = codehack.replace_functions(m.code, repl)
     return True
 
+if sys.platform=='darwin':
+    recipe_pkg_resources = osx_recipe_pkg_resources
+                  
 
 def recipe_matplotlib(mf):
     m = mf.findNode('matplotlib')
