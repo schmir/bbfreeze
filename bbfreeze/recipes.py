@@ -192,17 +192,17 @@ def recipe_time(mf):
     mf.import_hook('_strptime', m, ['*'])
     return True
 
-    
-def osx_recipe_pkg_resources(mf):
-    m = mf.findNode('pkg_resources')
+
+def recipe_distutils_util_get_platform(mf):
+    m = mf.findNode('distutils.util')
     if not isRealModule(m):
         return None
 
-    import pkg_resources
-    val = pkg_resources.get_supported_platform()
+    import distutils.util
+    val = distutils.util.get_platform()
     
     repl = """
-def get_supported_platform():
+def get_platform():
     return %r
 """ % (val,)
     
@@ -210,8 +210,6 @@ def get_supported_platform():
     m.code = codehack.replace_functions(m.code, repl)
     return True
 
-if sys.platform=='darwin':
-    recipe_pkg_resources = osx_recipe_pkg_resources
                   
 
 def recipe_matplotlib(mf):
