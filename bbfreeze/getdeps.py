@@ -73,8 +73,12 @@ if sys.platform=='win32':
 
             This implementation walks through the PE header"""
         import pefile
-        pe=pefile.PE(path, True)
-        dlls = [x.dll for x in pe.DIRECTORY_ENTRY_IMPORT]
+        try:
+            pe=pefile.PE(path, True)
+            dlls = [x.dll for x in pe.DIRECTORY_ENTRY_IMPORT]
+        except Exception, err:
+            print "WARNING: could not determine binary dependencies for %r:%s" % (path, err)
+            dlls = []
         return dlls
 
 
