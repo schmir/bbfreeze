@@ -63,7 +63,9 @@ if sys.platform=='win32':
          'WINSPOOL.DRV',
          'WS2HELP.DLL',
          'WS2_32.DLL',
-         'WSOCK32.DLL'])
+         'WSOCK32.DLL',
+         'MSVCR90.DLL',
+         ])
 
 
     def getImports(path):
