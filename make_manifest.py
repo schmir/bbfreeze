@@ -3,11 +3,10 @@
 import os
 
 def main():
-    files = [x.strip() for x in os.popen("hg manifest")]
+    files = [x.strip() for x in os.popen("git ls-files")]
     files.append("README.html")
     
     files.remove("make_manifest.py")
-    files.remove(".hgtags")
     files.remove("Makefile")
     files.remove(".hgignore")
     
