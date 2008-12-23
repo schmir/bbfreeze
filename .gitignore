@@ -1,5 +1,3 @@
-syntax: glob
-
 *.so
 *.o
 *.pyc
