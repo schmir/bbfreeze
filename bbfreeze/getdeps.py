@@ -65,6 +65,8 @@ if sys.platform=='win32':
          'WS2_32.DLL',
          'WSOCK32.DLL',
          'MSVCR90.DLL',
+         'POWRPROF.DLL',
+         'SHFOLDER.DLL',
          ])
 
 
