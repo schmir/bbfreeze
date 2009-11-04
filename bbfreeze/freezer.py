@@ -607,6 +607,8 @@ class Freezer(object):
             fn = os.path.basename(m.filename)
             if fn.endswith(".py"):
                 fn = fn[:-3]
+            elif fn.endswith(".pyw"):
+                fn = fn[:-4]
 
             exename = fn
             fn = '__main__%s__.pyc' % fn.replace(".", "_")
