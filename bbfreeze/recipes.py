@@ -154,34 +154,6 @@ def recipe_pywintypes(mf):
     mf.createReference(m, n)
     return True
 
-
-def recipe_py_magic_greenlet(mf):
-    m = mf.findNode('py')
-    if not isRealModule(m):
-        return None
-
-    pydir = os.path.dirname(m.filename)
-    gdir = os.path.join(pydir, "c-extension", "greenlet")
-    mf.path.append(gdir)
-    mf.import_hook("greenlet", m, ['*'])
-
-
-
-    gr = mf.findNode('py.magic.greenlet')
-    if gr is None or gr.filename is None:
-        return None
-
-    gr.code = compile("""
-__path__ = []    
-import sys
-mod = sys.modules[__name__]
-from greenlet import greenlet
-sys.modules[__name__] = mod
-del mod
-""", "py/magic/greenlet.py", "exec")
-    
-    return True
-
 def recipe_time(mf):
     m = mf.findNode('time')
     
