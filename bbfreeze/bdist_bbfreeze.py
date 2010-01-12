@@ -87,7 +87,7 @@ class bdist_bbfreeze(easy_install):
         # freeze each of the scripts
         for args in get_script_args(dist, wininst=wininst):
             name = args[0]
-            if name.endswith('.exe'):
+            if name.endswith('.exe') or name.endswith(".exe.manifest"):
                 # skip .exes
                 continue
             log.info('bbfreezing %s', os.path.join(self.script_dir, name))
