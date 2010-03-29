@@ -124,6 +124,11 @@ class BuildInterpreters(build_ext.build_ext):
             if '-Xlinker' in linker:
                 linker += ' -Xlinker -zmuldefs'
                 linker += ' -Xlinker --disable-new-dtags'
+            LOCALMODLIBS = sysconfig.get_config_var("LOCALMODLIBS")
+            if LOCALMODLIBS:
+                linker += " %s " % (LOCALMODLIBS, )
+                
+            
             self.compiler.set_executables(linker_exe = linker)
 
         def hacked(*args, **kwargs):
