@@ -5,11 +5,11 @@ GENFILES = README.html MANIFEST.in
 MANIFEST.in::
 	./make_manifest.py
 
-README.html: README.txt
-	rst2html.py README.txt >README.html
+README.html: README.rst
+	rst2html.py README.rst >README.html
 
 www: README.html
-	scp README.txt README.html root@systemexit.de:bbfreeze/
+	scp README.rst README.html root@systemexit.de:bbfreeze/
 
 egg:: $(GENFILES)
 	python setup.py build bdist_egg

@@ -79,7 +79,7 @@ class Conf(object):
         return "\n".join(res)
 
 def read_long_description():
-    fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), "README.txt")
+    fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), "README.rst")
     return open(fn).read()
 
 def maybe_strip(exe):
