@@ -179,7 +179,8 @@ def copyDistribution(distribution, destdir):
         data = imp.get_magic() + struct.pack("<i", mtime) + marshal.dumps(code)        
         entries.append(Entry(name=x.name+'c', read=lambda data=data: data))
 
-    if distribution.has_metadata("zip-safe"):        
+
+    if distribution.has_metadata("zip-safe") and not os.path.isdir(location):
         write_zipfile(dest, entries)
     else:
         write_directory(dest, entries)
