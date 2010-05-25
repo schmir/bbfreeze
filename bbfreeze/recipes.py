@@ -313,3 +313,21 @@ typeconv_text_unicode""".split()
     for x in mods:
         mf.import_hook("kinterbasdb."+x, m)
     return True
+
+def recipe_gevent_core(mf):
+    m = mf.findNode("gevent.core")
+    if not isRealModule(m):
+        return None
+
+    mf.import_hook("weakref", m)
+    return True
+
+def recipe_gevent_hub(mf):
+    m = mf.findNode("gevent.hub")
+    if not isRealModule(m):
+        return None
+
+    deps=mf.import_hook("greenlet", None)
+    for n in deps:
+        mf.createReference(m, n)
+    return True
