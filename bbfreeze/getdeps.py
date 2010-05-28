@@ -95,9 +95,10 @@ if sys.platform=='win32':
                 try:
                     import win32api
                 except ImportError:
-                    print "Warning: Cannot determine your Windows or System directories"
-                    print "Warning: Please add them to your PATH if .dlls are not found"
-                    print "Warning: or install starship.python.net/skippy/win32/Downloads.html"
+
+                    print "Warning: Cannot determine your Windows or System directories because pywin32 is not installed."
+                    print "Warning: Either install it from http://sourceforge.net/projects/pywin32/ or"
+                    print "Warning: add them to your PATH if .dlls are not found."
                 else:
                     sysdir = win32api.GetSystemDirectory()
                     sysdir2 = os.path.join(sysdir, '../SYSTEM')
