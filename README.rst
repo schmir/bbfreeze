@@ -45,10 +45,10 @@ distutils command 'bdist_bbfreeze'
   A new distutils/setuptools command bdist_bbfreeze integrates
   bbfreeze into your setup.py.
 
-bbfreeze works on windows and UNIX-like operating systems. Starting
-with version 0.97 OS X is also supported. bbfreeze has been tested with python
-2.4, 2.5 and 2.6. bbfreeze will not work with python versions prior to 2.3
-as it uses the zipimport feature introduced with python 2.3.
+bbfreeze works on windows and UNIX-like operating systems. bbfreeze
+has been tested with python 2.4, 2.5 and 2.6. bbfreeze will not work
+with python versions prior to 2.3 as it uses the zipimport feature
+introduced with python 2.3.
 
 Contact Information
 -------------------
@@ -69,16 +69,16 @@ Source
 Windows Eggs and the source code can be downloaded from 
 http://cheeseshop.python.org/pypi/bbfreeze/.
 
-http://systemexit.de/repo/bbfreeze carries a mercurial_ repository of
+http://github.com/schmir/bbfreeze carries a git repository of
 the in-development version
 
 Use::
 
-  hg clone http://systemexit.de/repo/bbfreeze 
+  git clone http://github.com/schmir/bbfreeze.git
 
 to create a copy of the repository, then::
 
-  hg pull --update
+  git pull
 
 inside the copy to receive the latest version.
 
@@ -96,8 +96,7 @@ altgraph and install them.
 
 Limitations
 ---------------
-- documentation
-
+- documentation is a bit sparse
 
 
 bb-freeze - command line tool
@@ -203,12 +202,29 @@ bbfreeze/recipes.py if you need to implement your own. Note that the
 API might change.
 
 
+Linux Notes
+======================================================================
+The glibc version on the system used for freezing will generally be
+the minimum glibc version required to run the binaries.
+
+gtk, gdk, pango, glib shared libraries will not be copied by the
+freezing process. Those need a rather complicated runtime system and
+copying them would probably only lead to problems.
+
+Windows Notes
+======================================================================
+binaries created with python 2.6 or 2.7 will need the Microsoft Visual
+C++ 2008 Redistributable Package (download_) installed on the target
+machine.
+
+
 Change-Log
 ======================================================================
-2008-XX-XX         release 0.97.0
+2010-08-17         release 0.97.0
 -----------------------------------------------
-- OS X support has been added (using macholib to find binary
-  dependencies and rewrite mach-o headers).
+- make it compatible with latest altgraph
+- add recipe for gevent
+- fix build on latest ubuntu
 
 2008-09-18         release 0.96.5
 -----------------------------------------------
@@ -350,7 +366,7 @@ Change-Log
 LICENSE
 ======================================================================
 bbfreeze contains a modified copy of modulegraph, which is distributed
-under the MIT license and is copyrighted by Bop Ippolito.
+under the MIT license and is copyrighted by Bob Ippolito.
 
 bbfreeze contains a modified copy of getpath.c from the python
 distribution, which is distributed under the python software
@@ -394,4 +410,4 @@ freely, subject to the following restrictions:
 .. _cx_Freeze: http://www.python.net/crew/atuining/cx_Freeze/
 .. _modulegraph: http://undefined.org/python/#modulegraph
 .. __: http://brainbot.com
-.. _mercurial: http://www.selenic.com/mercurial/wiki/
+.. _download: http://www.microsoft.com/downloads/details.aspx?familyid=9B2DA534-3E03-4391-8A4D-074B9F2BC1BF&displaylang=en
