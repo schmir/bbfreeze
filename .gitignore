@@ -7,4 +7,4 @@ bbfreeze.egg-info
 tests/dist
 dist/
 .ropeproject/
-
+build/
