@@ -16,6 +16,7 @@ import sys
 import new
 import struct
 import urllib
+from itertools import ifilter, imap
 
 from altgraph.Dot import Dot
 from altgraph.ObjectGraph import ObjectGraph
