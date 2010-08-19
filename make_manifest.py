@@ -8,7 +8,7 @@ def main():
     
     files.remove("make_manifest.py")
     files.remove("Makefile")
-    files.remove(".hgignore")
+    files.remove(".gitignore")
     
     files.sort()
 
