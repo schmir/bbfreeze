@@ -60,6 +60,30 @@ def addtcltk():
     if os.path.isdir(libtcl):
         os.environ['TCL_LIBRARY'] = libtcl
 
+def fixwin32com():
+    """setup win32com to 'genpy' in a tmp directory
+    """
+    if sys.platform!='win32':
+        return
+
+    # hide imports by using exec. bbfreeze analyzes this file.
+    exec """
+try:
+    import win32com.client
+    import win32com.gen_py
+    import win32api
+except ImportError:
+    pass
+else:
+    win32com.client.gencache.is_readonly=False
+    tmpdir = os.path.join(win32api.GetTempPath(),
+                          "frozen-genpy-%s%s" % sys.version_info[:2])
+    if not os.path.isdir(tmpdir):
+        os.makedirs(tmpdir)
+    win32com.__gen_path__ = tmpdir
+    win32com.gen_py.__path__=[tmpdir]
+"""
+
 #print "EXE:", sys.executable
 #print "SYS.PATH:", sys.path
 
@@ -73,6 +97,8 @@ try:
     import encodings
 except ImportError:
     pass
+
+fixwin32com()
 
 exe = os.path.basename(sys.argv[0])
 if exe.lower().endswith(".exe"):
