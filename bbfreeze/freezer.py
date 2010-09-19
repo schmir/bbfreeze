@@ -451,6 +451,7 @@ class Freezer(object):
         
     def findBinaryDependencies(self):
         from bbfreeze import getdeps
+        assert os.access(self.console, os.X_OK), "%r is not executable" % (self.console,)
 
         for so in getdeps.getDependencies(self.console):
             n = self.mf.createNode(SharedLibrary, os.path.basename(so))
@@ -473,15 +474,27 @@ class Freezer(object):
         
         self.addModule("encodings.*")
         self._add_loader()
+
+        if os.path.exists(self.distdir):
+            shutil.rmtree(self.distdir)
+        os.makedirs(self.distdir)
+
+        # work around easy_install which doesn't preserve the
+        # executable bit
+        if not os.access(self.console, os.X_OK):
+            xconsole = os.path.join(self.distdir, "bbfreeze-console.exe")
+            shutil.copy2(self.console, xconsole)
+            os.chmod(xconsole, 0755)
+            self.console = xconsole
+        else:
+            xconsole = None
+
         while 1:
             self.findBinaryDependencies()
             if not self._handleRecipes():
                 break
 
         
-        if os.path.exists(self.distdir):
-            shutil.rmtree(self.distdir)
-        os.makedirs(self.distdir)
         zipfilepath = os.path.join(self.distdir, "library.zip")
         self.zipfilepath = zipfilepath
         if self.linkmethod=='loader' and sys.platform=='win32':
@@ -524,6 +537,9 @@ class Freezer(object):
             m(x)
 
         self.outfile.close()
+
+        if xconsole:
+            os.unlink(xconsole)
 
         self.finish_dist()
         
