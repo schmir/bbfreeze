@@ -220,6 +220,13 @@ machine.
 
 Change-Log
 ======================================================================
+2010-10-12         release 0.97.2
+-----------------------------------------------
+- workaround console.exe not being executable.
+- switch to ez_setup.py from setuptools-0.6c11.
+- make win32com work by using a temporary directory as it's
+  __gen_path__.
+
 2010-08-19         release 0.97.1
 -----------------------------------------------
 - add missing README.rst file.
