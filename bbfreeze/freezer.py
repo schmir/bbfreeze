@@ -471,6 +471,15 @@ class Freezer(object):
     def _getRPath(self, exe):
         os.environ["S"] = exe
 
+        status, out = commands.getstatusoutput("patchelf --version")
+
+        if status == 0:
+            print out
+            status, out = commands.getstatusoutput("patchelf --print-rpath $S")
+            if status:
+                raise RuntimeError("patchelf failed: %r" % out)
+            return out.strip() or None
+
         status, out = commands.getstatusoutput("objdump -x $S")
         if status:
             print "WARNING: objdump failed: could not determine RPATH by running 'objdump -x %s'" % exe
@@ -485,14 +494,15 @@ class Freezer(object):
 
         return ""
 
-
     def _setRPath(self, exe, rpath):
         os.environ["S"] = exe
         os.environ["R"] = rpath
-        print "running 'chrpath -r '%s' %s'" % (rpath, exe)
-        status, out = commands.getstatusoutput("chrpath -r $R $S")
-        if status != 0 or "new RPATH: %s" % rpath not in out:
+        print "running 'patchelf --set-rpath '%s' %s'" % (rpath, exe)
+        status, out = commands.getstatusoutput("patchelf --set-rpath $R $S")
+        if status != 0:
             print "WARNING: failed to set RPATH for %s: %s" % (exe, out)
+        else:
+            print "RPATH adjusted successfully"
 
     def ensureRPath(self, exe):
         if sys.platform != "linux2":
@@ -508,16 +518,8 @@ class Freezer(object):
             return
 
         print "RPATH=%s" % (current_rpath,)
-        print "RPATH needs adjustment. make sure you have the chrpath executable installed."
+        print "RPATH needs adjustment. make sure you have the patchelf executable installed."
         self._setRPath(exe, expected_rpath)
-
-        current_rpath = self._getRPath(exe)
-        if current_rpath == expected_rpath:
-            print "RPATH adjusted successfully"
-        else:
-            print "RPATH=%s" % (current_rpath,)
-            print "WARNING: RPATH still wrong. make sure you have the chrpath executable installed."
-
 
     def __call__(self):
         if self.include_py:
