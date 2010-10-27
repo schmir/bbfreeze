@@ -3,6 +3,7 @@
 import sys
 import os
 import re
+import commands
 
 if sys.platform=='win32':
 
@@ -132,7 +133,7 @@ if sys.platform=='win32':
 elif sys.platform.startswith("freebsd"):
     def _getDependencies(path):
         os.environ["P"] = path
-        s=os.popen4("ldd $P")[1].read()
+        s=commands.getoutput("ldd $P")
         res = [x for x in re.compile(r"^ *.* => (.*) \(.*", re.MULTILINE).findall(s) if x]
         return res
 
@@ -142,7 +143,7 @@ elif sys.platform.startswith("freebsd"):
 elif sys.platform.startswith("linux"):
     def _getDependencies(path):
         os.environ["P"] = path
-        s=os.popen4("ldd $P")[1].read()
+        s=commands.getoutput("ldd $P")
         res = [x for x in re.compile(r"^ *.* => (.*) \(.*", re.MULTILINE).findall(s) if x]
         return res
 
