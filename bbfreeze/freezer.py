@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 import time
 import shutil
 import struct
@@ -7,6 +8,7 @@ import zipfile
 import imp
 import marshal
 import zipimport
+import commands
 
 from modulegraph import modulegraph
 modulegraph.ReplacePackage("_xmlplus", "xml")
@@ -465,8 +467,58 @@ class Freezer(object):
                     n = self.mf.createNode(SharedLibrary, os.path.basename(so))
                     n.filename = so
                     self.mf.createReference(x, n)
-                
-        
+
+    def _getRPath(self, exe):
+        os.environ["S"] = exe
+
+        status, out = commands.getstatusoutput("objdump -x $S")
+        if status:
+            print "WARNING: objdump failed: could not determine RPATH by running 'objdump -x %s'" % exe
+            return None
+
+        tmp = re.findall("[ \t]+RPATH[ \t]*(.*)", out)
+        if len(tmp) == 1:
+            return tmp[0].strip()
+
+        if len(tmp) > 1:
+            raise RuntimeError("Could not determine RPATH from objdump output: %r" % out)
+
+        return ""
+
+
+    def _setRPath(self, exe, rpath):
+        os.environ["S"] = exe
+        os.environ["R"] = rpath
+        print "running 'chrpath -r '%s' %s'" % (rpath, exe)
+        status, out = commands.getstatusoutput("chrpath -r $R $S")
+        if status != 0 or "new RPATH: %s" % rpath not in out:
+            print "WARNING: failed to set RPATH for %s: %s" % (exe, out)
+
+    def ensureRPath(self, exe):
+        if sys.platform != "linux2":
+            return
+
+        expected_rpath = "${ORIGIN}:${ORIGIN}/../lib"
+        current_rpath = self._getRPath(exe)
+        if current_rpath is None:
+            return
+
+        if current_rpath == expected_rpath:
+            print "RPATH %s is fine" % (current_rpath,)
+            return
+
+        print "RPATH=%s" % (current_rpath,)
+        print "RPATH needs adjustment. make sure you have the chrpath executable installed."
+        self._setRPath(exe, expected_rpath)
+
+        current_rpath = self._getRPath(exe)
+        if current_rpath == expected_rpath:
+            print "RPATH adjusted successfully"
+        else:
+            print "RPATH=%s" % (current_rpath,)
+            print "WARNING: RPATH still wrong. make sure you have the chrpath executable installed."
+
+
     def __call__(self):
         if self.include_py:
             pyscript = os.path.join(os.path.dirname(__file__), 'py.py')
@@ -501,7 +553,8 @@ class Freezer(object):
             pass #open(library, 'w')
         else:
             shutil.copy(self.console, zipfilepath)
-        
+            self.ensureRPath(zipfilepath)
+
         if os.path.exists(zipfilepath):
             mode = 'a'
         else:
