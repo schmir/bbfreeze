@@ -192,12 +192,18 @@ def main():
     else:
         extra_sources.append('bbfreeze/getpath.c')
 
+    if sys.platform == 'win32':
+        extra_link_args = ['/LARGEADDRESSAWARE']
+    else:
+        extra_link_args = []
+        
     ext_modules=[]
     def ext(name, source, libraries):
         e = Extension(name, source+extra_sources,
                       libraries=libraries,
                       library_dirs=library_dirs,
                       extra_objects=extra_objects,
+                      extra_link_args=extra_link_args,
                       define_macros=define_macros)
         ext_modules.append(e)
         
