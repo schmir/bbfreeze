@@ -69,12 +69,12 @@ Source
 Windows Eggs and the source code can be downloaded from 
 http://cheeseshop.python.org/pypi/bbfreeze/.
 
-http://github.com/schmir/bbfreeze carries a git repository of
+https://github.com/schmir/bbfreeze carries a git repository of
 the in-development version
 
 Use::
 
-  git clone http://github.com/schmir/bbfreeze.git
+  git clone https://github.com/schmir/bbfreeze.git
 
 to create a copy of the repository, then::
 
