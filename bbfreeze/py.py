@@ -5,6 +5,7 @@
 # (http://matplotlib.sourceforge.net/examples/interactive.py)
 
 from code import InteractiveConsole
+from code import compile_command
 import time
 try:
     # rlcompleter also depends on readline
@@ -63,9 +64,27 @@ if __name__=='__main__':
         histfile = os.path.expanduser("~/.pyhistory")
         if os.path.exists(histfile):
             readline.read_history_file(histfile)
-        
+
+    # Emulate necessary python options for pytest_xdist to work with
+    # bundled python interpreter.
+    from optparse import OptionParser
+    parser = OptionParser()
+    parser.add_option('-u', dest='cache_stdin_out', action='store_true',
+	    help='Emulate python interpreter option -u. It is ignored.')
+    parser.add_option('-c', dest='command', action='store', default=None,
+            help='Specify the command to execute.')
+    (options, args) = parser.parse_args()
+
+    import sys
+    sys.argv = [sys.argv[0]] + args
+
     try:
-        MyConsole(locals=dict()).interact()
+        # Execute python command (code) if given
+	if options.command:
+	    compiled_code = compile_command(options.command, '<string>')
+	    MyConsole(locals=dict()).runcode(compiled_code)
+	else:
+	    MyConsole(locals=dict()).interact()
     finally:
-        if readline:
-            readline.write_history_file(histfile)
+	if readline:
+	    readline.write_history_file(histfile)

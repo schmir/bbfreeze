@@ -107,7 +107,7 @@ if exe.lower().endswith(".exe"):
     
 m = __import__("__main__")
 
-if exe=='py' and len(sys.argv)>1:
+if exe=='py' and len(sys.argv)==2:
     del sys.argv[0]
     m.__dict__['__file__'] = sys.argv[0]
     exec open(sys.argv[0], 'r') in m.__dict__
