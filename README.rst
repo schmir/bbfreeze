@@ -214,7 +214,7 @@ copying them would probably only lead to problems.
 Windows Notes
 ======================================================================
 binaries created with python 2.6 or 2.7 will need the Microsoft Visual
-C++ 2008 Redistributable Package (download_) installed on the target
+C++ 2008 Redistributable Package (either the 32bit_ or the 64bit_ version) installed on the target
 machine.
 
 
@@ -421,4 +421,5 @@ freely, subject to the following restrictions:
 .. _cx_Freeze: http://www.python.net/crew/atuining/cx_Freeze/
 .. _modulegraph: http://undefined.org/python/#modulegraph
 .. __: http://brainbot.com
-.. _download: http://www.microsoft.com/downloads/details.aspx?familyid=9B2DA534-3E03-4391-8A4D-074B9F2BC1BF&displaylang=en
+.. _32bit: http://www.microsoft.com/downloads/en/details.aspx?familyid=9B2DA534-3E03-4391-8A4D-074B9F2BC1BF
+.. _64bit: http://www.microsoft.com/downloads/en/details.aspx?FamilyID=BD2A6171-E2D6-4230-B809-9A8D7548C1B6
