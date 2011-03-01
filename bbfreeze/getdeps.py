@@ -68,6 +68,7 @@ if sys.platform=='win32':
          'MSVCR90.DLL',
          'POWRPROF.DLL',
          'SHFOLDER.DLL',
+         'QUERY.DLL',
          ])
 
 
@@ -115,7 +116,7 @@ if sys.platform=='win32':
         winpath = [os.path.dirname(os.path.abspath(path))] + getWindowsPath()
         deps = set()
         for dll in dlls:
-            if dll.upper() in excludes:
+            if exclude(dll):
                 continue
 
             for x in winpath:
@@ -128,7 +129,8 @@ if sys.platform=='win32':
         return deps
 
     def exclude(fp):
-        return os.path.basename(fp).upper() in excludes
+        u = os.path.basename(fp).upper()
+        return  u in excludes or u.startswith("API-MS-WIN-")
         
 elif sys.platform.startswith("freebsd"):
     def _getDependencies(path):
