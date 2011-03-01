@@ -1,11 +1,8 @@
 #! /usr/bin/env python
 
-import sys
-import os
-import re
-import commands
+import sys, os, re, commands
 
-if sys.platform=='win32':
+if sys.platform == 'win32':
 
     # -----------------------
     ## http://mail.python.org/pipermail/python-win32/2005-June/003446.html:
@@ -31,7 +28,6 @@ if sys.platform=='win32':
     # so better exclude it
     #
     # ----> EXCLUDE SHLWAPI.DLL
-
 
     excludes = set(
         ['ADVAPI.DLL',
@@ -71,29 +67,27 @@ if sys.platform=='win32':
          'QUERY.DLL',
          ])
 
-
     def getImports(path):
         """Find the binary dependencies of PTH.
 
             This implementation walks through the PE header"""
         import pefile
         try:
-            pe=pefile.PE(path, True)
+            pe = pefile.PE(path, True)
             dlls = [x.dll for x in pe.DIRECTORY_ENTRY_IMPORT]
         except Exception, err:
             print "WARNING: could not determine binary dependencies for %r:%s" % (path, err)
             dlls = []
         return dlls
 
-
-
     _bpath = None
+
     def getWindowsPath():
         """Return the path that Windows will search for dlls."""
         global _bpath
         if _bpath is None:
             _bpath = []
-            if sys.platform=='win32':
+            if sys.platform == 'win32':
                 try:
                     import win32api
                 except ImportError:
@@ -131,25 +125,24 @@ if sys.platform=='win32':
     def exclude(fp):
         u = os.path.basename(fp).upper()
         return  u in excludes or u.startswith("API-MS-WIN-")
-        
+
 elif sys.platform.startswith("freebsd"):
     def _getDependencies(path):
         os.environ["P"] = path
-        s=commands.getoutput("ldd $P")
+        s = commands.getoutput("ldd $P")
         res = [x for x in re.compile(r"^ *.* => (.*) \(.*", re.MULTILINE).findall(s) if x]
         return res
 
     def exclude(fp):
         return bool(re.match(r"^/usr/lib/.*$", fp))
-    
+
 elif sys.platform.startswith("linux"):
     def _getDependencies(path):
         os.environ["P"] = path
-        s=commands.getoutput("ldd $P")
+        s = commands.getoutput("ldd $P")
         res = [x for x in re.compile(r"^ *.* => (.*) \(.*", re.MULTILINE).findall(s) if x]
         return res
 
-    
     def exclude(fp):
         return re.match(r"^libc\.|^librt\.|^libcrypt\.|^libm\.|^libdl\.|^libpthread\.|^libnsl\.|^libutil\.|^ld-linux\.|^ld-linux-", os.path.basename(fp))
 else:
@@ -161,8 +154,9 @@ else:
 
     def exclude(fp):
         return False
-        
+
 _cache = {}
+
 
 def getDependencies(path):
     """Get direct and indirect dependencies of executable given in path"""
@@ -179,16 +173,16 @@ def getDependencies(path):
         for p in path:
             deps.update(getDependencies(p))
         return list(deps)
-            
-    
+
     deps = normedDeps(path)
     while True:
-        newdeps = set(deps) # copy
+        newdeps = set(deps)  # copy
         for d in deps:
             newdeps.update(normedDeps(d))
         if deps == newdeps:
             return list(deps)
         deps = newdeps
+
 
 def main():
     deps = set()
@@ -196,7 +190,7 @@ def main():
     deps = list(deps)
     deps.sort()
     print "\n".join(deps)
-        
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     main()
