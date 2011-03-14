@@ -159,9 +159,15 @@ def main():
     extra_objects = []
     
     # --- libs
-    libs = sysconfig.get_config_var("LIBS") or ""
-    libs = [x[2:] for x in libs.split()]
-    
+    cfglibs = sysconfig.get_config_var("LIBS") or ""
+    libs = []
+    extra_link_args = []
+    for part in cfglibs.split():
+        if part[:2] == '-l':
+            libs.append(part[2:])
+        else:
+            extra_link_args.append(part)
+
     if sysconfig.get_config_var("LIBM"):
         libs += [sysconfig.get_config_var("LIBM")[2:]]
 
@@ -194,9 +200,7 @@ def main():
 
     if sys.platform == 'win32':
         extra_link_args = ['/LARGEADDRESSAWARE']
-    else:
-        extra_link_args = []
-        
+
     ext_modules=[]
     def ext(name, source, libraries):
         e = Extension(name, source+extra_sources,
