@@ -107,25 +107,22 @@ if exe.lower().endswith(".exe"):
 
 m = __import__("__main__")
 
-if exe == 'py' and len(sys.argv) == 2:
-    del sys.argv[0]
-    m.__dict__['__file__'] = sys.argv[0]
-    exec open(sys.argv[0], 'r') in m.__dict__
-else:
-    # add '.py' suffix to prevent garbage from the warnings module
-    m.__dict__['__file__'] = exe + '.py'
-    exe = exe.replace(".", "_")
-    importer = zipimport.zipimporter(sys.path[0])
-    while 1:
-        # if exe is a-b-c, try loading a-b-c, a-b and a
-        try:
-            code = importer.get_code("__main__%s__" % exe)
-        except zipimport.ZipImportError, err:
-            if '-' in exe:
-                exe = exe[:exe.find('-')]
-            else:
-                raise err
+# add '.py' suffix to prevent garbage from the warnings module
+m.__dict__['__file__'] = exe + '.py'
+exe = exe.replace(".", "_")
+importer = zipimport.zipimporter(sys.path[0])
+while 1:
+    # if exe is a-b-c, try loading a-b-c, a-b and a
+    try:
+        code = importer.get_code("__main__%s__" % exe)
+    except zipimport.ZipImportError, err:
+        if '-' in exe:
+            exe = exe[:exe.find('-')]
         else:
-            break
-
+            raise err
+    else:
+        break
+if exe == "py":
+    exec code
+else:
     exec code in m.__dict__

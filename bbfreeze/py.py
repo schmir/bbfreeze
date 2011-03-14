@@ -4,8 +4,64 @@
 # code inspired by matplotlib
 # (http://matplotlib.sourceforge.net/examples/interactive.py)
 
+import sys
+main = __import__("__main__")
+
+
+class error(Exception):
+    pass
+
+
+def parse_options(args, spec):
+    needarg = dict()
+
+    for x in spec.split():
+        if x.endswith("="):
+            needarg[x[:-1]] = True
+        else:
+            needarg[x] = False
+
+    opts = []
+    newargs = []
+
+    i = 0
+    while i < len(args):
+        a, v = (args[i].split("=", 1) + [None])[:2]
+        if a in needarg:
+            if v is None and needarg[a]:
+                i += 1
+                try:
+                    v = args[i]
+                except IndexError:
+                    raise error("option %s needs an argument" % (a, ))
+            opts.append((a, v))
+            if a == "-c":
+                break
+        else:
+            break
+
+        i += 1
+
+    newargs.extend(args[i:])
+    return opts, newargs
+
+opts, args = parse_options(sys.argv[1:], "-u -c=")
+opts = dict(opts)
+sys.argv = args
+if not sys.argv:
+    sys.argv.append("")
+
+if opts.get("-c") is not None:
+    exec opts.get("-c") in main.__dict__
+    sys.exit(0)
+
+if sys.argv[0]:
+    main.__dict__['__file__'] = sys.argv[0]
+    exec open(sys.argv[0], 'r') in main.__dict__
+    sys.exit(0)
+
+
 from code import InteractiveConsole
-from code import compile_command
 import time
 try:
     # rlcompleter also depends on readline
@@ -56,33 +112,14 @@ class MyConsole(InteractiveConsole):
         return InteractiveConsole.raw_input(self, prompt)
 
 
-if __name__ == '__main__':
+if readline:
+    import os
+    histfile = os.path.expanduser("~/.pyhistory")
+    if os.path.exists(histfile):
+        readline.read_history_file(histfile)
+
+try:
+    MyConsole(locals=dict()).interact()
+finally:
     if readline:
-        import os
-        histfile = os.path.expanduser("~/.pyhistory")
-        if os.path.exists(histfile):
-            readline.read_history_file(histfile)
-
-    # Emulate necessary python options for pytest_xdist to work with
-    # bundled python interpreter.
-    from optparse import OptionParser
-    parser = OptionParser()
-    parser.add_option('-u', dest='cache_stdin_out', action='store_true',
-            help='Emulate python interpreter option -u. It is ignored.')
-    parser.add_option('-c', dest='command', action='store', default=None,
-            help='Specify the command to execute.')
-    (options, args) = parser.parse_args()
-
-    import sys
-    sys.argv = [sys.argv[0]] + args
-
-    try:
-        # Execute python command (code) if given
-        if options.command:
-            compiled_code = compile_command(options.command, '<string>')
-            MyConsole(locals=dict()).runcode(compiled_code)
-        else:
-            MyConsole(locals=dict()).interact()
-    finally:
-        if readline:
-            readline.write_history_file(histfile)
+        readline.write_history_file(histfile)
