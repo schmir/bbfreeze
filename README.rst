@@ -220,6 +220,15 @@ machine.
 
 Change-Log
 ======================================================================
+2011-03-15         release 0.97.3
+-----------------------------------------------
+- exclude ms-win-api-* and query.dll.
+- make py parse minimal set of options required to run py.test on the
+  frozen executable.
+- link with /LARGEADDRESSAWARE on win32
+- ensure RPATH of application loader has the right value. try to fix
+  it with patchelf if not.
+
 2010-10-12         release 0.97.2
 -----------------------------------------------
 - workaround console.exe not being executable.
