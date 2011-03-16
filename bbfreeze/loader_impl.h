@@ -128,6 +128,10 @@ static int loader_main(int argc, char **argv)
 	Py_NoSiteFlag = 1;
 	Py_FrozenFlag = 1;
 	Py_IgnoreEnvironmentFlag = 1;
+#if PY_VERSION_HEX >= 0x02060000
+	Py_DontWriteBytecodeFlag = 1;
+	Py_NoUserSiteDirectory = 1;
+#endif
 	Py_SetPythonHome("");
 
 	set_program_path(argv[0]);
