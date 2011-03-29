@@ -70,7 +70,12 @@ class EggAnalyzer(object):
                 self.used.add(x)
         
     def usableWorkingSet(self):
+        from distutils.sysconfig import get_python_lib as gl
         pathcount = {}
+        for lib in [gl(0, 0), gl(0, 1), gl(1, 0), gl(1, 1)]:
+            pathcount[lib] = 2
+            pathcount[os.path.realpath(lib)] = 2  # handle symlinks!
+
         for x in pkg_resources.working_set:
             try:
                 pathcount[x.location]+=1
