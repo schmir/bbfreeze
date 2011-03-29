@@ -625,7 +625,12 @@ class Freezer(object):
         pass
     def _handle_AliasNode(self, m):
         pass
-    
+
+    def _handle_NamespaceModule(self, m):
+        fn = "%s/__init__.py" % (m.identifier.replace(".", "/"),)
+        code = compile("", fn, "exec")
+        self._writecode(fn+"c", time.time(), code)
+
     def _handle_Extension(self, m):
         name = m.identifier
 

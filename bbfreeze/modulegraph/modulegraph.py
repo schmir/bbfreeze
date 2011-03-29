@@ -158,6 +158,9 @@ class FlatPackage(BaseModule):
 class Extension(BaseModule):
     pass
 
+class NamespaceModule(BaseModule):
+    pass
+
 class ModuleGraph(ObjectGraph):
     def __init__(self, path=None, excludes=(), replace_paths=(), implies=(), graph=None, debug=0):
         super(ModuleGraph, self).__init__(graph=graph, debug=debug)
@@ -397,6 +400,7 @@ class ModuleGraph(ObjectGraph):
 
     def load_module(self, fqname, fp, pathname, (suffix, mode, typ)):
         self.msgin(2, "load_module", fqname, fp and "fp", pathname)
+        packagepath = None
         if typ == imp.PKG_DIRECTORY:
             m = self.load_package(fqname, pathname)
             self.msgout(2, "load_module ->", m)
@@ -414,6 +418,10 @@ class ModuleGraph(ObjectGraph):
         elif typ == imp.C_BUILTIN:
             cls = BuiltinModule
             co = None
+        elif typ == NamespaceModule:
+            cls = NamespaceModule
+            co = None
+            packagepath = sys.modules[fqname].__path__
         else:
             cls = Extension
             co = None
@@ -424,6 +432,8 @@ class ModuleGraph(ObjectGraph):
                 co = self.replace_paths_in_code(co)
             m.code = co
             self.scan_code(co, m)
+        if packagepath is not None:
+            m.packagepath = packagepath
         self.msgout(2, "load_module ->", m)
         return m
 
@@ -617,7 +627,15 @@ class ModuleGraph(ObjectGraph):
 
             path = self.path
 
-        fp, buf, stuff = imp.find_module(name, path)
+        try:
+            fp, buf, stuff = imp.find_module(name, path)
+        except ImportError:
+            # pip installed namespace packages without a __init__
+            m = sys.modules.get(fullname)
+            if m is None or getattr(m, "__file__", None) or not getattr(m, "__path__", None):
+                raise
+            return (None, None, ("", "", NamespaceModule))
+
         if buf:
             buf = os.path.realpath(buf)
         return (fp, buf, stuff)
