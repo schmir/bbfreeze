@@ -220,7 +220,7 @@ machine.
 
 Change-Log
 ======================================================================
-2011-03-15         release 0.97.3
+2011-04-12         release 0.97.3
 -----------------------------------------------
 - exclude ms-win-api-* and query.dll.
 - make py parse minimal set of options required to run py.test on the
@@ -228,6 +228,9 @@ Change-Log
 - link with /LARGEADDRESSAWARE on win32
 - ensure RPATH of application loader has the right value. try to fix
   it with patchelf if not.
+- set dont_write_bytecode and no_user_site flags if they are
+  available.
+- handle pip installed namespace packages
 
 2010-10-12         release 0.97.2
 -----------------------------------------------
