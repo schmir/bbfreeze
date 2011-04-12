@@ -152,7 +152,7 @@ new command 'bdist_bbfreeze'. To show the help message just run::
 
   python setup.py bdist_bbfreeze --help
 
-Usage examples:
+Usage examples::
 
   # freeze all scripts into ./dist/<egg_name>-<egg_version>/
   python setup.py bdist_bbfreeze
