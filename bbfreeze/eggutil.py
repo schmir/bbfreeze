@@ -136,7 +136,7 @@ def copyDistribution(distribution, destdir):
             import shutil
             tmp = tempfile.mkdtemp()
             atexit.register(shutil.rmtree, tmp)
-            cmd = [sys.executable, "setup.py", "-q", "bdist_egg", "--dist", tmp]
+            cmd = [sys.executable, "-c", "from bbfreeze import ensure_setuptools; ensure_setuptools.main()", "setup.py", "-q", "bdist_egg", "--dist", tmp]
             print "running %r in %r" % (" ".join(cmd), os.getcwd())
             spawn(cmd)
             print "====> setup.py bdist_egg finished in", os.getcwd()
