@@ -1,5 +1,6 @@
 """bytecode manipulation"""
 
+
 def replace_functions(co, repl):
     """replace the functions in the code object co with those from repl.
        repl can either be a code object or a source code string.
@@ -7,16 +8,16 @@ def replace_functions(co, repl):
     """
     import new
     if isinstance(repl, basestring):
-        repl=compile(repl, co.co_name, "exec")
+        repl = compile(repl, co.co_name, "exec")
 
     name2repl = {}
     for c in repl.co_consts:
         if isinstance(c, type(repl)):
             name2repl[c.co_name] = c
-            
+
     consts = list(co.co_consts)
     for i in range(len(consts)):
-        c=consts[i]
+        c = consts[i]
         if isinstance(c, type(repl)):
             if c.co_name in name2repl:
                 consts[i] = name2repl[c.co_name]

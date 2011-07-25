@@ -8,13 +8,14 @@ __copyright__ = "Copyright 2008 by Hartmut Goebel <h.goebel@goebel-consult.de>"
 __licence__ = "Same as bbfreeze"
 __version__ = "0.1"
 
-import os, sys
+import os
 
 from distutils.util import get_platform
 from distutils import log
 
 from setuptools.command.easy_install import easy_install, get_script_args
 from pkg_resources import Distribution, PathMetadata, normalize_path
+
 
 class bdist_bbfreeze(easy_install):
     # this is a bit hackish: we inherit from easy_install,
@@ -62,7 +63,6 @@ class bdist_bbfreeze(easy_install):
         if self.dist_dir is None:
             self.dist_dir = "dist"
 
-
     def run(self, wininst=False):
         # import bbfreeze only thenabout to run the command
         from bbfreeze import Freezer
@@ -73,8 +73,7 @@ class bdist_bbfreeze(easy_install):
         dist = Distribution(
             target,
             PathMetadata(target, os.path.abspath(ei.egg_info)),
-            project_name = ei.egg_name
-        )
+            project_name=ei.egg_name)
 
         # install wrapper_Scripts into self.bdist_base == self.script_dir
         self.install_wrapper_scripts(dist)

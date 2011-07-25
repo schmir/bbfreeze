@@ -39,8 +39,6 @@ else:
     for p in xml.__path__:
         modulegraph.AddPackagePath("xml", p)
 
-
-
 from bbfreeze import recipes, eggutil
 
 try:
@@ -48,27 +46,28 @@ try:
 except ImportError:
     pkg_resources = None
 
+
 class EggAnalyzer(object):
     def __init__(self):
         self.used = set()
-        
+
         if pkg_resources is None:
             return
-        
-        self.locations = [x.location for x in list(pkg_resources.working_set)]        
+
+        self.locations = [x.location for x in list(pkg_resources.working_set)]
         self.usable = None
 
     def add(self, dist):
         if dist in self.used:
             return
-        
+
         self.used.add(dist)
         deps = pkg_resources.working_set.resolve(dist.requires())
         for x in deps:
             if x not in self.used:
                 print "adding %s as a dependency of %s" % (x, dist)
                 self.used.add(x)
-        
+
     def usableWorkingSet(self):
         from distutils.sysconfig import get_python_lib as gl
         pathcount = {}
@@ -78,43 +77,42 @@ class EggAnalyzer(object):
 
         for x in pkg_resources.working_set:
             try:
-                pathcount[x.location]+=1
+                pathcount[x.location] += 1
             except KeyError:
-                pathcount[x.location]=1
+                pathcount[x.location] = 1
 
         def is_good(dist):
-            if dist.project_name=="bbfreeze":
+            if dist.project_name == "bbfreeze":
                 return False
-            
+
             if not dist.has_metadata("top_level.txt"):
                 return False
-            
-            if type(dist._provider)==pkg_resources.FileMetadata: # no real egg
+
+            if type(dist._provider) == pkg_resources.FileMetadata:  # no real egg
                 return False
 
             return True
-        
+
         ws = []
         for x in pkg_resources.working_set:
-            if pathcount[x.location]==1 and is_good(x):
+            if pathcount[x.location] == 1 and is_good(x):
                 x._freeze_usable = True
                 ws.append(x)
             else:
                 x._freeze_usable = False
         return ws
-    
-        
+
     def findDistribution(self, m):
         if isinstance(m, modulegraph.Script):
             return None
-        
+
         if pkg_resources is None:
             return None
         if m.filename is None:
             return None
         if self.usable is None:
             self.usable = self.usableWorkingSet()
-            
+
         fn = m.filename
         for dist in self.usable:
             if fn.startswith(dist.location):
@@ -125,7 +123,7 @@ class EggAnalyzer(object):
                     if isinstance(m, modulegraph.Package) and m.identifier in ns:
                         #print "SKIP:", ns, m
                         return None
-                    
+
                 self.add(dist)
                 return dist
 
@@ -133,11 +131,11 @@ class EggAnalyzer(object):
         tmp = [(x.project_name, x) for x in self.used]
         tmp.sort()
         if tmp:
-            print "="*50
+            print "=" * 50
             print "The following eggs are being used:"
             for x in tmp:
                 print repr(x[1])
-            print "="*50
+            print "=" * 50
 
     def copy(self, destdir):
         for x in self.used:
@@ -151,11 +149,13 @@ class EggAnalyzer(object):
                     continue
                 print "Copying egg-info of %s from %r" % (x, path)
                 shutil.copy2(path, destdir)
-        
+
+
 def fullname(p):
     return os.path.join(os.path.dirname(__file__), p)
 
-def getRecipes():    
+
+def getRecipes():
     res = []
     for x in dir(recipes):
         if x.startswith("recipe_"):
@@ -165,17 +165,20 @@ def getRecipes():
 
     return res
 
+
 class SharedLibrary(modulegraph.Node):
     def __init__(self, identifier):
         self.graphident = identifier
         self.identifier = identifier
-        self.filename = None        
+        self.filename = None
+
 
 class Executable(modulegraph.Node):
     def __init__(self, identifier):
         self.graphident = identifier
         self.identifier = identifier
-        self.filename = None        
+        self.filename = None
+
 
 class CopyTree(modulegraph.Node):
     def __init__(self, identifier, dest):
@@ -183,47 +186,46 @@ class CopyTree(modulegraph.Node):
         self.identifier = identifier
         self.filename = identifier
         self.dest = dest
-        
+
+
 class ZipModule(modulegraph.BaseModule):
     pass
+
 
 class MyModuleGraph(modulegraph.ModuleGraph):
     def _find_single_path(self, name, p, parent=None):
         """find module or zip module in directory or zipfile p"""
         if parent is not None:
             # assert path is not None
-            fullname = parent.identifier+'.'+name
+            fullname = parent.identifier + '.' + name
         else:
             fullname = name
 
-        try:    
+        try:
             return modulegraph.ModuleGraph.find_module(self, name, [p], parent)
         except ImportError, err:
             pass
 
         if not os.path.isfile(p):
             raise err
-        
+
         zi = zipimport.zipimporter(p)
         m = zi.find_module(fullname.replace(".", "/"))
         if m:
             code = zi.get_code(fullname.replace(".", "/"))
             return zi, p, ('', '', 314)
         raise err
-        
 
     def copyTree(self, source, dest, parent):
-        n=self.createNode(CopyTree, source, dest)
+        n = self.createNode(CopyTree, source, dest)
         self.createReference(parent, n)
-        
-        
-        
+
     def find_module(self, name, path, parent=None):
         paths_seen = set()
-        
+
         if parent is not None:
             # assert path is not None
-            fullname = parent.identifier+'.'+name
+            fullname = parent.identifier + '.' + name
         else:
             fullname = name
 
@@ -233,14 +235,14 @@ class MyModuleGraph(modulegraph.ModuleGraph):
             path = self.path
 
         found = []
+
         def append_if_uniq(r):
             for t in found:
-                if r[1]==t[1]:
+                if r[1] == t[1]:
                     return
             found.append(r)
 
-
-        for p in path:            
+        for p in path:
             try:
                 p = os.path.normcase(os.path.normpath(os.path.abspath(p)))
                 if p in paths_seen:
@@ -259,7 +261,7 @@ class MyModuleGraph(modulegraph.ModuleGraph):
             except ImportError, err:
                 pass
 
-        if len(found)>1:
+        if len(found) > 1:
             print "WARNING: found %s in multiple directories. Assuming it's a namespace package. (found in %s)" % (
                 fullname, ", ".join(x[1] for x in found))
             for x in found[1:]:
@@ -269,23 +271,21 @@ class MyModuleGraph(modulegraph.ModuleGraph):
             return found[0]
 
         raise err
-    
-    
+
     def load_module(self, fqname, fp, pathname, (suffix, mode, typ)):
-        if typ==314:
+        if typ == 314:
             m = self.createNode(ZipModule, fqname)
-            code=fp.get_code(fqname.replace(".", "/"))
+            code = fp.get_code(fqname.replace(".", "/"))
             m.filename = fp.archive
             m.packagepath = [fp.archive]
             m.code = code
             m.is_package = fp.is_package(fqname.replace(".", "/"))
-            
+
             self.scan_code(m.code, m)
             return m
         else:
             return modulegraph.ModuleGraph.load_module(self, fqname, fp, pathname, (suffix, mode, typ))
-        
-            
+
 
 def replace_paths_in_code(co, newname):
     import new
@@ -331,22 +331,25 @@ if not found:
     del sys.modules[__name__]
     raise ImportError, "No module named %%s" %% __name__
 """
+
+
 def get_implies():
     implies = {
-        "wxPython.wx":  modulegraph.Alias('wx'),
+        "wxPython.wx": modulegraph.Alias('wx'),
         }
 
     try:
         from email import _LOWERNAMES, _MIMENAMES
     except ImportError:
         return implies
-    
+
     for x in _LOWERNAMES:
-        implies['email.'+x] = modulegraph.Alias('email.'+x.lower())
+        implies['email.' + x] = modulegraph.Alias('email.' + x.lower())
     for x in _MIMENAMES:
-        implies['email.MIME'+x] = modulegraph.Alias('email.mime.'+x.lower())
-        
+        implies['email.MIME' + x] = modulegraph.Alias('email.mime.' + x.lower())
+
     return implies
+
 
 class Freezer(object):
     use_compression = True
@@ -356,30 +359,29 @@ class Freezer(object):
     def __init__(self, distdir="dist", includes=(), excludes=()):
         self.distdir = os.path.abspath(distdir)
         self._recipes = None
-        
+
         self.mf = MyModuleGraph(excludes=excludes, implies=self.implies, debug=0)
 
         # workaround for virtualenv's distutils monkeypatching
         import distutils
         self.mf.load_package("distutils", distutils.__path__[0])
 
-
         self._loaderNode = None
-        if sys.platform=='win32':
+        if sys.platform == 'win32':
             self.linkmethod = 'loader'
         else:
             self.linkmethod = 'hardlink'
 
         self.console = fullname("console.exe")
-        if sys.platform=='win32':
+        if sys.platform == 'win32':
             self.consolew = fullname("consolew.exe")
-        
+
         self._have_console = False
         self.binaries = []
 
         for x in includes:
             self.addModule(x)
-            
+
     def _get_mtime(self, fn):
         if fn and os.path.exists(fn):
             mtime = os.stat(fn).st_mtime
@@ -388,7 +390,7 @@ class Freezer(object):
         return mtime
 
     def _entry_script(self, path):
-        f=open(path, 'r')
+        f = open(path, 'r')
         lines = [f.readline(), f.readline()]
         del f
         eicomment = "# EASY-INSTALL-ENTRY-SCRIPT: "
@@ -397,12 +399,11 @@ class Freezer(object):
                 values = [x.strip("'\"") for x in line[len(eicomment):].strip().split(",")]
                 print path, "is an easy install entry script. running pkg_resources.require(%r)" % (values[0],)
                 pkg_resources.require(values[0])
-                ep=pkg_resources.get_entry_info(*values)
+                ep = pkg_resources.get_entry_info(*values)
                 print "entry point is", ep
-                return ep.module_name                
-        return None        
-            
-        
+                return ep.module_name
+        return None
+
     def addScript(self, path, gui_only=False):
         dp = os.path.dirname(os.path.abspath(path))
         self.mf.path.insert(0, dp)
@@ -412,22 +413,21 @@ class Freezer(object):
         del self.mf.path[0]
         if ep_module_name:
             self.mf.import_hook(ep_module_name, s)
-        
+
     def addModule(self, name):
         if name.endswith(".*"):
             self.mf.import_hook(name[:-2], fromlist="*")
         else:
             if name not in sys.builtin_module_names:
                 self.mf.import_hook(name)
-                                
 
     def _add_loader(self):
         if self._loaderNode is not None:
             return
         loader = fullname("load_console.py")
         assert os.path.exists(loader)
-        
-        m=self.mf.run_script(loader)
+
+        m = self.mf.run_script(loader)
         self._loaderNode = m
 
     def _handleRecipes(self):
@@ -439,12 +439,12 @@ class Freezer(object):
             if x(self.mf):
                 print "*** applied", x
                 self._recipes.remove(x)
-                numApplied+=1
+                numApplied += 1
         return numApplied
-    
+
     def _handle_CopyTree(self, n):
         shutil.copytree(n.filename, os.path.join(self.distdir, n.dest))
-        
+
     def addExecutable(self, exe):
         from bbfreeze import getdeps
         e = self.mf.createNode(Executable, os.path.basename(exe))
@@ -455,7 +455,7 @@ class Freezer(object):
             n = self.mf.createNode(SharedLibrary, os.path.basename(so))
             n.filename = so
             self.mf.createReference(e, n)
-        
+
     def findBinaryDependencies(self):
         from bbfreeze import getdeps
         assert os.access(self.console, os.X_OK), "%r is not executable" % (self.console,)
@@ -464,7 +464,6 @@ class Freezer(object):
             n = self.mf.createNode(SharedLibrary, os.path.basename(so))
             n.filename = so
             self.mf.createReference(self.mf, n)
-        
 
         for x in list(self.mf.flatten()):
             if isinstance(x, modulegraph.Extension):
@@ -530,7 +529,7 @@ class Freezer(object):
         if self.include_py:
             pyscript = os.path.join(os.path.dirname(__file__), 'py.py')
             self.addScript(pyscript)
-        
+
         self.addModule("encodings.*")
         self._add_loader()
 
@@ -553,11 +552,10 @@ class Freezer(object):
             if not self._handleRecipes():
                 break
 
-        
         zipfilepath = os.path.join(self.distdir, "library.zip")
         self.zipfilepath = zipfilepath
-        if self.linkmethod=='loader' and sys.platform=='win32':
-            pass #open(library, 'w')
+        if self.linkmethod == 'loader' and sys.platform == 'win32':
+            pass  # open(library, 'w')
         else:
             shutil.copy(self.console, zipfilepath)
             self.ensureRPath(zipfilepath)
@@ -566,9 +564,9 @@ class Freezer(object):
             mode = 'a'
         else:
             mode = 'w'
-        
+
         self.outfile = zipfile.PyZipFile(zipfilepath, mode, zipfile.ZIP_DEFLATED)
-        
+
         mods = [(x.identifier, x) for x in self.mf.flatten()]
         mods.sort()
         mods = [x[1] for x in mods]
@@ -584,13 +582,13 @@ class Freezer(object):
             dist = analyzer.findDistribution(x)
             if not dist:
                 use_mods.append(x)
-                
+
         analyzer.report()
         analyzer.copy(self.distdir)
-        
-        for x in use_mods:               
+
+        for x in use_mods:
             try:
-                m = getattr(self, "_handle_"+x.__class__.__name__)
+                m = getattr(self, "_handle_" + x.__class__.__name__)
             except AttributeError:
                 print "WARNING: dont know how to handle", x
                 continue
@@ -602,7 +600,7 @@ class Freezer(object):
             os.unlink(xconsole)
 
         self.finish_dist()
-        
+
         if os.environ.get("XREF") or os.environ.get("xref"):
             self.showxref()
 
@@ -612,24 +610,25 @@ class Freezer(object):
 
         from macholib.MachOStandalone import MachOStandalone
         d = os.path.join(os.path.abspath(self.distdir), "")
-        m=MachOStandalone(d, d)
+        m = MachOStandalone(d, d)
         m.run(contents="@executable_path/")
-        
+
     def _handle_ExcludedModule(self, m):
         pass
-    
+
     def _handle_MissingModule(self, m):
         pass
-    
+
     def _handle_BuiltinModule(self, m):
         pass
+
     def _handle_AliasNode(self, m):
         pass
 
     def _handle_NamespaceModule(self, m):
         fn = "%s/__init__.py" % (m.identifier.replace(".", "/"),)
         code = compile("", fn, "exec")
-        self._writecode(fn+"c", time.time(), code)
+        self._writecode(fn + "c", time.time(), code)
 
     def _handle_Extension(self, m):
         name = m.identifier
@@ -637,31 +636,29 @@ class Freezer(object):
         basefilename = os.path.basename(m.filename)
         base, ext = os.path.splitext(basefilename)
         # fedora has zlibmodule.so, timemodule.so,...
-        if base not in [name,  name+"module"]:
-            code = compile(EXTENSION_LOADER_SOURCE % (name+ext),
+        if base not in [name, name + "module"]:
+            code = compile(EXTENSION_LOADER_SOURCE % (name + ext),
                            "ExtensionLoader.py", "exec")
-            fn = name.replace(".", "/")+".pyc"
+            fn = name.replace(".", "/") + ".pyc"
             self._writecode(fn, time.time(), code)
 
-        dst = os.path.join(self.distdir, name+ext)
+        dst = os.path.join(self.distdir, name + ext)
         shutil.copy2(m.filename, dst)
         os.chmod(dst, 0755)
         # when searching for DLL's the location matters, so don't
         # add the destination file, but rather the source file
-        self.binaries.append(m.filename) 
+        self.binaries.append(m.filename)
         self.stripBinary(dst)
-        
+
     def _handle_Package(self, m):
-        fn = m.identifier.replace(".", "/")+"/__init__.pyc"
-        mtime = self._get_mtime(m.filename)        
-        self._writecode(fn, mtime, m.code)
-        
-            
-    def _handle_SourceModule(self, m):
-        fn = m.identifier.replace(".", "/")+'.pyc'
+        fn = m.identifier.replace(".", "/") + "/__init__.pyc"
         mtime = self._get_mtime(m.filename)
         self._writecode(fn, mtime, m.code)
-        
+
+    def _handle_SourceModule(self, m):
+        fn = m.identifier.replace(".", "/") + '.pyc'
+        mtime = self._get_mtime(m.filename)
+        self._writecode(fn, mtime, m.code)
 
     def _handle_ZipModule(self, m):
         fn = m.identifier.replace(".", "/")
@@ -669,16 +666,15 @@ class Freezer(object):
             fn += "/__init__"
         fn += ".pyc"
         mtime = self._get_mtime(m.filename)
-        
+
         self._writecode(fn, mtime, m.code)
-        
-                        
+
     def _handle_CompiledModule(self, m):
-        fn = m.identifier.replace(".", "/")+'.pyc'
+        fn = m.identifier.replace(".", "/") + '.pyc'
         print "WARNING: using .pyc file %r for which no source file could be found." % (fn,)
         mtime = self._get_mtime(m.filename)
         self._writecode(fn, mtime, m.code)
-        
+
     def _handle_Script(self, m):
         exename = None
         mtime = self._get_mtime(m.filename)
@@ -693,16 +689,15 @@ class Freezer(object):
 
             exename = fn
             fn = '__main__%s__.pyc' % fn.replace(".", "_")
-                
+
         self._writecode(fn, mtime, m.code)
         if exename:
-            if sys.platform=='win32':
-                exename+='.exe'
+            if sys.platform == 'win32':
+                exename += '.exe'
             gui_only = getattr(m, 'gui_only', False)
-            
+
             self.link(self.zipfilepath, os.path.join(self.distdir, exename), gui_only=gui_only)
-                
-        
+
     def _writecode(self, fn, mtime, code):
         code = replace_paths_in_code(code, fn)
         ziptime = time.localtime(mtime)[:6]
@@ -716,20 +711,20 @@ class Freezer(object):
         if not self._have_console:
             self.binaries.append(dst)
             self._have_console = True
-        
+
         if os.path.exists(dst) or os.path.islink(dst):
             os.unlink(dst)
 
         lm = self.linkmethod
-        if lm=='symlink':
-            assert os.path.dirname(src)==os.path.dirname(dst)
+        if lm == 'symlink':
+            assert os.path.dirname(src) == os.path.dirname(dst)
             os.symlink(os.path.basename(src), dst)
             os.chmod(dst, 0755)
-        elif lm=='hardlink':
+        elif lm == 'hardlink':
             os.link(src, dst)
             os.chmod(dst, 0755)
-        elif lm=='loader':
-            if gui_only and sys.platform=='win32':
+        elif lm == 'loader':
+            if gui_only and sys.platform == 'win32':
                 shutil.copy2(self.consolew, dst)
             else:
                 shutil.copy2(self.console, dst)
@@ -738,7 +733,7 @@ class Freezer(object):
             raise RuntimeError("linkmethod %r not supported" % (self.linkmethod,))
 
     def stripBinary(self, p):
-        if sys.platform=='win32' or sys.platform=='darwin':
+        if sys.platform == 'win32' or sys.platform == 'darwin':
             return
         os.environ['S'] = p
         os.system('strip $S')
@@ -754,25 +749,23 @@ class Freezer(object):
         shutil.copy2(m.filename, dst)
         os.chmod(dst, 0755)
         self.stripBinary(dst)
-        
-        
+
     def showxref(self):
         import tempfile
-        
+
         fd, htmlfile = tempfile.mkstemp(".html")
         ofi = open(htmlfile, "w")
         os.close(fd)
 
-        self.mf.create_xref(ofi)        
+        self.mf.create_xref(ofi)
         ofi.close()
-        
+
         import webbrowser
         try:
-            webbrowser.open("file://"+htmlfile)
+            webbrowser.open("file://" + htmlfile)
         except webbrowser.Error:
             # sometimes there is no browser (e.g. in chroot environments)
             pass
         # how long does it take to start the browser?
         import threading
         threading.Timer(5, os.remove, args=[htmlfile])
-        

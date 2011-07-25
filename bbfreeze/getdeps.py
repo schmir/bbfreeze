@@ -127,6 +127,7 @@ if sys.platform == 'win32':
         return  u in excludes or u.startswith("API-MS-WIN-")
 
 elif sys.platform.startswith("freebsd"):
+
     def _getDependencies(path):
         os.environ["P"] = path
         s = commands.getoutput("ldd $P")
@@ -137,6 +138,7 @@ elif sys.platform.startswith("freebsd"):
         return bool(re.match(r"^/usr/lib/.*$", fp))
 
 elif sys.platform.startswith("linux"):
+
     def _getDependencies(path):
         os.environ["P"] = path
         s = commands.getoutput("ldd $P")
