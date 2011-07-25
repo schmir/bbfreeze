@@ -8,6 +8,38 @@ def isRealModule(m):
     else:
         return True
 
+
+def include_whole_package(name, skip=lambda x: False):
+    def recipe(mf):
+        m = mf.findNode(name)
+        if not isRealModule(m):
+            return None
+
+        from bbfreeze.freezer import ZipModule
+        if isinstance(m, ZipModule):
+            return None
+
+        top = os.path.dirname(m.filename)
+        prefixlen = len(os.path.dirname(top))+1
+        for root, dirs, files in os.walk(top):
+            pkgname = root[prefixlen:].replace(os.path.sep, ".")
+            for f in files:
+                if not f.endswith(".py"):
+                    continue
+
+                if f == "__init__.py":
+                    modname = pkgname
+                else:
+                    modname = "%s.%s" % (pkgname, f[:-3])
+
+                if not skip(modname):
+                    mf.import_hook(modname, m, ['*'])
+        return True
+
+    recipe.__name__ = "recipe_"+name
+    return recipe
+
+
 def find_all_packages(name, skip=lambda x: False):
     def recipe(mf):
         m = mf.findNode(name)
@@ -31,7 +63,7 @@ def find_all_packages(name, skip=lambda x: False):
 
 recipe_flup = find_all_packages('flup')
 recipe_django = find_all_packages('django')
-recipe_py = find_all_packages("py", skip=lambda x: x.startswith("py.test.tkinter"))
+recipe_py = include_whole_package("py", skip=lambda x: x.startswith("py.test.tkinter"))
 recipe_IPython = find_all_packages("IPython")
 
 def recipe_django_core_management(mf):
