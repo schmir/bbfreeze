@@ -509,7 +509,7 @@ class Freezer(object):
             print "RPATH adjusted successfully"
 
     def ensureRPath(self, exe):
-        if sys.platform != "linux2":
+        if sys.platform not in ("linux2", "linux3"):
             return
 
         expected_rpath = "${ORIGIN}:${ORIGIN}/../lib"
