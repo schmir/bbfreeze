@@ -36,6 +36,7 @@ include bbfreeze/modulegraph/util.py
 include bbfreeze/py.py
 include bbfreeze/recipes.py
 include ez_setup.py
+include setup.cfg
 include setup.py
 include showvars.py
 include tests/baz/__init__.py
