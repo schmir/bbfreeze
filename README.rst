@@ -46,9 +46,8 @@ distutils command 'bdist_bbfreeze'
   bbfreeze into your setup.py.
 
 bbfreeze works on windows and UNIX-like operating systems. bbfreeze
-has been tested with python 2.4, 2.5 and 2.6. bbfreeze will not work
-with python versions prior to 2.3 as it uses the zipimport feature
-introduced with python 2.3.
+has been tested with python 2.4, 2.5, 2.6 and 2.7 bbfreeze will not
+work with python 3 or higher.
 
 Contact Information
 -------------------
@@ -62,7 +61,7 @@ bbfreeze-users-subscribe@googlegroups.com
 An archive is available at 
 http://groups.google.com/group/bbfreeze-users
 
-You can also reach the author via email to schmir@gmail.com
+You can also reach the author via email to ralf@systemexit.de
 
 Source
 -------------------

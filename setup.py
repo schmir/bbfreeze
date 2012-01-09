@@ -233,11 +233,23 @@ def main():
           packages=['bbfreeze', 'bbfreeze.modulegraph'],
           zip_safe=False,
           maintainer="Ralf Schmitt",
-          maintainer_email="schmir@gmail.com",
-          url="http://cheeseshop.python.org/pypi/bbfreeze/",
+          maintainer_email="ralf@systemexit.de",
+          url="http://pypi.python.org/pypi/bbfreeze/",
           description="create standalone executables from python scripts",
           platforms="Linux Windows",
           license="zlib/libpng license",
+          classifiers=[
+            "Development Status :: 5 - Production/Stable",
+            "License :: OSI Approved :: zlib/libpng License",
+            "Intended Audience :: Developers",
+            "Programming Language :: Python",
+            "Programming Language :: Python :: 2",
+            "Programming Language :: Python :: 2.4",
+            "Programming Language :: Python :: 2.5",
+            "Programming Language :: Python :: 2.6",
+            "Programming Language :: Python :: 2.7",
+            "Topic :: Software Development :: Build Tools",
+            "Topic :: System :: Software Distribution"],
           long_description=read_long_description())
 
 if __name__ == '__main__':
