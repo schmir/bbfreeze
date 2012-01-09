@@ -2,13 +2,14 @@
 
 # setup.py adapted from py2exe's setup.py
 
-import os
-import sys
-import platform
+import sys, os, platform
 
-import ez_setup
-ez_setup.use_setuptools()
-from setuptools import setup, Extension
+try:
+    from setuptools import setup, Extension
+except ImportError:
+    import ez_setup
+    ez_setup.use_setuptools()
+    from setuptools import setup, Extension
 
 
 from distutils.command import build_ext
