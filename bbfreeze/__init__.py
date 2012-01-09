@@ -1,7 +1,6 @@
 import sys
 
-from bbfreeze import macholib, modulegraph
-sys.modules['macholib'] = macholib
+from bbfreeze import modulegraph
 sys.modules['modulegraph'] = modulegraph
 
 from bbfreeze._version import version

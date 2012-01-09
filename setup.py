@@ -230,7 +230,7 @@ def main():
                  "bdist_bbfreeze = bbfreeze.bdist_bbfreeze:bdist_bbfreeze"]},
           ext_modules=ext_modules,
           install_requires=install_requires,
-          packages=['bbfreeze', 'bbfreeze.modulegraph', 'bbfreeze.macholib'],
+          packages=['bbfreeze', 'bbfreeze.modulegraph'],
           zip_safe=False,
           maintainer="Ralf Schmitt",
           maintainer_email="schmir@gmail.com",
