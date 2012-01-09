@@ -30,6 +30,7 @@ include tests/baz/dom/expatbuilder.py
 include tests/baz/parsers/__init__.py
 include tests/baz/parsers/expat.py
 include tests/bazscript.py
+include tests/conftest.py
 include tests/ex-celementtree.py
 include tests/ex-email_mimetext.py
 include tests/ex-kinterbasdb.py
@@ -48,3 +49,4 @@ include tests/test_guiscript.py
 include tests/test_relimport.py
 include tests/test_script.py
 include tests/wx-example.py
+include tox.ini
