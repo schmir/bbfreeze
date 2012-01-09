@@ -20,3 +20,4 @@ tests/dist
 dist/
 build/
 /README.html
+/.tox/
