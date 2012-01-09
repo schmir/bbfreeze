@@ -1,14 +1,14 @@
-import sys
+__version_info__ = (1, 0, 0)
+version = __version__ = "1.0.0"
 
+import sys
 from bbfreeze import modulegraph
 sys.modules['modulegraph'] = modulegraph
 
-from bbfreeze._version import version
 from bbfreeze.freezer import Freezer
 
 
 def main():
-    import sys
     scripts = sys.argv[1:]
     if not scripts:
         print "Version: %s (Python %s)" % (version, ".".join([str(x) for x in sys.version_info]))

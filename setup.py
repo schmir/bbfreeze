@@ -14,9 +14,17 @@ except ImportError:
 
 from distutils.command import build_ext
 from distutils import sysconfig
-import distutils.util
-execfile(distutils.util.convert_path('bbfreeze/_version.py'))
-# adds 'version' to local namespace
+
+
+def get_version():
+    d = {}
+    try:
+        execfile("bbfreeze/__init__.py", d)
+    except Exception:
+        pass
+    return d["__version__"]
+
+version = get_version()
 
 os.environ['LD_RUN_PATH'] = "${ORIGIN}:${ORIGIN}/../lib"
 
@@ -223,7 +231,7 @@ def main():
 
     setup(name="bbfreeze",
           cmdclass=dict(build_ext=BuildInterpreters),
-          version=str(version),  # see execfile from above
+          version=version,
           entry_points={
              "console_scripts": ['bb-freeze = bbfreeze:main'],
              "distutils.commands": [
