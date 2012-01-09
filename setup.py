@@ -122,15 +122,14 @@ class BuildInterpreters(build_ext.build_ext):
         if self._patched:
             return
 
+        LOCALMODLIBS = ""
         LINKFORSHARED = sysconfig.get_config_var("LINKFORSHARED")
         if LINKFORSHARED and sys.platform != 'darwin':
             linker = " ".join([sysconfig.get_config_var(x) for x in 'LINKCC LDFLAGS LINKFORSHARED'.split()])
             if '-Xlinker' in linker:
                 linker += ' -Xlinker -zmuldefs'
                 linker += ' -Xlinker --disable-new-dtags'
-            LOCALMODLIBS = sysconfig.get_config_var("LOCALMODLIBS")
-            if LOCALMODLIBS:
-                linker += " %s " % (LOCALMODLIBS, )
+            LOCALMODLIBS = sysconfig.get_config_var("LOCALMODLIBS") or ""
 
             self.compiler.set_executables(linker_exe=linker)
 
@@ -140,6 +139,9 @@ class BuildInterpreters(build_ext.build_ext):
                     del kwargs[x]
                 except KeyError:
                     pass
+
+            if LOCALMODLIBS:
+                kwargs["extra_postargs"] = LOCALMODLIBS.split()
 
             retval = self.compiler.link_executable(*args, **kwargs)
             maybe_strip(args[1])
