@@ -33,6 +33,7 @@ include tests/bazscript.py
 include tests/conftest.py
 include tests/ex-celementtree.py
 include tests/ex-email_mimetext.py
+include tests/ex-fsenc.py
 include tests/ex-kinterbasdb.py
 include tests/ex-matplotlib.py
 include tests/ex-mbox.py
@@ -45,6 +46,7 @@ include tests/ex-wxpython.py
 include tests/hello-world.py
 include tests/relimport/__init__.py
 include tests/relimport/forms.py
+include tests/test_filesystemencoding.py
 include tests/test_guiscript.py
 include tests/test_relimport.py
 include tests/test_script.py
