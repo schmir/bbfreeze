@@ -4,6 +4,12 @@
 bbfreeze - create stand-alone executables from python scripts
 ======================================================================
 
+:Authors: Ralf Schmitt <ralf@systemexit.de>
+:Version: 1.0.0
+:Date:    2012-01-10
+:Download: http://pypi.python.org/pypi/bbfreeze
+:Code: https://github.com/schmir/bbfreeze
+
 
 Overview
 ======================================================================
@@ -66,10 +72,10 @@ You can also reach the author via email to ralf@systemexit.de
 Source
 -------------------
 Windows Eggs and the source code can be downloaded from 
-http://cheeseshop.python.org/pypi/bbfreeze/.
+http://pypi.python.org/pypi/bbfreeze/.
 
-https://github.com/schmir/bbfreeze carries a git repository of
-the in-development version
+The source code is maintained in a git repository on github:
+https://github.com/schmir/bbfreeze
 
 Use::
 
@@ -120,23 +126,32 @@ Example Usage::
   print "__name__:", __name__
 
   print "locals():", locals()
-  
+
   print "sys.argv", sys.argv
   print "sys.executable:", sys.executable
   $ bb-freeze hello-world.py
-  *** applied <function recipe_email at 0xb7ba702c>
+  WARNING: found encodings in multiple directories. Assuming it's a namespace package. (found in /home/ralf/py27/lib/python2.7/encodings, /usr/lib/python2.7/encodings)
+  *** applied <function recipe_doctest at 0x1f01aa0>
+  *** applied <function recipe_time at 0x1f01de8>
+  *** applied <function recipe_urllib at 0x1f01c08>
+  RPATH ${ORIGIN}:${ORIGIN}/../lib is fine
   $ dist/hello-world
   hello world!
-  ...
+  sys.path: ['/home/ralf/bbfreeze/tests/dist/library.zip', '/home/ralf/bbfreeze/tests/dist']
+  __file__: hello-world.py
+  __name__: __main__
+  locals(): {'__builtins__': <module '__builtin__' (built-in)>, '__file__': 'hello-world.py', '__package__': None, 'sys': <module 'sys' (built-in)>, 'email': <module 'email' from '/home/ralf/bbfreeze/tests/dist/library.zip/email/__init__.pyc'>, '__name__': '__main__', '__doc__': None}
+  sys.argv ['/home/ralf/bbfreeze/tests/dist/hello-world']
+  sys.executable: /home/ralf/bbfreeze/tests/dist/hello-world
   $ dist/py
-  Python 2.5.1c1 (r251c1:54692, Apr 11 2007, 01:40:50)
-  [GCC 4.1.2 20061115 (prerelease) (Debian 4.1.1-21)] on linux2
+  Python 2.7.2 (default, Nov 21 2011, 17:25:27)
+  [GCC 4.6.2] on linux2
   Type "help", "copyright", "credits" or "license" for more information.
   (MyConsole)
   >>> import email
-  $
+  >>>
 
-   
+
 bdist_bbfreeze - distutils command
 ======================================================================
 
@@ -397,7 +412,7 @@ foundation.
 
 bbfreeze includes a module 'bdist_bbfreeze.py' which is
 
-  Copyright 2008 by Hartmut Goebel <h.goebel@goebel-consult.de>
+  Copyright 2008-2012 by Hartmut Goebel <h.goebel@goebel-consult.de>
 
 The 'bdist_bbfreeze' module may be distributed under the same licence
 as bbfreeze itself.
@@ -405,7 +420,7 @@ as bbfreeze itself.
 
 The remaining part is distributed under the zlib/libpng license:
 
-Copyright (c) 2007, 2008 brainbot technologies AG
+Copyright (c) 2007-2012 brainbot technologies AG
 
 This software is provided 'as-is', without any express or implied
 warranty. In no event will the authors be held liable for any damages
