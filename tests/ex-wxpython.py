@@ -1,5 +1,6 @@
 from wxPython.wx import *
 
+
 class MyApp(wxApp):
     def OnInit(self):
         frame = wxFrame(NULL, -1, "Hello from wxPython")
@@ -9,5 +10,3 @@ class MyApp(wxApp):
 
 app = MyApp(0)
 app.MainLoop()
-
-        

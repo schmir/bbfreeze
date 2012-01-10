@@ -1,6 +1,7 @@
 #import wx
 from wxPython.wx import *
 
+
 class MyApp(wxApp):
     def OnInit(self):
         frame = wxFrame(NULL, -1, "Hello from wxPython")

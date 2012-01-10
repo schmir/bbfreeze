@@ -2,13 +2,14 @@
 
 from pylab import plot, show
 
+
 def main():
     x = range(10)
     y = range(10)
 
-    plot(x,y)
+    plot(x, y)
     show()
-    
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     main()

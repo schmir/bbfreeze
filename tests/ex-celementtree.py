@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import sys
-if sys.version_info>=(2,5):
+if sys.version_info >= (2, 5):
     import xml.etree.cElementTree as ET
 else:
     import cElementTree as ET

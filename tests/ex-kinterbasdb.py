@@ -6,6 +6,4 @@ con = kinterbasdb.connect(dsn='bison:/temp/test.db', user='sysdba', password='pa
 # Or, equivalently:
 con = kinterbasdb.connect(
     host='bison', database='/temp/test.db',
-    user='sysdba', password='pass'
-  )
-
+    user='sysdba', password='pass')

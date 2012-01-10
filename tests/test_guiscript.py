@@ -12,8 +12,9 @@ if win32ui:
         f = bbfreeze.Freezer()
         f.addScript("ex-mbox.py", True)
         f()
-        err=os.system("dist\\ex-mbox")
-        assert err==0
+        err = os.system("dist\\ex-mbox")
+        assert err == 0
+
 
 def test_guiscript2():
     f = bbfreeze.Freezer()
@@ -21,8 +22,6 @@ def test_guiscript2():
     f()
 
     cmd = os.path.join("dist", "hello-world")
-    err=os.system(cmd)
-        
-    assert err==0
-    
-    
+    err = os.system(cmd)
+
+    assert err == 0
