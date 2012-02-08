@@ -6,7 +6,7 @@ bbfreeze - create stand-alone executables from python scripts
 
 :Authors: Ralf Schmitt <ralf@systemexit.de>
 :Version: 1.0.0
-:Date:    2012-01-10
+:Date:    2012-02-08
 :Download: http://pypi.python.org/pypi/bbfreeze
 :Code: https://github.com/schmir/bbfreeze
 
@@ -234,6 +234,17 @@ machine.
 
 Change-Log
 ======================================================================
+2012-02-08         release 1.0.0
+-----------------------------------------------
+- better test infrastructure
+- update documentation
+- remove bbfreeze.macholib
+- fix build on ubuntu 11.10
+- handle platform=='linux3' case in ensureRPath
+- make py recipe work again.
+- handle "pip -e" installed development eggs, that aren't even setuptools packages
+
+
 2011-04-12         release 0.97.3
 -----------------------------------------------
 - exclude ms-win-api-* and query.dll.
