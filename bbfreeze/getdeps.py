@@ -146,7 +146,7 @@ elif sys.platform.startswith("linux"):
         return res
 
     def exclude(fp):
-        return re.match(r"^libc\.|^librt\.|^libcrypt\.|^libm\.|^libdl\.|^libpthread\.|^libnsl\.|^libutil\.|^ld-linux\.|^ld-linux-", os.path.basename(fp))
+        return re.match(r"^libc\.|^librt\.|^libcrypt\.|^libm\.|^libdl\.|^libpthread\.|^libnsl\.|^libutil\.|^libresolv\.|^ld-linux\.|^ld-linux-", os.path.basename(fp))
 else:
     if sys.platform != 'darwin':
         print "Warning: don't know how to handle binary dependencies on this platform (%s)" % (sys.platform,)
