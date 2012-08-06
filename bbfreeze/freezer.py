@@ -478,7 +478,6 @@ class Freezer(object):
         status, out = commands.getstatusoutput("patchelf --version")
 
         if status == 0:
-            print out
             status, out = commands.getstatusoutput("patchelf --print-rpath $S")
             if status:
                 raise RuntimeError("patchelf failed: %r" % out)
@@ -505,8 +504,6 @@ class Freezer(object):
         status, out = commands.getstatusoutput("patchelf --set-rpath $R $S")
         if status != 0:
             print "WARNING: failed to set RPATH for %s: %s" % (exe, out)
-        else:
-            print "RPATH adjusted successfully"
 
     def ensureRPath(self, exe):
         if sys.platform not in ("linux2", "linux3"):
@@ -518,11 +515,10 @@ class Freezer(object):
             return
 
         if current_rpath == expected_rpath:
-            print "RPATH %s is fine" % (current_rpath,)
+            # print "RPATH %s of %s is fine" % (current_rpath, exe)
             return
 
-        print "RPATH=%s" % (current_rpath,)
-        print "RPATH needs adjustment. make sure you have the patchelf executable installed."
+        print "RPATH %r of %s needs adjustment. make sure you have the patchelf executable installed." % (current_rpath, exe)
         self._setRPath(exe, expected_rpath)
 
     def __call__(self):
@@ -648,7 +644,7 @@ class Freezer(object):
         # when searching for DLL's the location matters, so don't
         # add the destination file, but rather the source file
         self.binaries.append(m.filename)
-        self.stripBinary(dst)
+        self.adaptBinary(dst)
 
     def _handle_Package(self, m):
         fn = m.identifier.replace(".", "/") + "/__init__.pyc"
@@ -732,6 +728,10 @@ class Freezer(object):
         else:
             raise RuntimeError("linkmethod %r not supported" % (self.linkmethod,))
 
+    def adaptBinary(self, p):
+        self.stripBinary(p)
+        self.ensureRPath(p)
+
     def stripBinary(self, p):
         if sys.platform == 'win32' or sys.platform == 'darwin':
             return
@@ -742,13 +742,13 @@ class Freezer(object):
         dst = os.path.join(self.distdir, os.path.basename(m.filename))
         shutil.copy2(m.filename, dst)
         os.chmod(dst, 0755)
-        self.stripBinary(dst)
+        self.adaptBinary(dst)
 
     def _handle_SharedLibrary(self, m):
         dst = os.path.join(self.distdir, os.path.basename(m.filename))
         shutil.copy2(m.filename, dst)
         os.chmod(dst, 0755)
-        self.stripBinary(dst)
+        self.adaptBinary(dst)
 
     def showxref(self):
         import tempfile
