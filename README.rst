@@ -453,10 +453,10 @@ freely, subject to the following restrictions:
    distribution.
 
 .. _py2exe: http://www.py2exe.org/
-.. _py2app: http://undefined.org/python/#py2app
-.. _PyInstaller: http://pyinstaller.python-hosting.com/
-.. _cx_Freeze: http://www.python.net/crew/atuining/cx_Freeze/
-.. _modulegraph: http://undefined.org/python/#modulegraph
+.. _py2app: http://pypi.python.org/pypi/py2app/
+.. _PyInstaller: http://www.pyinstaller.org/
+.. _cx_Freeze: http://cx-freeze.sourceforge.net/
+.. _modulegraph: http://pypi.python.org/pypi/modulegraph
 .. __: http://brainbot.com
 .. _32bit: http://www.microsoft.com/downloads/en/details.aspx?familyid=9B2DA534-3E03-4391-8A4D-074B9F2BC1BF
 .. _64bit: http://www.microsoft.com/downloads/en/details.aspx?FamilyID=BD2A6171-E2D6-4230-B809-9A8D7548C1B6
