@@ -5,9 +5,9 @@ bbfreeze - create stand-alone executables from python scripts
 ======================================================================
 
 :Authors: Ralf Schmitt <ralf@systemexit.de>
-:Version: 1.0.0
-:Date:    2012-02-08
-:Download: http://pypi.python.org/pypi/bbfreeze
+:Version: 1.0.1
+:Date:    2012-09-27
+:Download: http://pypi.python.org/pypi/bbfreeze/#downloads
 :Code: https://github.com/schmir/bbfreeze
 
 
@@ -228,12 +228,18 @@ copying them would probably only lead to problems.
 Windows Notes
 ======================================================================
 binaries created with python 2.6 or 2.7 will need the Microsoft Visual
-C++ 2008 Redistributable Package (either the 32bit_ or the 64bit_ version) installed on the target
-machine.
+C++ 2008 Redistributable Package (either the 32bit_ or the 64bit_
+version) installed on the target machine.
 
 
 Change-Log
 ======================================================================
+2012-09-27         release 1.0.1
+-----------------------------------------------
+- update links to alternative freezers
+- skip libresolv.so, which is a part of glibc
+- call patchelf for anything which looks like a binary
+
 2012-02-08         release 1.0.0
 -----------------------------------------------
 - better test infrastructure
