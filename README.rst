@@ -5,8 +5,8 @@ bbfreeze - create stand-alone executables from python scripts
 ======================================================================
 
 :Authors: Ralf Schmitt <ralf@systemexit.de>
-:Version: 1.0.1
-:Date:    2012-09-27
+:Version: 1.0.2
+:Date:    2012-10-23
 :Download: http://pypi.python.org/pypi/bbfreeze/#downloads
 :Code: https://github.com/schmir/bbfreeze
 
@@ -234,6 +234,10 @@ version) installed on the target machine.
 
 Change-Log
 ======================================================================
+2012-10-23         release 1.0.2
+-----------------------------------------------
+- use altgraph 0.9 as 0.10 is incompatible
+
 2012-09-27         release 1.0.1
 -----------------------------------------------
 - update links to alternative freezers
