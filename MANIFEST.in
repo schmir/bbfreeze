@@ -1,5 +1,4 @@
 include MANIFEST.in
-include README.html
 include README.rst
 include bb-freeze
 include bbfreeze/__init__.py
