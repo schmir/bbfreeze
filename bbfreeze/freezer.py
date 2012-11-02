@@ -319,17 +319,14 @@ for p in sys.path:
     f = os.path.join(p, "%s")
     if not os.path.exists(f):
         continue
-    try:
-        m = imp.load_dynamic(__name__, f)
-    except ImportError:
-        del sys.modules[__name__]
-        raise
-    sys.modules[__name__] = m
+    sys.modules[__name__] = imp.load_dynamic(__name__, f)
     found = True
     break
 if not found:
-    del sys.modules[__name__]
-    raise ImportError, "No module named %%s" %% __name__
+    try:
+        raise ImportError, "No module named %%s" %% __name__
+    finally:
+        del sys.modules[__name__]
 """
 
 
