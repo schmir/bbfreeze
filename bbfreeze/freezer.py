@@ -308,9 +308,9 @@ def replace_paths_in_code(co, newname):
 # and higher and can be removed once support for Python 2.3 is no longer needed
 EXTENSION_LOADER_SOURCE = \
 """
-import sys
-import os
-import imp
+sys = __import__("sys")
+os = __import__("os")
+imp = __import__("imp")
 
 found = False
 for p in sys.path:
