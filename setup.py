@@ -2,7 +2,7 @@
 
 # setup.py adapted from py2exe's setup.py
 
-import sys, os, platform
+import sys, os, struct, platform
 
 from setuptools import setup, Extension
 
@@ -10,10 +10,16 @@ from distutils.command import build_ext
 from distutils import sysconfig
 
 
+if sys.version_info >= (3, 0):
+    exec("def do_exec(co, loc): exec(co, loc)\n")
+else:
+    exec("def do_exec(co, loc): exec co in loc\n")
+
+
 def get_version():
     d = {}
     try:
-        execfile("bbfreeze/__init__.py", d)
+        do_exec(open("bbfreeze/__init__.py", "r").read(), d)
     except Exception:
         pass
     return d["__version__"]
@@ -66,13 +72,11 @@ class Conf(object):
         d = self.__dict__.copy()
         d['sys.version'] = sys.version
         d['sys.maxunicode'] = hex(sys.maxunicode)
-        d['sys.maxint'] = hex(sys.maxint)
+        d['bits'] = struct.calcsize("P")*8
         d['sys.executable'] = sys.executable
         d['platform'] = platform.platform()
 
-        items = d.items()
-
-        items.sort()
+        items = sorted(d.items())
         res = ['']
         first = "------ bbfreeze %s configuration ------" % (version,)
         res.append(first)
@@ -96,10 +100,10 @@ def maybe_strip(exe):
         return
 
     os.environ['S'] = exe
-    print "====> Running 'strip %s'" % (exe,)
+    sys.stdout.write("====> Running 'strip %s'\n" % (exe,))
     err = os.system("strip $S")
     if err:
-        print "strip command failed"
+        sys.stdout.write("strip command failed\n")
 
 
 class BuildInterpreters(build_ext.build_ext):
@@ -118,7 +122,7 @@ class BuildInterpreters(build_ext.build_ext):
             ext = ''
         else:
             ext = '.exe'
-        return apply(os.path.join, ext_path) + ext
+        return os.path.join(*ext_path) + ext
 
     def _patch(self):
         if self._patched:
@@ -161,7 +165,7 @@ class BuildInterpreters(build_ext.build_ext):
 def main():
     global conf
     conf = Conf()
-    print conf
+    sys.stdout.write("%s\n" % conf)
 
     extra_objects = []
 
