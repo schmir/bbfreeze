@@ -4,13 +4,7 @@
 
 import sys, os, platform
 
-try:
-    from setuptools import setup, Extension
-except ImportError:
-    import ez_setup
-    ez_setup.use_setuptools()
-    from setuptools import setup, Extension
-
+from setuptools import setup, Extension
 
 from distutils.command import build_ext
 from distutils import sysconfig
