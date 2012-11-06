@@ -104,9 +104,9 @@ Limitations
 - documentation is a bit sparse
 
 
-bb-freeze - command line tool
+bbfreeze - command line tool
 ======================================================================
-bbfreeze provides a command line utility called bb-freeze, which
+bbfreeze provides a command line utility called bbfreeze, which
 freezes all python scripts given on the command line into the
 directory dist, which then contains for each script an executable and
 all dependencies needed by those executables.
@@ -129,7 +129,7 @@ Example Usage::
 
   print "sys.argv", sys.argv
   print "sys.executable:", sys.executable
-  $ bb-freeze hello-world.py
+  $ bbfreeze hello-world.py
   WARNING: found encodings in multiple directories. Assuming it's a namespace package. (found in /home/ralf/py27/lib/python2.7/encodings, /usr/lib/python2.7/encodings)
   *** applied <function recipe_doctest at 0x1f01aa0>
   *** applied <function recipe_time at 0x1f01de8>
@@ -156,7 +156,7 @@ bdist_bbfreeze - distutils command
 ======================================================================
 
 bbfreeze provides a distutils command which works much like the
-'bb-freeze' command line tool, but integrates nicely into distutils
+'bbfreeze' command line tool, but integrates nicely into distutils
 and setuptools. It collects all 'console_scripts' 'gui_scripts'
 entry-points, generates the wrapper scripts (like easy_install would
 do) and freezes these scripts.

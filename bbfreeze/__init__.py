@@ -12,7 +12,7 @@ def main():
     scripts = sys.argv[1:]
     if not scripts:
         print "Version: %s (Python %s)" % (version, ".".join([str(x) for x in sys.version_info]))
-        print "Usage: bb-freeze SCRIPT1 [SCRIPT2...]"
+        print "Usage: bbfreeze SCRIPT1 [SCRIPT2...]"
         print "   creates standalone executables from python scripts SCRIPT1,..."
         print
 

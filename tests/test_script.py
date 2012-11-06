@@ -9,8 +9,8 @@ def fullpath(x):
 
 
 def compile_and_run(p):
-    err = os.system("bb-freeze %s" % p)
-    assert err == 0, "bb-freeze failed"
+    err = os.system("bbfreeze %s" % p)
+    assert err == 0, "bbfreeze failed"
     if p.endswith('.py'):
         p = p[:-3]
     err = os.system(os.path.abspath(os.path.join('dist', p)))

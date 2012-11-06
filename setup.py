@@ -227,7 +227,7 @@ def main():
           cmdclass=dict(build_ext=BuildInterpreters),
           version=version,
           entry_points={
-             "console_scripts": ['bb-freeze = bbfreeze:main'],
+             "console_scripts": ['bb-freeze = bbfreeze:main', 'bbfreeze = bbfreeze:main'],
              "distutils.commands": [
                  "bdist_bbfreeze = bbfreeze.bdist_bbfreeze:bdist_bbfreeze"]},
           ext_modules=ext_modules,

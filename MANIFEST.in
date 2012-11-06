@@ -1,7 +1,7 @@
 include MANIFEST.in
 include README.rst
-include bb-freeze
 include bbfreeze/__init__.py
+include bbfreeze/__main__.py
 include bbfreeze/bdist_bbfreeze.py
 include bbfreeze/codehack.py
 include bbfreeze/console.c
