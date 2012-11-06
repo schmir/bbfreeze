@@ -361,7 +361,7 @@ class Freezer(object):
 
         # workaround for virtualenv's distutils monkeypatching
         import distutils
-        self.mf.load_package("distutils", distutils.__path__[0])
+        self.mf.load_package("distutils", "distutils", distutils.__path__)
 
         self._loaderNode = None
         if sys.platform == 'win32':

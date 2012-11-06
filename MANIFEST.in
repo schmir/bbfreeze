@@ -13,10 +13,6 @@ include bbfreeze/getdeps.py
 include bbfreeze/getpath.c
 include bbfreeze/load_console.py
 include bbfreeze/loader_impl.h
-include bbfreeze/modulegraph/__init__.py
-include bbfreeze/modulegraph/find_modules.py
-include bbfreeze/modulegraph/modulegraph.py
-include bbfreeze/modulegraph/util.py
 include bbfreeze/py.py
 include bbfreeze/recipes.py
 include setup.cfg

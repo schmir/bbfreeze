@@ -1,10 +1,7 @@
-__version_info__ = (1, 0, 2)
-version = __version__ = "1.0.2"
+__version_info__ = (1, 1, 0)
+version = __version__ = "1.1.0dev"
 
 import sys
-from bbfreeze import modulegraph
-sys.modules['modulegraph'] = modulegraph
-
 from bbfreeze.freezer import Freezer
 
 

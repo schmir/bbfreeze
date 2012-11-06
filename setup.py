@@ -197,7 +197,7 @@ def main():
     # --- extra_sources, define_macros, ext_modules
     extra_sources = []
     define_macros = []
-    install_requires = ["altgraph==0.9"]
+    install_requires = ["modulegraph>=0.10.1,<0.11"]
 
     if sys.platform == 'win32':
         define_macros.append(('WIN32', 1))
@@ -232,7 +232,7 @@ def main():
                  "bdist_bbfreeze = bbfreeze.bdist_bbfreeze:bdist_bbfreeze"]},
           ext_modules=ext_modules,
           install_requires=install_requires,
-          packages=['bbfreeze', 'bbfreeze.modulegraph'],
+          packages=['bbfreeze'],
           zip_safe=False,
           maintainer="Ralf Schmitt",
           maintainer_email="ralf@systemexit.de",
