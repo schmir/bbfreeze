@@ -646,7 +646,7 @@ class Freezer(object):
     def _handle_Package(self, m):
         fn = m.identifier.replace(".", "/") + "/__init__.pyc"
         mtime = self._get_mtime(m.filename)
-        self._writecode(fn, mtime, m.code)
+        self._writecode(fn, mtime, m.code or compile("", fn[:-1], "exec"))
 
     def _handle_SourceModule(self, m):
         fn = m.identifier.replace(".", "/") + '.pyc'
