@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
-import sys, os, re, commands
+import sys, os, re
+from bbfreeze.freezer import getstatusoutput
 
 if sys.platform == 'win32':
 
@@ -129,8 +130,7 @@ if sys.platform == 'win32':
 elif sys.platform.startswith("freebsd"):
 
     def _getDependencies(path):
-        os.environ["P"] = path
-        s = commands.getoutput("ldd $P")
+        _, s = getstatusoutput(["ldd", path])
         res = [x for x in re.compile(r"^ *.* => (.*) \(.*", re.MULTILINE).findall(s) if x]
         return res
 
@@ -140,8 +140,7 @@ elif sys.platform.startswith("freebsd"):
 elif sys.platform.startswith("linux"):
 
     def _getDependencies(path):
-        os.environ["P"] = path
-        s = commands.getoutput("ldd $P")
+        _, s = getstatusoutput(["ldd", path])
         res = [x for x in re.compile(r"^ *.* => (.*) \(.*", re.MULTILINE).findall(s) if x]
         return res
 
