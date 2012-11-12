@@ -694,7 +694,7 @@ class Freezer(object):
     def _writecode(self, fn, mtime, code):
         code = replace_paths_in_code(code, fn)
         ziptime = time.localtime(mtime)[:6]
-        data = imp.get_magic() + struct.pack("<i", mtime) + marshal.dumps(code)
+        data = imp.get_magic() + struct.pack("<i", int(mtime)) + marshal.dumps(code)
         zinfo = zipfile.ZipInfo(fn, ziptime)
         if self.use_compression:
             zinfo.compress_type = zipfile.ZIP_DEFLATED
