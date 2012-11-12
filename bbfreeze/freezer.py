@@ -272,7 +272,8 @@ class MyModuleGraph(modulegraph.ModuleGraph):
 
         raise err
 
-    def load_module(self, fqname, fp, pathname, (suffix, mode, typ)):
+    def load_module(self, fqname, fp, pathname, smt):
+        suffix, mode, typ = smt
         if typ == 314:
             m = self.createNode(ZipModule, fqname)
             code = fp.get_code(fqname.replace(".", "/"))
