@@ -8,7 +8,7 @@ import zipfile
 import imp
 import marshal
 import zipimport
-import commands
+import subprocess
 
 from modulegraph import modulegraph
 modulegraph.replacePackage("_xmlplus", "xml")
@@ -45,6 +45,13 @@ try:
     import pkg_resources
 except ImportError:
     pkg_resources = None
+
+
+def getstatusoutput(*args):
+    process = subprocess.Popen(stdout=subprocess.PIPE, *args)
+    output, _ = process.communicate()
+    retcode = process.poll()
+    return retcode, output
 
 
 class EggAnalyzer(object):
@@ -471,17 +478,15 @@ class Freezer(object):
                     self.mf.createReference(x, n)
 
     def _getRPath(self, exe):
-        os.environ["S"] = exe
-
-        status, out = commands.getstatusoutput("patchelf --version")
+        status, out = getstatusoutput(["patchelf", "--version"])
 
         if status == 0:
-            status, out = commands.getstatusoutput("patchelf --print-rpath $S")
+            status, out = getstatusoutput(["patchelf", "--print-rpath", exe])
             if status:
                 raise RuntimeError("patchelf failed: %r" % out)
             return out.strip() or None
 
-        status, out = commands.getstatusoutput("objdump -x $S")
+        status, out = getstatusoutput(["objdump", "-x", exe])
         if status:
             print "WARNING: objdump failed: could not determine RPATH by running 'objdump -x %s'" % exe
             return None
@@ -496,10 +501,8 @@ class Freezer(object):
         return ""
 
     def _setRPath(self, exe, rpath):
-        os.environ["S"] = exe
-        os.environ["R"] = rpath
         print "running 'patchelf --set-rpath '%s' %s'" % (rpath, exe)
-        status, out = commands.getstatusoutput("patchelf --set-rpath $R $S")
+        status, out = getstatusoutput(["patchelf", "--set-rpath", rpath, exe])
         if status != 0:
             print "WARNING: failed to set RPATH for %s: %s" % (exe, out)
 
