@@ -11,7 +11,7 @@ import zipimport
 import commands
 
 from modulegraph import modulegraph
-modulegraph.ReplacePackage("_xmlplus", "xml")
+modulegraph.replacePackage("_xmlplus", "xml")
 
 # workaround for win32com hacks.
 # see: http://starship.python.net/crew/theller/moin.cgi/WinShell
@@ -19,7 +19,7 @@ modulegraph.ReplacePackage("_xmlplus", "xml")
 try:
     import win32com
     for p in win32com.__path__[1:]:
-        modulegraph.AddPackagePath("win32com", p)
+        modulegraph.addPackagePath("win32com", p)
     for extra in ["win32com.shell", "win32com.mapi"]:
         try:
             __import__(extra)
@@ -27,7 +27,7 @@ try:
             continue
         m = sys.modules[extra]
         for p in m.__path__[1:]:
-            modulegraph.AddPackagePath(extra, p)
+            modulegraph.addPackagePath(extra, p)
 except ImportError:
     pass
 
@@ -37,7 +37,7 @@ except ImportError:
     pass
 else:
     for p in xml.__path__:
-        modulegraph.AddPackagePath("xml", p)
+        modulegraph.addPackagePath("xml", p)
 
 from bbfreeze import recipes, eggutil
 
@@ -265,7 +265,7 @@ class MyModuleGraph(modulegraph.ModuleGraph):
             print "WARNING: found %s in multiple directories. Assuming it's a namespace package. (found in %s)" % (
                 fullname, ", ".join(x[1] for x in found))
             for x in found[1:]:
-                modulegraph.AddPackagePath(fullname, x[1])
+                modulegraph.addPackagePath(fullname, x[1])
 
         if found:
             return found[0]
