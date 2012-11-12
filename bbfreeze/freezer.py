@@ -288,7 +288,7 @@ class MyModuleGraph(modulegraph.ModuleGraph):
 
 
 def replace_paths_in_code(co, newname):
-    import new
+    import types
     if newname.endswith('.pyc'):
         newname = newname[:-1]
 
@@ -298,11 +298,11 @@ def replace_paths_in_code(co, newname):
         if isinstance(consts[i], type(co)):
             consts[i] = replace_paths_in_code(consts[i], newname)
 
-    return new.code(co.co_argcount, co.co_nlocals, co.co_stacksize,
-                     co.co_flags, co.co_code, tuple(consts), co.co_names,
-                     co.co_varnames, newname, co.co_name,
-                     co.co_firstlineno, co.co_lnotab,
-                     co.co_freevars, co.co_cellvars)
+    return types.CodeType(co.co_argcount, co.co_nlocals, co.co_stacksize,
+                          co.co_flags, co.co_code, tuple(consts), co.co_names,
+                          co.co_varnames, newname, co.co_name,
+                          co.co_firstlineno, co.co_lnotab,
+                          co.co_freevars, co.co_cellvars)
 
 # NOTE: the try: except: block in this code is not necessary under Python 2.4
 # and higher and can be removed once support for Python 2.3 is no longer needed
