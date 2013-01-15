@@ -143,12 +143,15 @@ class EggAnalyzer(object):
                 eggutil.copyDistribution(x, destdir)
             else:
                 try:
-                    path = x._provider.path
+                    path = getattr(x._provider, "egg_info", None) or x._provider.path
                 except AttributeError:
                     print "Warning: cannot copy egg-info for", x
                     continue
                 print "Copying egg-info of %s from %r" % (x, path)
-                shutil.copy2(path, destdir)
+                if os.path.isdir(path):
+                    shutil.copytree(path, os.path.join(destdir, os.path.basename(path)))
+                else:
+                    shutil.copy2(path, destdir)
 
 
 def fullname(p):
