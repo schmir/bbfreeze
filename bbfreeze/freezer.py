@@ -404,6 +404,17 @@ class Freezer(object):
                 return ep.module_name
         return None
 
+    def addEntryPoint(self, name, importspec):
+        modname, attr = importspec.split(":")
+        m = self.mf.createNode(modulegraph.Script, name)
+        m.code = compile("""
+import sys, %s
+sys.exit(%s.%s())
+""" % (modname, modname, attr), name, "exec")
+        self.mf.createReference(None, m)
+        self.mf.scan_code(m.code, m)
+        return m
+
     def addScript(self, path, gui_only=False):
         dp = os.path.dirname(os.path.abspath(path))
         self.mf.path.insert(0, dp)
