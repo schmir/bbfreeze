@@ -46,6 +46,7 @@ try:
 except ImportError:
     pkg_resources = None
 
+dont_copy_as_egg = set(["bbfreeze", "PyXML"])
 
 class EggAnalyzer(object):
     def __init__(self):
@@ -82,7 +83,7 @@ class EggAnalyzer(object):
                 pathcount[x.location] = 1
 
         def is_good(dist):
-            if dist.project_name == "bbfreeze":
+            if dist.project_name in dont_copy_as_egg:
                 return False
 
             if not dist.has_metadata("top_level.txt"):
