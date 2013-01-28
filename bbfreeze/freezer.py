@@ -150,7 +150,8 @@ class EggAnalyzer(object):
                     continue
                 print "Copying egg-info of %s from %r" % (x, path)
                 if os.path.isdir(path):
-                    shutil.copytree(path, os.path.join(destdir, os.path.basename(path)))
+                    basename = "%s.egg-info" % x.project_name
+                    shutil.copytree(path, os.path.join(destdir, basename))
                 else:
                     shutil.copy2(path, destdir)
 
