@@ -48,6 +48,11 @@ except ImportError:
 
 dont_copy_as_egg = set(["bbfreeze", "PyXML"])
 
+
+def normalize_pkgname(name):
+    return name.lower().replace("-", "_")
+
+
 class EggAnalyzer(object):
     def __init__(self):
         self.used = set()
@@ -82,8 +87,10 @@ class EggAnalyzer(object):
             except KeyError:
                 pathcount[x.location] = 1
 
+        normalized_dont_copy = set([normalize_pkgname(x) for x in dont_copy_as_egg])
+
         def is_good(dist):
-            if dist.project_name in dont_copy_as_egg:
+            if normalize_pkgname(dist.project_name) in normalized_dont_copy:
                 return False
 
             if not dist.has_metadata("top_level.txt"):
