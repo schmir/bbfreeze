@@ -127,6 +127,11 @@ def copyDistribution(distribution, destdir):
         and not distribution.location.lower().endswith(".egg")
         and os.path.exists(os.path.join(distribution.location, "setup.py"))):
         # this seems to be a development egg. FIXME the above test looks fragile
+
+        setuptools_dist = pkg_resources.working_set.find(pkg_resources.Requirement.parse("setuptools"))
+        if setuptools_dist:
+            os.environ["PYTHONPATH"] = setuptools_dist.location
+
         cwd = os.getcwd()
         os.chdir(distribution.location)
         try:
