@@ -62,7 +62,7 @@ and suggestions should be send to the bbfreeze-users mailing list:
 bbfreeze-users@googlegroups.com
 
 You can subscribe by sending email to
-bbfreeze-users-subscribe@googlegroups.com
+bbfreeze-users+subscribe@googlegroups.com
 
 An archive is available at 
 http://groups.google.com/group/bbfreeze-users
