@@ -321,6 +321,9 @@ def replace_paths_in_code(co, newname):
 EXTENSION_LOADER_SOURCE = \
 """
 def _bbfreeze_import_dynamic_module():
+    global _bbfreeze_import_dynamic_module
+    del _bbfreeze_import_dynamic_module
+
     sys = __import__("sys", level=0)
     os = __import__("os", level=0)
     imp = __import__("imp", level=0)
@@ -341,10 +344,7 @@ def _bbfreeze_import_dynamic_module():
         finally:
             del sys.modules[__name__]
 
-try:
-    _bbfreeze_import_dynamic_module()
-finally:
-    del _bbfreeze_import_dynamic_module
+_bbfreeze_import_dynamic_module()
 """
 
 
