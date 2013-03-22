@@ -545,7 +545,8 @@ if __name__ == '__main__':
     def __call__(self):
         if self.include_py:
             pyscript = os.path.join(os.path.dirname(__file__), 'py.py')
-            self.addScript(pyscript)
+            s = self.mf.run_script(pyscript)
+            s.gui_only = False
 
         self.addModule("encodings.*")
         self._add_loader()
