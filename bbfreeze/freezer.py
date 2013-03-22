@@ -320,25 +320,31 @@ def replace_paths_in_code(co, newname):
 # and higher and can be removed once support for Python 2.3 is no longer needed
 EXTENSION_LOADER_SOURCE = \
 """
-sys = __import__("sys", level=0)
-os = __import__("os", level=0)
-imp = __import__("imp", level=0)
+def _bbfreeze_import_dynamic_module():
+    sys = __import__("sys", level=0)
+    os = __import__("os", level=0)
+    imp = __import__("imp", level=0)
 
-found = False
-for p in sys.path:
-    if not os.path.isdir(p):
-        continue
-    f = os.path.join(p, "%s")
-    if not os.path.exists(f):
-        continue
-    sys.modules[__name__] = imp.load_dynamic(__name__, f)
-    found = True
-    break
-if not found:
-    try:
-        raise ImportError, "No module named %%s" %% __name__
-    finally:
-        del sys.modules[__name__]
+    found = False
+    for p in sys.path:
+        if not os.path.isdir(p):
+            continue
+        f = os.path.join(p, "%s")
+        if not os.path.exists(f):
+            continue
+        sys.modules[__name__] = imp.load_dynamic(__name__, f)
+        found = True
+        break
+    if not found:
+        try:
+            raise ImportError, "No module named %%s" %% __name__
+        finally:
+            del sys.modules[__name__]
+
+try:
+    _bbfreeze_import_dynamic_module()
+finally:
+    del _bbfreeze_import_dynamic_module
 """
 
 
