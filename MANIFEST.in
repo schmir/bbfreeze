@@ -33,6 +33,7 @@ include tests/ex-celementtree.py
 include tests/ex-email_mimetext.py
 include tests/ex-fsenc.py
 include tests/ex-kinterbasdb.py
+include tests/ex-lxml.py
 include tests/ex-matplotlib.py
 include tests/ex-mbox.py
 include tests/ex-pylog.py
