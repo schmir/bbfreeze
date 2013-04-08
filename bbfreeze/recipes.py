@@ -370,3 +370,13 @@ def recipe_gevent_hub(mf):
     for n in deps:
         mf.createReference(m, n)
     return True
+
+
+def recipe_lxml_etree(mf):
+    m = mf.findNode("lxml.etree")
+    if not isRealModule(m):
+        return None
+    mf.import_hook("lxml._elementpath", m)
+    mf.import_hook("gzip", m)
+    mf.import_hook("inspect", m)
+    return True
