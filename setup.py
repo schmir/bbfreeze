@@ -78,7 +78,7 @@ class Conf(object):
 
         items = sorted(d.items())
         res = ['']
-        first = "------ bbfreeze %s configuration ------" % (version,)
+        first = "------ bbfreeze-loader %s configuration ------" % (version,)
         res.append(first)
         for k, v in items:
             res.append("%s = %s" % (k, v))
@@ -156,6 +156,10 @@ class BuildInterpreters(build_ext.build_ext):
         self._patch()
         return build_ext.build_ext.build_extension(self, ext)
 
+long_description = """bbfreeze-loader provides binary dependencies for
+bbfreeze. please do not install this module, install bbfreeze
+instead."""
+
 
 def main():
     global conf
@@ -229,7 +233,8 @@ def main():
           maintainer="Ralf Schmitt",
           maintainer_email="ralf@systemexit.de",
           url="http://pypi.python.org/pypi/bbfreeze/",
-          description="create standalone executables from python scripts",
+          description="provide binary loaders for bbfreeze",
+          long_description=long_description,
           platforms="Linux Windows",
           license="zlib/libpng license",
           classifiers=[
