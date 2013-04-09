@@ -201,7 +201,7 @@ def main():
     # --- extra_sources, define_macros, ext_modules
     extra_sources = []
     define_macros = []
-    install_requires = ["modulegraph>=0.10.1,<0.11"]
+    install_requires = ["modulegraph>=0.10.1,<0.11", "altgraph>=0.10,<0.11"]
 
     if sys.platform == 'win32':
         define_macros.append(('WIN32', 1))
