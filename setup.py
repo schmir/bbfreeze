@@ -19,7 +19,7 @@ else:
 def get_version():
     d = {}
     try:
-        do_exec(open("bbfreeze/__init__.py", "r").read(), d)
+        do_exec(open("_bbfreeze_loader/__init__.py", "r").read(), d)
     except Exception:
         pass
     return d["__version__"]
@@ -85,11 +85,6 @@ class Conf(object):
         res.append("-" * len(first))
         res.append('')
         return "\n".join(res)
-
-
-def read_long_description():
-    fn = os.path.join(os.path.dirname(os.path.abspath(__file__)), "README.rst")
-    return open(fn).read()
 
 
 def maybe_strip(exe):
@@ -201,12 +196,11 @@ def main():
     # --- extra_sources, define_macros, ext_modules
     extra_sources = []
     define_macros = []
-    install_requires = ["modulegraph>=0.10.1,<0.11", "altgraph>=0.10,<0.11"]
 
     if sys.platform == 'win32':
         define_macros.append(('WIN32', 1))
     else:
-        extra_sources.append('bbfreeze/getpath.c')
+        extra_sources.append('_bbfreeze_loader/getpath.c')
 
     if sys.platform == 'win32':
         extra_link_args = ['/LARGEADDRESSAWARE']
@@ -222,21 +216,15 @@ def main():
                       define_macros=define_macros)
         ext_modules.append(e)
 
-    ext("bbfreeze/console", ['bbfreeze/console.c'], libs)
+    ext("_bbfreeze_loader/console", ['_bbfreeze_loader/console.c'], libs)
     if sys.platform == 'win32':
-        ext("bbfreeze/consolew", ['bbfreeze/consolew.c'], libs + ['user32'])
-        install_requires.append("pefile>=1.2.4")
+        ext("_bbfreeze_loader/consolew", ['_bbfreeze_loader/consolew.c'], libs + ['user32'])
 
-    setup(name="bbfreeze",
+    setup(name="bbfreeze-loader",
           cmdclass=dict(build_ext=BuildInterpreters),
           version=version,
-          entry_points={
-             "console_scripts": ['bb-freeze = bbfreeze:main', 'bbfreeze = bbfreeze:main'],
-             "distutils.commands": [
-                 "bdist_bbfreeze = bbfreeze.bdist_bbfreeze:bdist_bbfreeze"]},
           ext_modules=ext_modules,
-          install_requires=install_requires,
-          packages=['bbfreeze'],
+          packages=['_bbfreeze_loader'],
           zip_safe=False,
           maintainer="Ralf Schmitt",
           maintainer_email="ralf@systemexit.de",
@@ -255,8 +243,7 @@ def main():
             "Programming Language :: Python :: 2.6",
             "Programming Language :: Python :: 2.7",
             "Topic :: Software Development :: Build Tools",
-            "Topic :: System :: Software Distribution"],
-          long_description=read_long_description())
+            "Topic :: System :: Software Distribution"])
 
 if __name__ == '__main__':
     main()

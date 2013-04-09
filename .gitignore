@@ -21,3 +21,5 @@ dist/
 build/
 /README.html
 /.tox/
+/_bbfreeze_loader/console.exe
+/bbfreeze_loader.egg-info/
