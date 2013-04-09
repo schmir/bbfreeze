@@ -46,6 +46,12 @@ try:
 except ImportError:
     pkg_resources = None
 
+dont_copy_as_egg = set(["bbfreeze", "PyXML"])
+
+
+def normalize_pkgname(name):
+    return name.lower().replace("-", "_")
+
 
 def getstatusoutput(*args):
     process = subprocess.Popen(stdout=subprocess.PIPE, *args)
@@ -88,8 +94,10 @@ class EggAnalyzer(object):
             except KeyError:
                 pathcount[x.location] = 1
 
+        normalized_dont_copy = set([normalize_pkgname(x) for x in dont_copy_as_egg])
+
         def is_good(dist):
-            if dist.project_name == "bbfreeze":
+            if normalize_pkgname(dist.project_name) in normalized_dont_copy:
                 return False
 
             if not dist.has_metadata("top_level.txt"):
@@ -150,12 +158,16 @@ class EggAnalyzer(object):
                 eggutil.copyDistribution(x, destdir)
             else:
                 try:
-                    path = x._provider.path
+                    path = getattr(x._provider, "egg_info", None) or x._provider.path
                 except AttributeError:
                     print "Warning: cannot copy egg-info for", x
                     continue
                 print "Copying egg-info of %s from %r" % (x, path)
-                shutil.copy2(path, destdir)
+                if os.path.isdir(path):
+                    basename = "%s.egg-info" % x.project_name
+                    shutil.copytree(path, os.path.join(destdir, basename))
+                else:
+                    shutil.copy2(path, destdir)
 
 
 def fullname(p):
@@ -316,25 +328,31 @@ def replace_paths_in_code(co, newname):
 # and higher and can be removed once support for Python 2.3 is no longer needed
 EXTENSION_LOADER_SOURCE = \
 """
-sys = __import__("sys")
-os = __import__("os")
-imp = __import__("imp")
+def _bbfreeze_import_dynamic_module():
+    global _bbfreeze_import_dynamic_module
+    del _bbfreeze_import_dynamic_module
 
-found = False
-for p in sys.path:
-    if not os.path.isdir(p):
-        continue
-    f = os.path.join(p, "%s")
-    if not os.path.exists(f):
-        continue
-    sys.modules[__name__] = imp.load_dynamic(__name__, f)
-    found = True
-    break
-if not found:
-    try:
-        raise ImportError, "No module named %%s" %% __name__
-    finally:
-        del sys.modules[__name__]
+    sys = __import__("sys", level=0)
+    os = __import__("os", level=0)
+    imp = __import__("imp", level=0)
+
+    found = False
+    for p in sys.path:
+        if not os.path.isdir(p):
+            continue
+        f = os.path.join(p, "%s")
+        if not os.path.exists(f):
+            continue
+        sys.modules[__name__] = imp.load_dynamic(__name__, f)
+        found = True
+        break
+    if not found:
+        try:
+            raise ImportError, "No module named %%s" %% __name__
+        finally:
+            del sys.modules[__name__]
+
+_bbfreeze_import_dynamic_module()
 """
 
 
@@ -408,6 +426,18 @@ class Freezer(object):
                 print "entry point is", ep
                 return ep.module_name
         return None
+
+    def addEntryPoint(self, name, importspec):
+        modname, attr = importspec.split(":")
+        m = self.mf.createNode(modulegraph.Script, name)
+        m.code = compile("""
+if __name__ == '__main__':
+    import sys, %s
+    sys.exit(%s.%s())
+""" % (modname, modname, attr), name, "exec")
+        self.mf.createReference(None, m)
+        self.mf.scan_code(m.code, m)
+        return m
 
     def addScript(self, path, gui_only=False):
         dp = os.path.dirname(os.path.abspath(path))
@@ -525,7 +555,8 @@ class Freezer(object):
     def __call__(self):
         if self.include_py:
             pyscript = os.path.join(os.path.dirname(__file__), 'py.py')
-            self.addScript(pyscript)
+            s = self.mf.run_script(pyscript)
+            s.gui_only = False
 
         self.addModule("encodings.*")
         self._add_loader()

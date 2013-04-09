@@ -48,9 +48,15 @@ def test_celementtree():
 def test_email_mimetext():
     maybe_compile_and_run("ex-email_mimetext.py")
 
+
+def test_lxml_etree():
+    maybe_compile_and_run("ex-lxml.py")
+
+
 if sys.platform == 'win32':
     def test_pythoncom():
         maybe_compile_and_run("ex-pythoncom.py")
 
     def test_pywintypes():
         maybe_compile_and_run("ex-pywintypes.py")
+

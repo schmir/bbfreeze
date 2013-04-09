@@ -127,6 +127,11 @@ def copyDistribution(distribution, destdir):
         and not distribution.location.lower().endswith(".egg")
         and os.path.exists(os.path.join(distribution.location, "setup.py"))):
         # this seems to be a development egg. FIXME the above test looks fragile
+
+        setuptools_dist = pkg_resources.working_set.find(pkg_resources.Requirement.parse("setuptools"))
+        if setuptools_dist:
+            os.environ["PYTHONPATH"] = setuptools_dist.location
+
         cwd = os.getcwd()
         os.chdir(distribution.location)
         try:
@@ -138,7 +143,8 @@ def copyDistribution(distribution, destdir):
             import shutil
             tmp = tempfile.mkdtemp()
             atexit.register(shutil.rmtree, tmp)
-            cmd = [sys.executable, "-c", "from bbfreeze import ensure_setuptools; ensure_setuptools.main()", "setup.py", "-q", "bdist_egg", "--dist", tmp]
+            cmd = [sys.executable, "-c", "import sys,__main__,setuptools; del sys.argv[0]; __main__.__file__=sys.argv[0], execfile(sys.argv[0],__main__.__dict__,__main__.__dict__)", "setup.py", "-q", "bdist_egg", "--dist", tmp]
+
             print "running %r in %r" % (" ".join(cmd), os.getcwd())
             spawn(cmd)
             print "====> setup.py bdist_egg finished in", os.getcwd()
