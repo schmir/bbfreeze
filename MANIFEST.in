@@ -4,15 +4,11 @@ include bbfreeze/__init__.py
 include bbfreeze/__main__.py
 include bbfreeze/bdist_bbfreeze.py
 include bbfreeze/codehack.py
-include bbfreeze/console.c
-include bbfreeze/consolew.c
 include bbfreeze/eggutil.py
 include bbfreeze/ensure_setuptools.py
 include bbfreeze/freezer.py
 include bbfreeze/getdeps.py
-include bbfreeze/getpath.c
 include bbfreeze/load_console.py
-include bbfreeze/loader_impl.h
 include bbfreeze/modulegraph/__init__.py
 include bbfreeze/modulegraph/find_modules.py
 include bbfreeze/modulegraph/modulegraph.py

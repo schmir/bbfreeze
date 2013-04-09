@@ -164,7 +164,8 @@ class EggAnalyzer(object):
 
 
 def fullname(p):
-    return os.path.join(os.path.dirname(__file__), p)
+    import _bbfreeze_loader
+    return os.path.join(os.path.dirname(_bbfreeze_loader.__file__), p)
 
 
 def getRecipes():
@@ -451,7 +452,7 @@ if __name__ == '__main__':
     def _add_loader(self):
         if self._loaderNode is not None:
             return
-        loader = fullname("load_console.py")
+        loader = os.path.join(os.path.dirname(__file__), "load_console.py")
         assert os.path.exists(loader)
 
         m = self.mf.run_script(loader)
