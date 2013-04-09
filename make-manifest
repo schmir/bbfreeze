@@ -5,7 +5,7 @@ import os
 
 def main():
     files = sorted(set([x.strip() for x in os.popen("git ls-files")])
-                   - set(["make_manifest.py", "Makefile", ".gitignore"]))
+                   - set(["make-manifest", ".gitignore"]))
 
     f = open("MANIFEST.in", "w")
     for x in files:
