@@ -5,8 +5,8 @@ bbfreeze - create stand-alone executables from python scripts
 ======================================================================
 
 :Authors: Ralf Schmitt <ralf@systemexit.de>
-:Version: 1.0.2
-:Date:    2012-10-23
+:Version: 1.1.0
+:Date:    2013-04-10
 :Download: http://pypi.python.org/pypi/bbfreeze/#downloads
 :Code: https://github.com/schmir/bbfreeze
 
@@ -234,6 +234,30 @@ version) installed on the target machine.
 
 Change-Log
 ======================================================================
+2013-04-10         release 1.1.0
+-----------------------------------------------
+- bbfreeze has been split into bbfreeze-loader package and a pure
+  python bbfreeze module. this should allow me to make more regular
+  releases.
+- add recipe for lxml.etree
+- don't pollute module namespace while importing
+- don't pollute the modules namespace in EXTENSION_LOADER_SOURCE
+- make sure we use absolute imports in EXTENSION_LOADER_SOURCE
+- do not pick up bbfreeze/__main__.py when freezing bbfreeze/py.py
+- fix 'googlegroup subscribe' address
+- fix bdist_egg procedure when setuptools is not importable
+- fix the bdist_egg procedure when running under buildout
+- normalize package names in 'dont_copy_as_egg'
+- only execute entry point scripts when called as __main__
+- use a project specific name for egg-info directories
+- don't install PyXML as egg since it won't work
+- add addEntryPoint method
+- copy egg-info directories
+- rename bb-freeze to bbfreeze
+- rely on setuptools/distribute being installed
+- shorten and simplify extension loader
+- use absolute imports in the extension loader to load stdlib modules
+
 2012-10-23         release 1.0.2
 -----------------------------------------------
 - use altgraph 0.9 as 0.10 is incompatible
