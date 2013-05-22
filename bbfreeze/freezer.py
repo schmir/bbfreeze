@@ -564,13 +564,10 @@ if __name__ == '__main__':
 
         # work around easy_install which doesn't preserve the
         # executable bit
-        if not os.access(self.console, os.X_OK):
-            xconsole = os.path.join(self.distdir, "bbfreeze-console.exe")
-            shutil.copy2(self.console, xconsole)
-            os.chmod(xconsole, 0755)
-            self.console = xconsole
-        else:
-            xconsole = None
+        xconsole = os.path.join(self.distdir, "bbfreeze-console.exe")
+        shutil.copy2(self.console, xconsole)
+        os.chmod(xconsole, 0755)
+        self.console = xconsole
 
         while 1:
             self.findBinaryDependencies()
