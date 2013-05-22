@@ -117,12 +117,27 @@ static void set_program_path(char *argv0)
 #endif
 }
 
+/* implement Py_GetArgcArgv for the setproctitle module.
+   this function may be hidden on ubuntu */
+static char **orig_argv;
+static int  orig_argc;
+
+void Py_GetArgcArgv(int *argc, char ***argv)
+{
+    *argc = orig_argc;
+    *argv = orig_argv;
+}
+
+
 static int loader_main(int argc, char **argv)
 {
 	// make stdin, stdout and stderr unbuffered
 	setbuf(stdin, (char *)NULL);
 	setbuf(stdout, (char *)NULL);
 	setbuf(stderr, (char *)NULL);
+
+        orig_argv = argv;
+        orig_argc = argc;
 
 	// initialize Python
 	Py_NoSiteFlag = 1;
