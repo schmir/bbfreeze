@@ -751,20 +751,19 @@ if __name__ == '__main__':
             os.link(src, dst)
             os.chmod(dst, 0755)
         elif lm == 'loader':
-            if sys.platform == 'win32':
-                if gui_only:
-                    shutil.copy2(self.consolew, dst)
-                else:
-                    shutil.copy2(self.console, dst)
-                
-                if self.icon:
-                    try:
-                        from bbfreeze import winexeutil
-                        # Set executable icon
-                        winexeutil.set_icon(dst, self.icon)
-                    except ImportError as e:
-                        raise RuntimeError("Cannot add icon to executable. Error: %s" % (e.message))
+            if gui_only and sys.platform == 'win32':
+                shutil.copy2(self.consolew, dst)
+            else:
+                shutil.copy2(self.console, dst)
             os.chmod(dst, 0755)
+            
+            if self.icon and sys.platform == 'win32':
+                try:
+                    from bbfreeze import winexeutil
+                    # Set executable icon
+                    winexeutil.set_icon(dst, self.icon)
+                except ImportError as e:
+                    raise RuntimeError("Cannot add icon to executable. Error: %s" % (e.message))
         else:
             raise RuntimeError("linkmethod %r not supported" % (self.linkmethod,))
 
