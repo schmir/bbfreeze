@@ -762,7 +762,7 @@ if __name__ == '__main__':
                     from bbfreeze import winexeutil
                     # Set executable icon
                     winexeutil.set_icon(dst, self.icon)
-                except ImportError as e:
+                except ImportError, e:
                     raise RuntimeError("Cannot add icon to executable. Error: %s" % (e.message))
         else:
             raise RuntimeError("linkmethod %r not supported" % (self.linkmethod,))
