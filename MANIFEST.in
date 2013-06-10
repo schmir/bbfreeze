@@ -15,6 +15,7 @@ include bbfreeze/modulegraph/modulegraph.py
 include bbfreeze/modulegraph/util.py
 include bbfreeze/py.py
 include bbfreeze/recipes.py
+include bbfreeze/winexeutil.py
 include setup.cfg
 include setup.py
 include showvars.py
@@ -39,10 +40,12 @@ include tests/ex-time.py
 include tests/ex-tkinter.py
 include tests/ex-wxpython.py
 include tests/hello-world.py
+include tests/python.ico
 include tests/relimport/__init__.py
 include tests/relimport/forms.py
 include tests/test_filesystemencoding.py
 include tests/test_guiscript.py
+include tests/test_icon.py
 include tests/test_relimport.py
 include tests/test_script.py
 include tests/wx-example.py
