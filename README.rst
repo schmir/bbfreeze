@@ -5,8 +5,8 @@ bbfreeze - create stand-alone executables from python scripts
 ======================================================================
 
 :Authors: Ralf Schmitt <ralf@systemexit.de>
-:Version: 1.1.0
-:Date:    2013-04-10
+:Version: 1.1.1
+:Date:    2013-07-14
 :Download: http://pypi.python.org/pypi/bbfreeze/#downloads
 :Code: https://github.com/schmir/bbfreeze
 
@@ -234,6 +234,14 @@ version) installed on the target machine.
 
 Change-Log
 ======================================================================
+2013-07-14         release 1.1.1
+-----------------------------------------------
+- Adding icon for executables on windows. Added SetIcon method to
+  Freezer. Winexeutil uses win32api so pywin32 must be installed to
+  use.
+- unconditionally copy console.exe to dist dir and ensure permissions
+  are usable
+
 2013-04-10         release 1.1.0
 -----------------------------------------------
 - bbfreeze has been split into bbfreeze-loader package and a pure
