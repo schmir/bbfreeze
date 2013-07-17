@@ -5,8 +5,8 @@ bbfreeze - create stand-alone executables from python scripts
 ======================================================================
 
 :Authors: Ralf Schmitt <ralf@systemexit.de>
-:Version: 1.1.1
-:Date:    2013-07-14
+:Version: 1.1.2
+:Date:    2013-07-17
 :Download: http://pypi.python.org/pypi/bbfreeze/#downloads
 :Code: https://github.com/schmir/bbfreeze
 
@@ -234,6 +234,10 @@ version) installed on the target machine.
 
 Change-Log
 ======================================================================
+2013-07-17         release 1.1.2
+-----------------------------------------------
+- fix extension loader on python 2.4
+
 2013-07-14         release 1.1.1
 -----------------------------------------------
 - Adding icon for executables on windows. Added SetIcon method to
