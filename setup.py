@@ -32,7 +32,7 @@ def main():
           zip_safe=False,
           maintainer="Ralf Schmitt",
           maintainer_email="ralf@systemexit.de",
-          url="http://pypi.python.org/pypi/bbfreeze/",
+          url="https://pypi.python.org/pypi/bbfreeze/",
           description="create standalone executables from python scripts",
           platforms="Linux Windows",
           license="zlib/libpng license",

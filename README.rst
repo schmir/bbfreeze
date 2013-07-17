@@ -7,7 +7,7 @@ bbfreeze - create stand-alone executables from python scripts
 :Authors: Ralf Schmitt <ralf@systemexit.de>
 :Version: 1.1.2
 :Date:    2013-07-17
-:Download: http://pypi.python.org/pypi/bbfreeze/#downloads
+:Download: https://pypi.python.org/pypi/bbfreeze/#downloads
 :Code: https://github.com/schmir/bbfreeze
 
 
@@ -72,7 +72,7 @@ You can also reach the author via email to ralf@systemexit.de
 Source
 -------------------
 Windows Eggs and the source code can be downloaded from 
-http://pypi.python.org/pypi/bbfreeze/.
+https://pypi.python.org/pypi/bbfreeze/.
 
 The source code is maintained in a git repository on github:
 https://github.com/schmir/bbfreeze
@@ -499,10 +499,10 @@ freely, subject to the following restrictions:
    distribution.
 
 .. _py2exe: http://www.py2exe.org/
-.. _py2app: http://pypi.python.org/pypi/py2app/
+.. _py2app: https://pypi.python.org/pypi/py2app/
 .. _PyInstaller: http://www.pyinstaller.org/
 .. _cx_Freeze: http://cx-freeze.sourceforge.net/
-.. _modulegraph: http://pypi.python.org/pypi/modulegraph
+.. _modulegraph: https://pypi.python.org/pypi/modulegraph
 .. __: http://brainbot.com
 .. _32bit: http://www.microsoft.com/downloads/en/details.aspx?familyid=9B2DA534-3E03-4391-8A4D-074B9F2BC1BF
 .. _64bit: http://www.microsoft.com/downloads/en/details.aspx?FamilyID=BD2A6171-E2D6-4230-B809-9A8D7548C1B6
