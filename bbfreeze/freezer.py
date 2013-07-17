@@ -317,18 +317,26 @@ def replace_paths_in_code(co, newname):
                      co.co_firstlineno, co.co_lnotab,
                      co.co_freevars, co.co_cellvars)
 
-# NOTE: the try: except: block in this code is not necessary under Python 2.4
-# and higher and can be removed once support for Python 2.3 is no longer needed
-EXTENSION_LOADER_SOURCE = \
-"""
+def make_extension_loader(modname):
+    src = """
 def _bbfreeze_import_dynamic_module():
     global _bbfreeze_import_dynamic_module
     del _bbfreeze_import_dynamic_module
-
+"""
+    if sys.version_info[:2] < (2, 5):
+        src += """
+    sys = __import__("sys")
+    os = __import__("os")
+    imp = __import__("imp")
+"""
+    else:
+        src += """
     sys = __import__("sys", level=0)
     os = __import__("os", level=0)
     imp = __import__("imp", level=0)
+"""
 
+    src += """
     found = False
     for p in sys.path:
         if not os.path.isdir(p):
@@ -346,7 +354,10 @@ def _bbfreeze_import_dynamic_module():
             del sys.modules[__name__]
 
 _bbfreeze_import_dynamic_module()
-"""
+""" % modname
+
+    return src
+
 
 
 def get_implies():
@@ -664,7 +675,7 @@ if __name__ == '__main__':
         base, ext = os.path.splitext(basefilename)
         # fedora has zlibmodule.so, timemodule.so,...
         if base not in [name, name + "module"]:
-            code = compile(EXTENSION_LOADER_SOURCE % (name + ext),
+            code = compile(make_extension_loader(name + ext),
                            "ExtensionLoader.py", "exec")
             fn = name.replace(".", "/") + ".pyc"
             self._writecode(fn, time.time(), code)
