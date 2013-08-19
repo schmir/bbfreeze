@@ -86,8 +86,9 @@ if sys.platform == 'win32':
         """Return the path that Windows will search for dlls."""
         global _bpath
         if _bpath is None:
-            _bpath = []
+            _bpath = [os.path.dirname(sys.executable)]
             if sys.platform == 'win32':
+
                 try:
                     import win32api
                 except ImportError:
@@ -99,7 +100,7 @@ if sys.platform == 'win32':
                     sysdir = win32api.GetSystemDirectory()
                     sysdir2 = os.path.join(sysdir, '../SYSTEM')
                     windir = win32api.GetWindowsDirectory()
-                    _bpath = [sysdir, sysdir2, windir]
+                    _bpath.extend([sysdir, sysdir2, windir])
             _bpath.extend(os.environ.get('PATH', '').split(os.pathsep))
         return _bpath
 
