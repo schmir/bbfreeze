@@ -550,10 +550,13 @@ if __name__ == '__main__':
             print "WARNING: failed to set RPATH for %s: %s" % (exe, out)
 
     def ensureRPath(self, exe):
-        if sys.platform not in ("linux2", "linux3"):
+        if sys.platform not in ("linux2", "linux3", "sunos5"):
             return
 
         expected_rpath = "${ORIGIN}:${ORIGIN}/../lib"
+        if sys.platform == "sunos5":
+            # RPATH shouldn't have the squiggly braces on sunos
+            expected_rpath = "$ORIGIN:$ORIGIN/../lib"
         current_rpath = self._getRPath(exe)
         if current_rpath is None:
             return

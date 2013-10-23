@@ -138,6 +138,17 @@ elif sys.platform.startswith("freebsd"):
     def exclude(fp):
         return bool(re.match(r"^/usr/lib/.*$", fp))
 
+elif sys.platform.startswith("sunos5"):
+
+    def _getDependencies(path):
+        os.environ["P"] = path
+        s = commands.getoutput("ldd $P")
+        res = [x for x in re.compile(r"^\t* *.*=>\t* (.*)", re.MULTILINE).findall(s) if x]
+        return res
+
+    def exclude(fp):
+        return bool(re.match(r"^/lib/.*$|^/usr/lib/.*$", fp))
+
 elif sys.platform.startswith("linux"):
 
     def _getDependencies(path):
