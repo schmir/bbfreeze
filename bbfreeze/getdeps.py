@@ -35,6 +35,7 @@ if sys.platform == 'win32':
          'COMCTL32.DLL',
          'COMDLG32.DLL',
          'CRTDLL.DLL',
+         'CRYPT32.DLL',
          'DCIMAN32.DLL',
          'DDRAW.DLL',
          'GDI32.DLL',
