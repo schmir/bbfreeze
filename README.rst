@@ -5,8 +5,8 @@ bbfreeze - create stand-alone executables from python scripts
 ======================================================================
 
 :Authors: Ralf Schmitt <ralf@systemexit.de>
-:Version: 1.1.2
-:Date:    2013-07-17
+:Version: 1.1.3
+:Date:    2014-01-20
 :Download: https://pypi.python.org/pypi/bbfreeze/#downloads
 :Code: https://github.com/schmir/bbfreeze
 
@@ -234,6 +234,13 @@ version) installed on the target machine.
 
 Change-Log
 ======================================================================
+2014-01-20         release 1.1.3
+-----------------------------------------------
+- Excluding Crypt32.dll
+- Add support for SunOS (tested on SmartOS)
+- Added current python executable path to allow freezing even if
+  python is not installed (portable python, buildout)
+
 2013-07-17         release 1.1.2
 -----------------------------------------------
 - fix extension loader on python 2.4
