@@ -53,7 +53,7 @@ distutils command 'bdist_bbfreeze'
 
 bbfreeze works on windows and UNIX-like operating systems. bbfreeze
 has been tested with python 2.4, 2.5, 2.6 and 2.7 bbfreeze will not
-work with python 3 or higher.
+work with python 3 or higher. bbfreeze does not work on OS X.
 
 Contact Information
 -------------------
