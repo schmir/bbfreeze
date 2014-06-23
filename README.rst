@@ -11,6 +11,11 @@ bbfreeze - create stand-alone executables from python scripts
 :Code: https://github.com/schmir/bbfreeze
 
 
+.. Note::
+
+   bbfreeze currently does not have a maintainer. If that doesn't scare you off, read on!
+
+
 Overview
 ======================================================================
 bbfreeze creates stand-alone executables from python scripts. It's
